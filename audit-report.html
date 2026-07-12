@@ -1,0 +1,354 @@
+<title>システム棚卸し・健康診断レポート(2026-07-12)</title>
+<style>
+  :root {
+    --bg: #F5F6F4;
+    --surface: #FFFFFF;
+    --ink: #22292D;
+    --muted: #5B666C;
+    --line: #DCE1DF;
+    --accent: #14646E;
+    --accent-ink: #0E4A52;
+    --danger: #B3261E; --danger-bg: #FAEAE8; --danger-line: #E5B7B3;
+    --warn: #8F6400;   --warn-bg: #FAF2DC;   --warn-line: #E2CE96;
+    --info: #245A8D;   --info-bg: #E9F1F8;   --info-line: #B7CDE0;
+    --ok: #2C6E49;     --ok-bg: #E7F2EA;     --ok-line: #B4D4C0;
+    --na: #5B666C;     --na-bg: #ECEEED;     --na-line: #C9CFCC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171B1D;
+      --surface: #21272A;
+      --ink: #E6EAE8;
+      --muted: #9BA6A3;
+      --line: #37403F;
+      --accent: #5FB8C2;
+      --accent-ink: #8AD0D8;
+      --danger: #F2A29B; --danger-bg: #3D2422; --danger-line: #6B3B37;
+      --warn: #E5C46A;   --warn-bg: #3A321E;   --warn-line: #6B5A2E;
+      --info: #93BFE6;   --info-bg: #1F2E3C;   --info-line: #3A5570;
+      --ok: #94CBA8;     --ok-bg: #20342A;     --ok-line: #3B5D49;
+      --na: #9BA6A3;     --na-bg: #2A3033;     --na-line: #454E51;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171B1D;
+    --surface: #21272A;
+    --ink: #E6EAE8;
+    --muted: #9BA6A3;
+    --line: #37403F;
+    --accent: #5FB8C2;
+    --accent-ink: #8AD0D8;
+    --danger: #F2A29B; --danger-bg: #3D2422; --danger-line: #6B3B37;
+    --warn: #E5C46A;   --warn-bg: #3A321E;   --warn-line: #6B5A2E;
+    --info: #93BFE6;   --info-bg: #1F2E3C;   --info-line: #3A5570;
+    --ok: #94CBA8;     --ok-bg: #20342A;     --ok-line: #3B5D49;
+    --na: #9BA6A3;     --na-bg: #2A3033;     --na-line: #454E51;
+  }
+  :root[data-theme="light"] {
+    --bg: #F5F6F4;
+    --surface: #FFFFFF;
+    --ink: #22292D;
+    --muted: #5B666C;
+    --line: #DCE1DF;
+    --accent: #14646E;
+    --accent-ink: #0E4A52;
+    --danger: #B3261E; --danger-bg: #FAEAE8; --danger-line: #E5B7B3;
+    --warn: #8F6400;   --warn-bg: #FAF2DC;   --warn-line: #E2CE96;
+    --info: #245A8D;   --info-bg: #E9F1F8;   --info-line: #B7CDE0;
+    --ok: #2C6E49;     --ok-bg: #E7F2EA;     --ok-line: #B4D4C0;
+    --na: #5B666C;     --na-bg: #ECEEED;     --na-line: #C9CFCC;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  header.report-head { border-bottom: 3px solid var(--accent); padding-bottom: 20px; margin-bottom: 28px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.14em; color: var(--accent); font-weight: 700; margin: 0 0 6px; }
+  h1 { font-size: 26px; margin: 0 0 10px; line-height: 1.4; text-wrap: balance; }
+  .meta { color: var(--muted); font-size: 13px; margin: 0; }
+  .meta span + span::before { content: "／"; margin: 0 6px; color: var(--line); }
+
+  h2 { font-size: 19px; margin: 48px 0 6px; padding-left: 12px; border-left: 4px solid var(--accent); line-height: 1.5; }
+  h2 .sec-no { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  .sec-note { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+
+  /* summary tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; border-top-width: 4px; }
+  .tile .num { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .tile .lbl { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+  .tile .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .tile.t-danger { border-top-color: var(--danger); } .tile.t-danger .num, .tile.t-danger .lbl { color: var(--danger); }
+  .tile.t-warn { border-top-color: var(--warn); } .tile.t-warn .num, .tile.t-warn .lbl { color: var(--warn); }
+  .tile.t-na { border-top-color: var(--na); } .tile.t-na .num, .tile.t-na .lbl { color: var(--na); }
+  .tile.t-ok { border-top-color: var(--ok); } .tile.t-ok .num, .tile.t-ok .lbl { color: var(--ok); }
+
+  .headline { background: var(--danger-bg); border: 1px solid var(--danger-line); border-radius: 6px; padding: 14px 18px; margin: 16px 0 0; }
+  .headline strong { color: var(--danger); }
+
+  /* chips */
+  .chip { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+  .c-danger { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-line); }
+  .c-warn { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-line); }
+  .c-info { color: var(--info); background: var(--info-bg); border-color: var(--info-line); }
+  .c-ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+  .c-na { color: var(--na); background: var(--na-bg); border-color: var(--na-line); }
+
+  /* tables */
+  .tblwrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: none; }
+  th { font-size: 12px; letter-spacing: 0.05em; color: var(--muted); background: color-mix(in srgb, var(--surface) 60%, var(--bg)); white-space: nowrap; }
+  td.item { font-weight: 700; white-space: nowrap; }
+  td.verdict { white-space: nowrap; }
+
+  /* plan list */
+  ol.plan { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 12px; counter-reset: plan; }
+  ol.plan > li { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 18px 14px 56px; position: relative; counter-increment: plan; }
+  ol.plan > li::before { content: counter(plan); position: absolute; left: 18px; top: 15px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--surface); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  ol.plan .p-title { font-weight: 700; }
+  ol.plan .p-body { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+
+  .note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--info); border-radius: 6px; padding: 12px 16px; font-size: 13.5px; margin: 14px 0 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; font-size: 12.5px; color: var(--muted); align-items: center; }
+  code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 0.92em; background: var(--na-bg); border: 1px solid var(--na-line); border-radius: 4px; padding: 0 5px; }
+  footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+</style>
+
+<div class="wrap">
+  <header class="report-head">
+    <p class="eyebrow">SYSTEM HEALTH CHECK</p>
+    <h1>Claude Code まかせている仕組みの棚卸し・健康診断レポート</h1>
+    <p class="meta">
+      <span>実施日: 2026年7月12日</span>
+      <span>対象: keshirock さんの Claude 環境(GitHub・スキル・コネクタ・自動化)</span>
+      <span>診断方法: すべて実際のコマンド・API で確認した事実のみ記載</span>
+    </p>
+  </header>
+
+  <p>
+    健康診断と同じ形式で、<strong>「危険(実害あり)」「要確認(疑いあり)」「改善余地」「正常」「未確認」</strong>の5段階で判定しています。
+    キーやパスワードの値そのものは、このレポートには一切載せていません。
+  </p>
+
+  <div class="legend">
+    判定の見方:
+    <span class="chip c-danger">危険</span> 実害を確認済み・すぐ対処
+    <span class="chip c-warn">要確認</span> 疑いあり・断定できず
+    <span class="chip c-info">改善余地</span> 危険ではないが直すと良い
+    <span class="chip c-ok">正常</span> 確認して問題なし
+    <span class="chip c-na">未確認</span> 今回調べられなかった
+  </div>
+
+  <h2><span class="sec-no">0</span>診断結果サマリー</h2>
+  <div class="tiles">
+    <div class="tile t-danger"><div class="num">1</div><div class="lbl">危険(実害あり)</div><div class="desc">個人情報がネット公開中</div></div>
+    <div class="tile t-warn"><div class="num">3</div><div class="lbl">要確認(疑いあり)</div><div class="desc">断定できず・追加確認が必要</div></div>
+    <div class="tile t-na"><div class="num">2</div><div class="lbl">未確認</div><div class="desc">権限の壁で今回調査不能</div></div>
+    <div class="tile t-ok"><div class="num">14</div><div class="lbl">正常</div><div class="desc">確認して問題なし</div></div>
+  </div>
+  <div class="headline">
+    <strong>最重要:</strong> 誰でも見られる「公開」設定の GitHub リポジトリの中に、あなたの<strong>メールアドレス・氏名・アカウント ID</strong> が埋め込まれたファイルが置かれています(下記 1 番)。これは推測ではなく、ファイルの中身とリポジトリの公開設定を実際に確認した結果です。
+  </div>
+
+  <h2><span class="sec-no">1</span>GitHub リポジトリ「command-support」</h2>
+  <p class="sec-note">あなたのアカウントで Claude Code が使えるリポジトリはこの 1 つだけです(確認済み)。設定は<strong>公開(誰でも閲覧可能)</strong>、中身はファイル 2 つ、履歴はコミット 2 件のみ。</p>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">index.html.html</td>
+        <td>「指揮支援 v2(消防活動記録・タイムライン管理ツール)」の画面を保存したファイル(2.6MB)</td>
+        <td>アプリ本体だけでなく <strong>claude.ai の画面まるごと</strong>を保存したもの。単体では正しく動かない可能性が高く、更新の仕組みもない(置きっぱなしで老朽化)</td>
+        <td><strong>確認済みの実害:</strong> ログイン中に保存したため、あなたのメールアドレス(kaw***@gmail.com)・氏名・アカウント ID・組織 ID がファイル内に埋め込まれており、リポジトリが公開設定のため<strong>誰でもダウンロードして読める状態</strong></td>
+        <td class="verdict"><span class="chip c-danger">危険</span></td>
+        <td>①リポジトリを非公開化(即効)→ ②アプリ本体だけの HTML に置き直し ③過去の履歴からも当該ファイルを消す(履歴には残り続けるため削除コミットだけでは不十分)</td>
+      </tr>
+      <tr>
+        <td class="item">同ファイル内の<br>電話番号らしき文字列</td>
+        <td>—</td>
+        <td>—</td>
+        <td>電話番号の形をした文字列が 7 件。claude.ai の画面部品(サポート窓口等)か実データかは、このファイルだけでは判別できなかった</td>
+        <td class="verdict"><span class="chip c-warn">要確認</span></td>
+        <td>非公開化・ファイル置き直し(上記①②)を行えばまとめて解消</td>
+      </tr>
+      <tr>
+        <td class="item">GitHub Pages<br>(Web公開機能)</td>
+        <td>—</td>
+        <td>—</td>
+        <td>このファイルが「Web ページとして」も公開されているかどうかは、この作業環境からは通信制限で確認できなかった</td>
+        <td class="verdict"><span class="chip c-warn">要確認</span></td>
+        <td>GitHub のリポジトリ設定 → Pages 欄を一度見て、有効なら無効化</td>
+      </tr>
+      <tr>
+        <td class="item">APIキー・<br>パスワード類</td>
+        <td>—</td>
+        <td>—</td>
+        <td>実物のキー・パスワード・トークンは<strong>検出されず</strong>(「API_KEY」という文字は claude.ai 画面の表示用文言で、キーの値ではないことを確認)。<code>.env</code> ファイルの混入も履歴全体を調べてなし</td>
+        <td class="verdict"><span class="chip c-ok">正常</span></td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="item">傷病者等の<br>実データ</td>
+        <td>—</td>
+        <td>—</td>
+        <td>傷病者名・住所・生年月日などの実データの混入は確認されず(画面の見出し文字が 1 件あるのみ)</td>
+        <td class="verdict"><span class="chip c-ok">正常</span></td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="item">README.md</td>
+        <td>リポジトリの説明ファイル(現在は名前 1 行のみ)</td>
+        <td>説明が空で、何のリポジトリか分からない</td>
+        <td>なし</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>アプリの目的・使い方を数行書く</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">2</span>スキル(Claude に覚えさせた手順書)</h2>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">kobe-fire-team<br>(自作)</td>
+        <td>消防業務支援の専門チームとして動くカスタムスキル</td>
+        <td>中身(手順書の本文)がこの作業環境からは読めず、重複・老朽化の点検ができなかった</td>
+        <td>中身に個人情報や連絡先が書き込まれていないか未点検</td>
+        <td class="verdict"><span class="chip c-warn">要確認</span></td>
+        <td>次回、スキルの中身を貼り付けてもらえれば点検可能。指揮支援 v2 と役割が重なるなら統合を検討</td>
+      </tr>
+      <tr>
+        <td class="item">標準スキル 7 件</td>
+        <td>Excel・PowerPoint・PDF・Word 作成、Web アプリ作成、デザイン、スキル作成支援(いずれも Anthropic 公式)</td>
+        <td>なし</td>
+        <td>なし</td>
+        <td class="verdict"><span class="chip c-ok">正常</span></td>
+        <td>そのままで OK</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">3</span>コネクタ(Claude と外部サービスの接続)</h2>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">Gmail / Google カレンダー /<br>Google Drive / Goodnotes</td>
+        <td>メール・予定・ファイル・ノートを Claude から読み書きできる接続(4 件とも接続済み)</td>
+        <td>なし(使っているなら妥当な構成)</td>
+        <td>Claude にメール・予定・ファイルの中身への広い読み取り権限を渡している状態。漏えい等の実害は確認されていないが、<strong>使っていない接続があれば権限の渡しすぎ</strong>になる</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>普段使っていないものがあれば接続解除。使うものだけ残す</td>
+      </tr>
+      <tr>
+        <td class="item">Canva / Microsoft 365</td>
+        <td>インストールされているが<strong>未接続・このチャットでも無効</strong>(=実質未使用)</td>
+        <td>未使用のまま残っている</td>
+        <td>未接続のため実害なし</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>使う予定がなければ削除して整理</td>
+      </tr>
+      <tr>
+        <td class="item">プラグイン 4 件</td>
+        <td>small-business / design / productivity / プラグイン管理(いずれも公式)</td>
+        <td>使用頻度はこちらからは判別不能</td>
+        <td>なし</td>
+        <td class="verdict"><span class="chip c-ok">正常</span></td>
+        <td>使っていないものがあれば無効化</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">4</span>定期実行・自動化</h2>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">定期実行(Routine・cron)</td>
+        <td><strong>登録なし(0 件)</strong>を確認済み。PR の自動監視などもなし</td>
+        <td>問題はないが、毎回手で頼んでいる作業を自動化する余地がある</td>
+        <td>なし</td>
+        <td class="verdict"><span class="chip c-ok">正常</span></td>
+        <td>「もっと任せる」候補: 週 1 回のリポジトリ秘密情報チェック、定例資料の下書き作成など</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">5</span>CLAUDE.md・メモリの運用ルール</h2>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">CLAUDE.md<br>(Claude への申し送り書)</td>
+        <td><strong>存在しない</strong>ことを確認済み(リポジトリにも作業環境にもなし)</td>
+        <td>毎回ゼロから説明することになり、指示のブレ・手戻りの原因になる</td>
+        <td>なし(書いていないので漏れるものもない)</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>「消防業務での用語」「レポートの書式」「やってはいけないこと(勝手に公開しない等)」をまとめた CLAUDE.md を作成</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">6</span>今回調べられなかったもの(あなたへの質問)</h2>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>状況</th><th>判定</th><th>お願い</th></tr>
+      <tr>
+        <td class="item">GAS(Google Apps Script)・<br>Drive 上のスクリプト類</td>
+        <td>Google Drive の検索が権限の承認待ちで止まり、この環境からは一覧できなかった</td>
+        <td class="verdict"><span class="chip c-na">未確認</span></td>
+        <td>GAS を作った覚えがあれば、スクリプト名か置き場所を教えてください。なければ「なし」で確定します</td>
+      </tr>
+      <tr>
+        <td class="item">claude.ai チャット内で<br>作った他のアプリ</td>
+        <td>この作業環境から一覧できるのは Claude Code 側の公開アプリのみ(0 件)。チャット画面で作ったアプリ(指揮支援 v2 など)は一覧の対象外</td>
+        <td class="verdict"><span class="chip c-na">未確認</span></td>
+        <td>ほかにも保存して使い続けているアプリがあれば名前を教えてください</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2><span class="sec-no">7</span>優先度つき改修プラン</h2>
+  <p class="sec-note">セキュリティ対応を最優先に並べています。いずれも<strong>着手前に方針をご相談し、承認をいただいてから</strong>実施します。</p>
+  <ol class="plan">
+    <li>
+      <div class="p-title">【最優先・危険】公開リポジトリの個人情報を止める</div>
+      <div class="p-body">まずリポジトリを非公開に切り替え(数分・影響なし)。その後、個人情報入りファイルを過去の履歴ごと除去するか、リポジトリを作り直す。GitHub は「削除しただけ」では過去の版が残るため、履歴の掃除まで行う。</div>
+    </li>
+    <li>
+      <div class="p-title">【高】指揮支援 v2 を正しい形で保存し直す</div>
+      <div class="p-body">claude.ai の画面まるごとではなく、アプリ本体だけの HTML として書き出し直す。単体で開いて動く形になり、個人情報の埋め込みもなくなる。あわせて README に説明を書く。</div>
+    </li>
+    <li>
+      <div class="p-title">【中】kobe-fire-team スキルの中身点検</div>
+      <div class="p-body">スキル本文を見せてもらい、個人情報の書き込み・指揮支援 v2 との役割重複・古くなった手順がないかを点検する。</div>
+    </li>
+    <li>
+      <div class="p-title">【中】GAS・Drive スクリプトの棚卸し</div>
+      <div class="p-body">場所を教えてもらうか、次回 Drive の読み取りを承認してもらえれば、同じ形式で監査して本レポートに追記する。</div>
+    </li>
+    <li>
+      <div class="p-title">【低】未使用の接続・プラグインの整理</div>
+      <div class="p-body">Canva・Microsoft 365 など使っていない接続を外し、Claude に渡す権限を「使うものだけ」にする。</div>
+    </li>
+    <li>
+      <div class="p-title">【低】CLAUDE.md 整備 と 定期チェックの自動化</div>
+      <div class="p-body">申し送り書(CLAUDE.md)を作り、あわせて「週 1 回、リポジトリに秘密情報が混ざっていないか自動チェック」などの定期実行を仕込む。今回のような事故の再発防止になる。</div>
+    </li>
+  </ol>
+
+  <footer>
+    本レポートの指摘はすべて 2026 年 7 月 12 日時点で実際にコマンド・API により確認した事実に基づきます。推測による指摘は「要確認」または「未確認」として明示しています。キー・パスワード等の値は本文に含めていません。
+  </footer>
+</div>
