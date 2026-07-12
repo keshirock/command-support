@@ -220,25 +220,25 @@
   </div>
 
   <h2><span class="sec-no">1b</span>同リポジトリで見つかった作りかけの仕組み(棚卸しで追加発見)</h2>
-  <p class="sec-note">診断中にリモートを精査したところ、過去のセッションで作られた<strong>開発ブランチが 2 本</strong>見つかりました。どちらも main には取り込まれておらず、宙に浮いた状態です。※両ブランチとも上記の個人情報ファイルを履歴に引き継いでいたため、履歴清掃を適用済み(7/12)。</p>
+  <p class="sec-note">診断中にリモートを精査したところ、過去のセッションで作られた<strong>開発ブランチが 2 本</strong>見つかりました。※両ブランチとも個人情報ファイルを履歴に引き継いでいたため履歴清掃を適用。その後、ご指示により<strong>7/12 に両方とも削除対応済み</strong>(バックアップ zip を送付のうえ、中身を空にして PR #1 をクローズ。ブランチ名の完全削除のみ GitHub の画面から可能)。</p>
   <div class="tblwrap">
     <table>
       <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
       <tr>
         <td class="item">消防専門家<br>エージェントチーム<br>(PR #1・未マージ)</td>
         <td>消防業務の専門家ペルソナ約 30 名分(労働安全・車両管理・情報セキュリティ・防災 BCP など)のエージェント定義とスキル一式。34 コミット分の作り込み</td>
-        <td>PR #1 として提案されたまま<strong>マージも却下もされず放置</strong>。claude.ai 側の「kobe-fire-team」スキルと役割が重複している可能性</td>
+        <td>PR #1 として提案されたままマージも却下もされず放置されていた。claude.ai 側の「kobe-fire-team」スキルと役割が重複している可能性</td>
         <td>実在の連絡先・個人名・キー類は<strong>検出されず</strong>(全ファイル走査済み)。権限設定ファイルも最小限で問題なし</td>
-        <td class="verdict"><span class="chip c-info">改善余地</span></td>
-        <td>使うなら PR #1 をマージして正式採用、使わないなら PR を閉じてブランチ削除。kobe-fire-team との重複整理もあわせて</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span><br>→ <span class="chip c-ok">削除済み</span></td>
+        <td><strong>実施済み(7/12):</strong> バックアップ zip 送付 → 中身を空に → PR #1 クローズ。復活させたい場合は zip から再構築可能</td>
       </tr>
       <tr>
         <td class="item">音声メモ→カレンダー<br>変換アプリ<br>(ブランチのみ・未マージ)</td>
         <td>iOS ショートカットから音声メモを送ると、AI が予定に変換してカレンダー登録する Web アプリ(手順書つき)</td>
-        <td>ブランチに置かれたまま main に未反映。実際に使っているかどうか不明(未使用なら削除候補)</td>
-        <td>実物の API キーの直書きは<strong>なし</strong>(入力例の文字のみと確認済み)。ただし<strong>ブラウザに Anthropic API キーを貼って保存する設計</strong>のため、共用端末での利用や公開ページへの設置には注意が必要</td>
-        <td class="verdict"><span class="chip c-info">改善余地</span></td>
-        <td>使っているなら main に取り込み+キーの扱い方を README に明記。使っていないならブランチごと削除</td>
+        <td>ブランチに置かれたまま main に未反映で、実際に使われている形跡なし</td>
+        <td>実物の API キーの直書きは<strong>なし</strong>(入力例の文字のみと確認済み)。設計上はブラウザに API キーを貼る方式だった</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span><br>→ <span class="chip c-ok">削除済み</span></td>
+        <td><strong>実施済み(7/12):</strong> バックアップ zip 送付 → 中身を空に。復活させたい場合は zip から再構築可能</td>
       </tr>
     </table>
   </div>
@@ -354,8 +354,8 @@
       <div class="p-body">履歴清掃は実施済み。仕上げとして、GitHub のリポジトリページ → Settings → 最下部の Danger Zone →「Change repository visibility」→ Private に変更。徹底するなら、あわせて GitHub サポートに古い版のキャッシュ消去を依頼(任意)。</div>
     </li>
     <li>
-      <div class="p-title">【高】作りかけの 2 ブランチの行き先を決める</div>
-      <div class="p-body">消防専門家エージェントチーム(PR #1)と音声メモ→カレンダーアプリを、それぞれ「採用してマージ」か「削除」に振り分ける。宙に浮いた作りかけをなくすのが目的。</div>
+      <div class="p-title">【完了】作りかけの 2 ブランチの整理 ✔</div>
+      <div class="p-body">ご指示により削除で確定(7/12 実施)。バックアップ zip 送付済み・PR #1 クローズ済み。仕上げとして、GitHub のブランチ一覧から空になった 2 ブランチをゴミ箱アイコンで削除すると完全に消えます(任意)。</div>
     </li>
     <li>
       <div class="p-title">【高】指揮支援 v2 を正しい形で保存し直す</div>
