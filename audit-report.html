@@ -129,7 +129,7 @@
     <p class="eyebrow">SYSTEM HEALTH CHECK</p>
     <h1>Claude Code まかせている仕組みの棚卸し・健康診断レポート</h1>
     <p class="meta">
-      <span>実施日: 2026年7月12日</span>
+      <span>実施日: 2026年7月12日(同日中に緊急対応まで実施・反映済み)</span>
       <span>対象: keshirock さんの Claude 環境(GitHub・スキル・コネクタ・自動化)</span>
       <span>診断方法: すべて実際のコマンド・API で確認した事実のみ記載</span>
     </p>
@@ -151,13 +151,16 @@
 
   <h2><span class="sec-no">0</span>診断結果サマリー</h2>
   <div class="tiles">
-    <div class="tile t-danger"><div class="num">1</div><div class="lbl">危険(実害あり)</div><div class="desc">個人情報がネット公開中</div></div>
-    <div class="tile t-warn"><div class="num">3</div><div class="lbl">要確認(疑いあり)</div><div class="desc">断定できず・追加確認が必要</div></div>
+    <div class="tile t-danger"><div class="num">1</div><div class="lbl">危険(実害あり)</div><div class="desc">発見1件 → 同日中に履歴清掃済み</div></div>
+    <div class="tile t-warn"><div class="num">2</div><div class="lbl">要確認(疑いあり)</div><div class="desc">Pages設定・スキル中身</div></div>
     <div class="tile t-na"><div class="num">2</div><div class="lbl">未確認</div><div class="desc">権限の壁で今回調査不能</div></div>
-    <div class="tile t-ok"><div class="num">14</div><div class="lbl">正常</div><div class="desc">確認して問題なし</div></div>
+    <div class="tile t-ok"><div class="num">17</div><div class="lbl">正常</div><div class="desc">確認して問題なし</div></div>
   </div>
   <div class="headline">
-    <strong>最重要:</strong> 誰でも見られる「公開」設定の GitHub リポジトリの中に、あなたの<strong>メールアドレス・氏名・アカウント ID</strong> が埋め込まれたファイルが置かれています(下記 1 番)。これは推測ではなく、ファイルの中身とリポジトリの公開設定を実際に確認した結果です。
+    <strong>最重要の指摘(発見時):</strong> 誰でも見られる「公開」設定の GitHub リポジトリの中に、あなたの<strong>メールアドレス・氏名・アカウント ID</strong> が埋め込まれたファイルが置かれていました(下記 1 番)。推測ではなく、ファイルの中身とリポジトリの公開設定を実際に確認した結果です。
+  </div>
+  <div class="note" style="border-left-color: var(--ok);">
+    <strong>対応状況(7/12 承認のうえ実施済み):</strong> 当該ファイルはバックアップをお渡ししたうえで、<strong>4 つ全ブランチの履歴から除去し、GitHub へ反映済み</strong>です。現在、リポジトリ上のどのブランチを開いてもこのファイルは存在しません。残る作業は 2 つ: ①リポジトリの非公開化(オーナー権限が必要なため、あなたの操作)、②GitHub 側に残り得る古い版のキャッシュ完全消去(GitHub サポートへの依頼。非公開化すれば実質的なリスクは小)。
   </div>
 
   <h2><span class="sec-no">1</span>GitHub リポジトリ「command-support」</h2>
@@ -169,17 +172,17 @@
         <td class="item">index.html.html</td>
         <td>「指揮支援 v2(消防活動記録・タイムライン管理ツール)」の画面を保存したファイル(2.6MB)</td>
         <td>アプリ本体だけでなく <strong>claude.ai の画面まるごと</strong>を保存したもの。単体では正しく動かない可能性が高く、更新の仕組みもない(置きっぱなしで老朽化)</td>
-        <td><strong>確認済みの実害:</strong> ログイン中に保存したため、あなたのメールアドレス(kaw***@gmail.com)・氏名・アカウント ID・組織 ID がファイル内に埋め込まれており、リポジトリが公開設定のため<strong>誰でもダウンロードして読める状態</strong></td>
-        <td class="verdict"><span class="chip c-danger">危険</span></td>
-        <td>①リポジトリを非公開化(即効)→ ②アプリ本体だけの HTML に置き直し ③過去の履歴からも当該ファイルを消す(履歴には残り続けるため削除コミットだけでは不十分)</td>
+        <td><strong>確認済みの実害:</strong> ログイン中に保存したため、あなたのメールアドレス(kaw***@gmail.com)・氏名・アカウント ID・組織 ID がファイル内に埋め込まれており、リポジトリが公開設定のため<strong>誰でもダウンロードして読める状態だった</strong>(2026/7/10〜7/12)</td>
+        <td class="verdict"><span class="chip c-danger">危険</span><br>→ <span class="chip c-ok">除去済み</span></td>
+        <td><strong>実施済み(7/12):</strong> バックアップ送付のうえ、全 4 ブランチの履歴から除去し GitHub に反映。<strong>残り:</strong> ①リポジトリの非公開化(あなたの操作・下記プラン1) ②アプリ本体だけの HTML への置き直し(任意)</td>
       </tr>
       <tr>
         <td class="item">同ファイル内の<br>電話番号らしき文字列</td>
         <td>—</td>
         <td>—</td>
-        <td>電話番号の形をした文字列が 7 件。claude.ai の画面部品(サポート窓口等)か実データかは、このファイルだけでは判別できなかった</td>
-        <td class="verdict"><span class="chip c-warn">要確認</span></td>
-        <td>非公開化・ファイル置き直し(上記①②)を行えばまとめて解消</td>
+        <td>電話番号の形をした文字列が 7 件。claude.ai の画面部品(サポート窓口等)か実データかは判別できなかったが、ファイルごと履歴から除去したため公開状態は解消</td>
+        <td class="verdict"><span class="chip c-warn">要確認</span><br>→ <span class="chip c-ok">除去済み</span></td>
+        <td>実施済み(7/12): ファイルごと履歴から除去。手元のバックアップを扱う際のみ注意</td>
       </tr>
       <tr>
         <td class="item">GitHub Pages<br>(Web公開機能)</td>
@@ -216,6 +219,30 @@
     </table>
   </div>
 
+  <h2><span class="sec-no">1b</span>同リポジトリで見つかった作りかけの仕組み(棚卸しで追加発見)</h2>
+  <p class="sec-note">診断中にリモートを精査したところ、過去のセッションで作られた<strong>開発ブランチが 2 本</strong>見つかりました。どちらも main には取り込まれておらず、宙に浮いた状態です。※両ブランチとも上記の個人情報ファイルを履歴に引き継いでいたため、履歴清掃を適用済み(7/12)。</p>
+  <div class="tblwrap">
+    <table>
+      <tr><th>項目</th><th>何をしているか</th><th>問題点</th><th>セキュリティ</th><th>判定</th><th>改善案</th></tr>
+      <tr>
+        <td class="item">消防専門家<br>エージェントチーム<br>(PR #1・未マージ)</td>
+        <td>消防業務の専門家ペルソナ約 30 名分(労働安全・車両管理・情報セキュリティ・防災 BCP など)のエージェント定義とスキル一式。34 コミット分の作り込み</td>
+        <td>PR #1 として提案されたまま<strong>マージも却下もされず放置</strong>。claude.ai 側の「kobe-fire-team」スキルと役割が重複している可能性</td>
+        <td>実在の連絡先・個人名・キー類は<strong>検出されず</strong>(全ファイル走査済み)。権限設定ファイルも最小限で問題なし</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>使うなら PR #1 をマージして正式採用、使わないなら PR を閉じてブランチ削除。kobe-fire-team との重複整理もあわせて</td>
+      </tr>
+      <tr>
+        <td class="item">音声メモ→カレンダー<br>変換アプリ<br>(ブランチのみ・未マージ)</td>
+        <td>iOS ショートカットから音声メモを送ると、AI が予定に変換してカレンダー登録する Web アプリ(手順書つき)</td>
+        <td>ブランチに置かれたまま main に未反映。実際に使っているかどうか不明(未使用なら削除候補)</td>
+        <td>実物の API キーの直書きは<strong>なし</strong>(入力例の文字のみと確認済み)。ただし<strong>ブラウザに Anthropic API キーを貼って保存する設計</strong>のため、共用端末での利用や公開ページへの設置には注意が必要</td>
+        <td class="verdict"><span class="chip c-info">改善余地</span></td>
+        <td>使っているなら main に取り込み+キーの扱い方を README に明記。使っていないならブランチごと削除</td>
+      </tr>
+    </table>
+  </div>
+
   <h2><span class="sec-no">2</span>スキル(Claude に覚えさせた手順書)</h2>
   <div class="tblwrap">
     <table>
@@ -226,7 +253,7 @@
         <td>中身(手順書の本文)がこの作業環境からは読めず、重複・老朽化の点検ができなかった</td>
         <td>中身に個人情報や連絡先が書き込まれていないか未点検</td>
         <td class="verdict"><span class="chip c-warn">要確認</span></td>
-        <td>次回、スキルの中身を貼り付けてもらえれば点検可能。指揮支援 v2 と役割が重なるなら統合を検討</td>
+        <td>次回、スキルの中身を貼り付けてもらえれば点検可能。リポジトリ内の「消防専門家エージェントチーム(PR #1)」と役割が重なるなら統合を検討</td>
       </tr>
       <tr>
         <td class="item">標準スキル 7 件</td>
@@ -323,16 +350,20 @@
   <p class="sec-note">セキュリティ対応を最優先に並べています。いずれも<strong>着手前に方針をご相談し、承認をいただいてから</strong>実施します。</p>
   <ol class="plan">
     <li>
-      <div class="p-title">【最優先・危険】公開リポジトリの個人情報を止める</div>
-      <div class="p-body">まずリポジトリを非公開に切り替え(数分・影響なし)。その後、個人情報入りファイルを過去の履歴ごと除去するか、リポジトリを作り直す。GitHub は「削除しただけ」では過去の版が残るため、履歴の掃除まで行う。</div>
+      <div class="p-title">【最優先・残作業】リポジトリの非公開化(あなたの操作・約2分)</div>
+      <div class="p-body">履歴清掃は実施済み。仕上げとして、GitHub のリポジトリページ → Settings → 最下部の Danger Zone →「Change repository visibility」→ Private に変更。徹底するなら、あわせて GitHub サポートに古い版のキャッシュ消去を依頼(任意)。</div>
+    </li>
+    <li>
+      <div class="p-title">【高】作りかけの 2 ブランチの行き先を決める</div>
+      <div class="p-body">消防専門家エージェントチーム(PR #1)と音声メモ→カレンダーアプリを、それぞれ「採用してマージ」か「削除」に振り分ける。宙に浮いた作りかけをなくすのが目的。</div>
     </li>
     <li>
       <div class="p-title">【高】指揮支援 v2 を正しい形で保存し直す</div>
-      <div class="p-body">claude.ai の画面まるごとではなく、アプリ本体だけの HTML として書き出し直す。単体で開いて動く形になり、個人情報の埋め込みもなくなる。あわせて README に説明を書く。</div>
+      <div class="p-body">claude.ai の画面まるごとではなく、アプリ本体だけの HTML として書き出し直す。単体で開いて動く形になり、個人情報の埋め込みもなくなる(元データはお渡ししたバックアップにあり)。あわせて README に説明を書く。</div>
     </li>
     <li>
       <div class="p-title">【中】kobe-fire-team スキルの中身点検</div>
-      <div class="p-body">スキル本文を見せてもらい、個人情報の書き込み・指揮支援 v2 との役割重複・古くなった手順がないかを点検する。</div>
+      <div class="p-body">スキル本文を見せてもらい、個人情報の書き込み・PR #1 のエージェントチームとの役割重複・古くなった手順がないかを点検する。</div>
     </li>
     <li>
       <div class="p-title">【中】GAS・Drive スクリプトの棚卸し</div>
@@ -349,6 +380,6 @@
   </ol>
 
   <footer>
-    本レポートの指摘はすべて 2026 年 7 月 12 日時点で実際にコマンド・API により確認した事実に基づきます。推測による指摘は「要確認」または「未確認」として明示しています。キー・パスワード等の値は本文に含めていません。
+    本レポートの指摘はすべて 2026 年 7 月 12 日時点で実際にコマンド・API により確認した事実に基づきます。推測による指摘は「要確認」または「未確認」として明示しています。キー・パスワード等の値は本文に含めていません。個人情報ファイルの履歴除去は同日、ご承認のうえ実施し、全ブランチで GitHub への反映を確認済みです。
   </footer>
 </div>
