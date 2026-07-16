@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あみだくじ班分け｜少人数ミーティング</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="あみだ班分け">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+  // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
+  // file:// で直接開いた場合は登録せず、通常のローカルHTMLとして動作します。
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* 失敗してもアプリ本体は動く */ });
+    });
+  }
+</script>
+<style>
+  :root{
+    --navy:#1A2332; --navy2:#232F42; --navy3:#2C3A52;
+    --red:#C8102E; --red-bright:#E5484D; --blue:#4C9AFF;
+    --amber:#E8A33D; --ice:#C9D6E3; --muted:#8A97A8; --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--navy);
+    color:var(--white);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:16px 14px 40px;
+    max-width:860px; margin:0 auto;
+  }
+  header{display:flex; align-items:center; gap:12px; padding:6px 2px 18px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--red); display:flex;align-items:center;justify-content:center;
+    font-size:22px; flex-shrink:0;
+  }
+  header h1{font-size:20px; font-weight:800; letter-spacing:.02em; line-height:1.2;}
+  header p{font-size:11.5px; color:var(--muted); margin-top:3px;}
+
+  .card{
+    background:var(--navy2); border-radius:14px; padding:18px 16px;
+    margin-bottom:14px;
+  }
+  .card h2{font-size:14px; font-weight:800; color:var(--ice); margin-bottom:12px; letter-spacing:.04em;}
+  .card h2 .step{color:var(--amber); margin-right:8px;}
+
+  .name-list{display:flex; flex-direction:column; gap:8px;}
+  .name-row{display:flex; gap:8px; align-items:center;}
+  .name-row .num{
+    width:26px; height:26px; border-radius:50%; background:var(--navy3);
+    color:var(--ice); font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .name-row input{
+    flex:1; background:var(--navy); border:1px solid var(--navy3);
+    border-radius:8px; color:var(--white); font-size:15px; padding:9px 12px;
+    font-family:inherit; min-width:0;
+  }
+  .name-row input:focus{outline:2px solid var(--amber); outline-offset:1px; border-color:transparent;}
+  .name-row .del{
+    background:none; border:none; color:var(--muted); font-size:18px;
+    cursor:pointer; padding:4px 6px; line-height:1;
+  }
+  .name-row .del:hover{color:var(--red-bright);}
+
+  .row-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  button.btn{
+    font-family:inherit; font-size:14px; font-weight:800; letter-spacing:.03em;
+    border:none; border-radius:9px; padding:11px 18px; cursor:pointer;
+    transition:transform .08s ease, opacity .15s ease;
+  }
+  button.btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--red); color:#fff;}
+  .btn-primary:disabled{opacity:.35; cursor:not-allowed;}
+  .btn-ghost{background:var(--navy3); color:var(--ice);}
+  .btn-amber{background:var(--amber); color:var(--navy);}
+  .hint{font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.6;}
+
+  /* ladder area */
+  #ladderCard{display:none;}
+  .ladder-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 2px;}
+  svg{display:block; margin:0 auto;}
+  .top-label{cursor:pointer;}
+  .top-label rect{transition:fill .2s;}
+  .top-label.done{cursor:default;}
+  .goal-a{fill:var(--red-bright);}
+  .goal-b{fill:var(--blue);}
+
+  .status{font-size:12.5px; color:var(--muted); text-align:center; margin-top:10px; min-height:1.4em;}
+  .status b{color:var(--amber);}
+
+  /* results */
+  #resultCard{display:none;}
+  .groups{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .group{border-radius:12px; padding:14px; min-height:90px;}
+  .group.a{background:rgba(229,72,77,.14); border:1px solid var(--red-bright);}
+  .group.b{background:rgba(76,154,255,.12); border:1px solid var(--blue);}
+  .group h3{font-size:14px; font-weight:800; margin-bottom:9px; display:flex; align-items:center; gap:7px;}
+  .group.a h3{color:var(--red-bright);} .group.b h3{color:var(--blue);}
+  .group h3 .cnt{font-size:11px; color:var(--muted); font-weight:600;}
+  .member{
+    font-size:14px; padding:6px 8px; border-bottom:1px dashed rgba(255,255,255,.08);
+    opacity:0; transform:translateY(4px); transition:opacity .3s, transform .3s, background .12s;
+    border-radius:7px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .member.show{opacity:1; transform:none;}
+  .member:last-child{border-bottom:none;}
+  .member.spin{background:rgba(232,163,61,.28);}
+  .member.fac{
+    background:rgba(232,163,61,.16);
+    outline:1.5px solid var(--amber);
+    font-weight:800;
+  }
+  .fac-badge{
+    font-size:10.5px; font-weight:800; color:var(--navy);
+    background:var(--amber); border-radius:20px; padding:3px 9px;
+    flex-shrink:0; letter-spacing:.03em;
+    animation:pop .35s ease;
+  }
+  @keyframes pop{ 0%{transform:scale(.4); opacity:0;} 70%{transform:scale(1.15);} 100%{transform:scale(1); opacity:1;} }
+  .fac-note{font-size:11.5px; color:var(--muted); margin-top:12px; line-height:1.6;}
+  @media (prefers-reduced-motion: reduce){
+    .fac-badge{animation:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .member{transition:none;}
+  }
+  @media (max-width:480px){
+    .groups{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">🚒</div>
+  <div>
+    <h1>あみだくじ班分け</h1>
+    <p>少人数ミーティング｜神戸市消防局 西消防署</p>
+  </div>
+</header>
+
+<!-- STEP1: メンバー入力 -->
+<div class="card" id="inputCard">
+  <h2><span class="step">STEP 1</span>メンバーを入力（2〜12名・2班に分けます）</h2>
+  <div class="name-list" id="nameList"></div>
+  <div class="row-actions">
+    <button class="btn btn-ghost" id="addBtn">＋ メンバー追加</button>
+    <button class="btn btn-primary" id="buildBtn">くじを作る ▶</button>
+  </div>
+  <p class="hint">班の人数は自動で半々（奇数なら4人・3人のように±1）に割り振られます。到達点の配置は毎回シャッフルされます。</p>
+</div>
+
+<!-- STEP2: あみだくじ -->
+<div class="card" id="ladderCard">
+  <h2><span class="step">STEP 2</span>くじをたどる — 名前をタップ、または「一斉にたどる」</h2>
+  <div class="ladder-wrap"><svg id="svg"></svg></div>
+  <p class="status" id="status">名前をタップすると、その人のルートをたどります</p>
+  <div class="row-actions" style="justify-content:center;">
+    <button class="btn btn-amber" id="autoBtn">▶ 一斉にたどる</button>
+    <button class="btn btn-ghost" id="redrawBtn">↻ くじを引き直す</button>
+    <button class="btn btn-ghost" id="backBtn">✎ メンバー編集</button>
+  </div>
+</div>
+
+<!-- 結果 -->
+<div class="card" id="resultCard">
+  <h2><span class="step">結果</span>班分け</h2>
+  <div class="groups">
+    <div class="group a"><h3>🔴 A班 <span class="cnt" id="cntA"></span></h3><div id="listA"></div></div>
+    <div class="group b"><h3>🔵 B班 <span class="cnt" id="cntB"></span></h3><div id="listB"></div></div>
+  </div>
+  <div class="row-actions" style="justify-content:center; display:none;" id="facActions">
+    <button class="btn btn-amber" id="facBtn">★ ファシリテーターを選び直す</button>
+  </div>
+  <p class="fac-note" id="facNote" style="display:none;">★＝ファシリテーター（各班1名をランダム選出）。役割は「自ら引っ張る」ではなく「意見が出るようにアシストする」こと。毎回交代しましょう。</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const PATH_COLORS = ["#E5484D","#4C9AFF","#E8A33D","#3DDC97","#C792EA","#FF8A5C","#5FD4D0","#F2C94C","#9BB0FF","#FF9EC6","#7FDB6A","#EAB6FF"];
+
+  // ---- state ----
+  let names = ["","","","","","","",""];   // default 8 slots
+  let rungs = [];       // [{row, col}] rung between col and col+1
+  let goals = [];       // "A"/"B" per bottom slot
+  let results = {};     // index -> "A"|"B"
+  let traced = new Set();
+  let busy = false;
+
+  const ROWS = 14;
+  const COLW = 86, TOPH = 64, ROWH = 30, BOTH = 58, PADX = 26;
+
+  // ---- elements ----
+  const $ = id => document.getElementById(id);
+  const nameList = $("nameList"), svg = $("svg");
+
+  // ---- STEP1: name inputs ----
+  function renderInputs(){
+    nameList.innerHTML = "";
+    names.forEach((v,i)=>{
+      const row = document.createElement("div"); row.className = "name-row";
+      const num = document.createElement("span"); num.className="num"; num.textContent = i+1;
+      const inp = document.createElement("input");
+      inp.type="text"; inp.value = v; inp.placeholder = "例）神戸 太郎";
+      inp.maxLength = 10;
+      inp.addEventListener("input", e => { names[i] = e.target.value; updateBuildBtn(); });
+      const del = document.createElement("button"); del.className="del"; del.textContent="✕";
+      del.title="削除";
+      del.addEventListener("click", ()=>{ if(names.length>2){ names.splice(i,1); renderInputs(); } });
+      row.append(num, inp, del);
+      nameList.appendChild(row);
+    });
+    updateBuildBtn();
+  }
+  function activeNames(){ return names.map(n=>n.trim()).filter(n=>n.length>0); }
+  function updateBuildBtn(){ $("buildBtn").disabled = activeNames().length < 2; }
+
+  $("addBtn").addEventListener("click", ()=>{ if(names.length<12){ names.push(""); renderInputs(); } });
+  $("buildBtn").addEventListener("click", ()=>{ buildLadder(); });
+
+  // ---- ladder generation ----
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  function makeGoals(n){
+    const half = Math.floor(n/2);
+    const extraToA = n%2===1 && Math.random()<0.5;
+    const nA = n%2===0 ? half : (extraToA ? half+1 : half);
+    const arr = Array(nA).fill("A").concat(Array(n-nA).fill("B"));
+    return shuffle(arr);
+  }
+
+  function makeRungs(n){
+    const list = [];
+    const grid = Array.from({length:ROWS}, ()=>Array(n-1).fill(false));
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<n-1;c++){
+        if(c>0 && grid[r][c-1]) continue;            // no adjacent rungs in same row
+        if(Math.random()<0.30){ grid[r][c]=true; }
+      }
+    }
+    // guarantee every adjacent pair has at least one rung
+    for(let c=0;c<n-1;c++){
+      if(!grid.some(row=>row[c])){
+        for(let t=0;t<50;t++){
+          const r = Math.floor(Math.random()*ROWS);
+          const leftOK  = c===0     || !grid[r][c-1];
+          const rightOK = c===n-2   || !grid[r][c+1];
+          if(leftOK && rightOK){ grid[r][c]=true; break; }
+        }
+      }
+    }
+    for(let r=0;r<ROWS;r++) for(let c=0;c<n-1;c++) if(grid[r][c]) list.push({row:r,col:c});
+    return list;
+  }
+
+  function buildLadder(){
+    const ppl = activeNames();
+    rungs = makeRungs(ppl.length);
+    goals = makeGoals(ppl.length);
+    results = {}; traced = new Set(); busy = false;
+    drawSVG(ppl);
+    $("inputCard").style.display="none";
+    $("ladderCard").style.display="block";
+    $("resultCard").style.display="none";
+    $("listA").innerHTML=""; $("listB").innerHTML="";
+    $("cntA").textContent=""; $("cntB").textContent="";
+    $("facActions").style.display="none"; $("facNote").style.display="none";
+    facIdxA = null; facIdxB = null; facBusy = false;
+    $("status").innerHTML = "名前をタップすると、その人のルートをたどります";
+    $("autoBtn").disabled = false;
+    $("ladderCard").scrollIntoView({behavior:"smooth"});
+  }
+
+  $("redrawBtn").addEventListener("click", ()=>{ if(!busy) buildLadder(); });
+  $("backBtn").addEventListener("click", ()=>{
+    if(busy) return;
+    $("ladderCard").style.display="none";
+    $("resultCard").style.display="none";
+    $("inputCard").style.display="block";
+  });
+
+  // ---- SVG drawing ----
+  function el(tag, attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  function xOf(col){ return PADX + COLW/2 + col*COLW; }
+  function yOfRow(r){ return TOPH + (r+1)*ROWH; }   // rung r sits between rows
+
+  function drawSVG(ppl){
+    const n = ppl.length;
+    const W = PADX*2 + COLW*n;
+    const H = TOPH + ROWH*(ROWS+1) + BOTH;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.setAttribute("width", Math.min(W, 820));
+    svg.style.maxWidth = "100%";
+    svg.innerHTML = "";
+
+    const yTop = TOPH, yBot = TOPH + ROWH*(ROWS+1);
+
+    // vertical lines
+    for(let c=0;c<n;c++){
+      svg.appendChild(el("line",{x1:xOf(c),y1:yTop,x2:xOf(c),y2:yBot,stroke:"#3B4A63","stroke-width":3,"stroke-linecap":"round"}));
+    }
+    // rungs
+    rungs.forEach(g=>{
+      const y = yOfRow(g.row);
+      svg.appendChild(el("line",{x1:xOf(g.col),y1:y,x2:xOf(g.col+1),y2:y,stroke:"#3B4A63","stroke-width":3,"stroke-linecap":"round"}));
+    });
+
+    // top name labels (clickable)
+    ppl.forEach((nm,i)=>{
+      const g = el("g",{class:"top-label"}); g.dataset.idx = i;
+      const bw = COLW-14;
+      g.appendChild(el("rect",{x:xOf(i)-bw/2,y:10,width:bw,height:38,rx:9,fill:"#2C3A52"}));
+      const t = el("text",{x:xOf(i),y:34,fill:"#FFFFFF","font-size":13,"font-weight":"700","text-anchor":"middle"});
+      t.textContent = nm.length>6 ? nm.slice(0,6)+"…" : nm;
+      g.appendChild(t);
+      g.addEventListener("click", ()=>{ if(!busy && !traced.has(i)) traceOne(i, ppl); });
+      svg.appendChild(g);
+    });
+
+    // bottom goal labels (hidden as "?")
+    goals.forEach((gl,i)=>{
+      const g = el("g",{id:"goal"+i});
+      const bw = COLW-26;
+      g.appendChild(el("rect",{x:xOf(i)-bw/2,y:yBot+12,width:bw,height:34,rx:8,fill:"#2C3A52"}));
+      const t = el("text",{x:xOf(i),y:yBot+35,fill:"#8A97A8","font-size":15,"font-weight":"800","text-anchor":"middle"});
+      t.textContent = "？";
+      g.appendChild(t);
+      svg.appendChild(g);
+    });
+
+    // layer for traced paths (on top of ladder, under labels)
+    svg.appendChild(el("g",{id:"paths"}));
+  }
+
+  // ---- path computation ----
+  function computePath(startCol, n){
+    const pts = [[xOf(startCol), TOPH]];
+    let col = startCol;
+    for(let r=0;r<ROWS;r++){
+      const y = yOfRow(r);
+      const right = rungs.find(g=>g.row===r && g.col===col);
+      const left  = rungs.find(g=>g.row===r && g.col===col-1);
+      if(right){ pts.push([xOf(col),y]); col++; pts.push([xOf(col),y]); }
+      else if(left){ pts.push([xOf(col),y]); col--; pts.push([xOf(col),y]); }
+    }
+    pts.push([xOf(col), TOPH + ROWH*(ROWS+1)]);
+    return {pts, endCol: col};
+  }
+
+  // ---- animation ----
+  const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function traceOne(idx, ppl){
+    return new Promise(resolve=>{
+      busy = true;
+      const {pts, endCol} = computePath(idx, ppl.length);
+      const color = PATH_COLORS[idx % PATH_COLORS.length];
+      const d = "M " + pts.map(p=>p.join(" ")).join(" L ");
+      const path = el("path",{d, fill:"none", stroke:color, "stroke-width":4.5, "stroke-linecap":"round", "stroke-linejoin":"round", opacity:.95});
+      document.getElementById("paths").appendChild(path);
+      const len = path.getTotalLength();
+
+      const finish = ()=>{
+        path.style.strokeDasharray = "none";
+        revealGoal(endCol);
+        traced.add(idx);
+        results[idx] = goals[endCol];
+        markName(idx, goals[endCol]);
+        $("status").innerHTML = `<b>${escapeHtml(ppl[idx])}</b> さん → <b>${goals[endCol]}班</b>`;
+        addResult(ppl[idx], goals[endCol]);
+        if(traced.size === ppl.length){ showResult(ppl); }
+        busy = false;
+        resolve();
+      };
+
+      if(prefersReduce){ finish(); return; }
+
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+      const dot = el("circle",{r:7, fill:color, stroke:"#fff","stroke-width":2});
+      document.getElementById("paths").appendChild(dot);
+
+      const dur = Math.min(2600, Math.max(1100, len*1.6));
+      const t0 = performance.now();
+      function frame(t){
+        const p = Math.min(1,(t-t0)/dur);
+        const ease = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+        const cur = len*ease;
+        path.style.strokeDashoffset = len - cur;
+        const pt = path.getPointAtLength(cur);
+        dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y);
+        if(p<1) requestAnimationFrame(frame);
+        else { dot.remove(); finish(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function revealGoal(col){
+    const g = document.getElementById("goal"+col);
+    const rect = g.querySelector("rect"), text = g.querySelector("text");
+    const grp = goals[col];
+    rect.setAttribute("fill", grp==="A" ? "#E5484D" : "#4C9AFF");
+    text.setAttribute("fill", "#FFFFFF");
+    text.textContent = grp + "班";
+  }
+  function markName(idx, grp){
+    const g = svg.querySelectorAll(".top-label")[idx];
+    g.classList.add("done");
+    g.querySelector("rect").setAttribute("fill", grp==="A" ? "#E5484D" : "#4C9AFF");
+  }
+
+  $("autoBtn").addEventListener("click", async ()=>{
+    if(busy) return;
+    const ppl = activeNames();
+    $("autoBtn").disabled = true;
+    const order = shuffle([...Array(ppl.length).keys()].filter(i=>!traced.has(i)));
+    for(const i of order){ await traceOne(i, ppl); await sleep(250); }
+  });
+
+  $("facBtn").addEventListener("click", ()=>{ if(!facBusy) pickFacilitators(); });
+
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  // ---- results ----
+  function addResult(name, grp){
+    $("resultCard").style.display = "block";
+    const div = document.createElement("div");
+    div.className = "member";
+    const sp = document.createElement("span"); sp.textContent = name;
+    div.appendChild(sp);
+    $(grp==="A" ? "listA" : "listB").appendChild(div);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>div.classList.add("show")));
+    $("cntA").textContent = $("listA").children.length + "名";
+    $("cntB").textContent = $("listB").children.length + "名";
+  }
+  async function showResult(ppl){
+    $("status").innerHTML = "🎉 全員の班分けが完了！　続いてファシリテーターを選出します…";
+    $("resultCard").scrollIntoView({behavior:"smooth", block:"nearest"});
+    await sleep(500);
+    await pickFacilitators();
+    $("facActions").style.display = "flex";
+    $("facNote").style.display = "block";
+  }
+
+  // ---- facilitator selection (roulette) ----
+  let facBusy = false;
+
+  function clearFac(list){
+    [...list.children].forEach(m=>{
+      m.classList.remove("fac","spin");
+      const b = m.querySelector(".fac-badge"); if(b) b.remove();
+    });
+  }
+
+  function rouletteOne(list, avoidIdx){
+    return new Promise(resolve=>{
+      const items = [...list.children];
+      if(items.length === 0){ resolve(null); return; }
+      let target = Math.floor(Math.random()*items.length);
+      if(items.length > 1 && avoidIdx !== null && target === avoidIdx){
+        target = (target + 1 + Math.floor(Math.random()*(items.length-1))) % items.length;
+      }
+      const crown = ()=>{
+        const m = items[target];
+        m.classList.remove("spin"); m.classList.add("fac");
+        const b = document.createElement("span");
+        b.className = "fac-badge"; b.textContent = "★ ファシリテーター";
+        m.appendChild(b);
+        resolve(target);
+      };
+      if(prefersReduce || items.length === 1){ crown(); return; }
+
+      // spinning highlight: fast -> slow, lands on target
+      const laps = 2;
+      const steps = laps*items.length + target + 1;
+      let i = 0;
+      function step(){
+        items.forEach(m=>m.classList.remove("spin"));
+        items[i % items.length].classList.add("spin");
+        i++;
+        if(i < steps){
+          const p = i/steps;
+          setTimeout(step, 55 + 260*p*p);   // decelerate
+        }else{
+          items.forEach(m=>m.classList.remove("spin"));
+          crown();
+        }
+      }
+      step();
+    });
+  }
+
+  let facIdxA = null, facIdxB = null;
+
+  async function pickFacilitators(){
+    if(facBusy) return;
+    facBusy = true;
+    const prevA = facIdxA, prevB = facIdxB;
+    clearFac($("listA")); clearFac($("listB"));
+    $("status").innerHTML = "★ <b>A班</b>のファシリテーターを選出中…";
+    facIdxA = await rouletteOne($("listA"), prevA);
+    await sleep(350);
+    $("status").innerHTML = "★ <b>B班</b>のファシリテーターを選出中…";
+    facIdxB = await rouletteOne($("listB"), prevB);
+    const nameA = facIdxA!==null ? $("listA").children[facIdxA].querySelector("span").textContent : "－";
+    const nameB = facIdxB!==null ? $("listB").children[facIdxB].querySelector("span").textContent : "－";
+    $("status").innerHTML = `🎉 班分け完了！　ファシリテーター：A班 <b>${escapeHtml(nameA)}</b>／B班 <b>${escapeHtml(nameB)}</b>`;
+    facBusy = false;
+  }
+
+  // init
+  renderInputs();
+})();
+</script>
+</body>
+</html>
