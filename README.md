@@ -22,4 +22,5 @@
 | `manifest.webmanifest` | PWA マニフェスト（ホーム画面追加用） |
 | `sw.js` | Service Worker（オフラインキャッシュ） |
 | `icon-192.png` / `icon-512.png` / `apple-touch-icon.png` | アプリアイコン |
-| `.github/workflows/deploy-pages.yml` | GitHub Pages への自動デプロイ |
+
+※ このリポジトリは GitHub Pages（main ブランチから配信）が有効なので、main にマージすると自動で公開されます。
