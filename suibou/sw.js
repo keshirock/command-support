@@ -1,5 +1,5 @@
 /* 西消防署 水防計画 — オフラインキャッシュ用 Service Worker */
-const CACHE = "suibou-v1";
+const CACHE = "suibou-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,6 +19,9 @@ self.addEventListener("activate", (e) => {
   );
 });
 self.addEventListener("fetch", (e) => {
+  // 同一オリジンのGETのみ扱う。外部サイト・他メソッドはブラウザの既定処理に任せる。
+  if (e.request.method !== "GET") return;
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then((r) => r || fetch(e.request))
   );

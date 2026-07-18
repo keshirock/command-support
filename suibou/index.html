@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; manifest-src 'self'; worker-src 'self'; child-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>西消防署 水防計画｜風水害対応</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -12,6 +15,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <script>
+  // クリックジャッキング対策：iframe内に埋め込まれた場合は表示しない。
+  try {
+    if (window.top !== window.self) { document.documentElement.style.display = "none"; }
+  } catch (e) { document.documentElement.style.display = "none"; }
   // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
   // file:// で直接開いた場合は登録せず、通常のローカルHTMLとして動作します。
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
@@ -231,7 +238,7 @@
 
   <div class="searchbox">
     <span>🔍</span>
-    <input type="search" id="q" placeholder="計画書内を検索（例：避難指示 / トリアージ / 量水標）" autocomplete="off">
+    <input type="search" id="q" placeholder="計画書内を検索（例：避難指示 / トリアージ / 量水標）" autocomplete="off" maxlength="60">
   </div>
   <div id="searchResults"></div>
 
@@ -262,27 +269,27 @@
 
   <div class="card">
     <h2>🌐 気象・水位 監視リンク</h2>
-    <a class="link-item" href="https://www.jma.go.jp/bosai/risk/" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.jma.go.jp/bosai/risk/" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">🌧</span>
       <span><span class="n">キキクル（気象庁）</span><br><span class="d">大雨・洪水・土砂の危険度分布</span></span>
     </a>
-    <a class="link-item" href="https://www.river.go.jp/" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.river.go.jp/" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">🏞</span>
       <span><span class="n">川の防災情報（国土交通省）</span><br><span class="d">河川水位・レーダ雨量</span></span>
     </a>
-    <a class="link-item" href="https://www.hazardmap.pref.hyogo.jp/" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.hazardmap.pref.hyogo.jp/" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">🗺</span>
       <span><span class="n">兵庫県C.G.ハザードマップ</span><br><span class="d">浸水想定・土砂災害警戒区域</span></span>
     </a>
-    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82%E6%B0%B4%E9%98%B2%E6%83%85%E5%A0%B1%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0+FISKO" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82%E6%B0%B4%E9%98%B2%E6%83%85%E5%A0%B1%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0+FISKO" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">💧</span>
       <span><span class="n">神戸市水防情報システム（FISKO）</span><br><span class="d">検索で開く（署内共有URLがあればそちらを優先）</span></span>
     </a>
-    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82+%E6%B2%B3%E5%B7%9D%E3%83%A2%E3%83%8B%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E3%82%AB%E3%83%A1%E3%83%A9" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82+%E6%B2%B3%E5%B7%9D%E3%83%A2%E3%83%8B%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E3%82%AB%E3%83%A1%E3%83%A9" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">📷</span>
       <span><span class="n">神戸市河川モニタリングカメラ</span><br><span class="d">検索で開く</span></span>
     </a>
-    <a class="link-item" href="https://www.google.com/search?q=%E5%85%B5%E5%BA%AB%E7%9C%8C+%E5%9C%B0%E5%9F%9F%E5%88%A5%E5%9C%9F%E7%A0%82%E7%81%BD%E5%AE%B3%E5%8D%B1%E9%99%BA%E5%BA%A6" target="_blank" rel="noopener">
+    <a class="link-item" href="https://www.google.com/search?q=%E5%85%B5%E5%BA%AB%E7%9C%8C+%E5%9C%B0%E5%9F%9F%E5%88%A5%E5%9C%9F%E7%A0%82%E7%81%BD%E5%AE%B3%E5%8D%B1%E9%99%BA%E5%BA%A6" target="_blank" rel="noopener noreferrer">
       <span class="li-ico">⛰</span>
       <span><span class="n">兵庫県 地域別土砂災害危険度</span><br><span class="d">検索で開く</span></span>
     </a>
@@ -1099,7 +1106,7 @@
   var resBox = document.getElementById("searchResults");
   var homeDefault = document.getElementById("homeDefault");
 
-  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+  function esc(s){ return s.replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
 
   q.addEventListener("input", function(){
     var kw = q.value.trim();
