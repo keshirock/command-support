@@ -1,5 +1,5 @@
 /* 西消防署 水防計画 — オフラインキャッシュ用 Service Worker */
-const CACHE = "suibou-v3";
+const CACHE = "suibou-v4";
 const ASSETS = [
   "./",
   "./index.html",

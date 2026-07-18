@@ -316,8 +316,88 @@
   .highlight-target{animation:hl 2s ease;}
   @keyframes hl{0%{box-shadow:0 0 0 3px var(--amber);} 100%{box-shadow:0 0 0 0 transparent;}}
 </style>
+<style>
+  /* ===== 改修: 視認性向上（フォント・アイコン拡大） ===== */
+  .badge{width:50px; height:50px; font-size:17px;}
+  header h1{font-size:21px;}
+  header p{font-size:12px;}
+  .levelbar .lab{font-size:11.5px;}
+  .levels button{font-size:13.5px; padding:9px 15px;}
+  .tabbar button{font-size:12px;}
+  .tabbar button .ico{font-size:23px;}
+  .card h2{font-size:15.5px;}
+  .lead{font-size:13.5px;}
+  .note{font-size:13px;}
+  .sub{font-size:13.5px;}
+  .rolestat .ri{font-size:26px;}
+  .rolestat .rn{font-size:15px;}
+  .rolestat .pct{font-size:11.5px;}
+  .rolestat .todo b{font-size:19px;}
+  .rolestat .todo span{font-size:10.5px;}
+  .log{font-size:13px;}
+  .btn{font-size:13.5px;}
+  .rolechips button{font-size:13.5px; padding:10px 15px;}
+  .roledesc{font-size:12.5px;}
+  .toggle{font-size:13px;}
+  .phase .ph .pn{font-size:14.5px;}
+  .phase .ph .lv{font-size:11px; background:#E8A33D; color:#1A2332;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+  .phase .ph .cnt{font-size:12px;}
+  .task .box{width:26px; height:26px; font-size:16px;}
+  .task .tx{font-size:14.5px;}
+  .task .dt{font-size:12px;}
+  .task .tag{font-size:11px;}
+  details.acc > summary{font-size:14.5px;}
+  details.acc .body{font-size:14px;}
+  table{font-size:13px;}
+  th{font-size:12.5px;}
+  .searchbox input{font-size:15px;}
+  .sr .t{font-size:14px;}
+  .sr .s{font-size:12.5px;}
+  .tel .n{font-size:14px;}
+  .tel .d{font-size:12px;}
+  .tel a.call, .tel span.ext{font-size:13.5px;}
+  .link-item .n{font-size:14px;}
+  .link-item .d{font-size:12px;}
+  .link-item .li-ico{font-size:22px;}
+  .foot{font-size:11.5px;}
+  .pill{font-size:11.5px;}
+  .tri{font-size:13.5px;}
+  .tri .t{font-size:14.5px;}
+  .lvrow{font-size:13.5px;}
+  .lvrow b{font-size:14px;}
+  mark{background:#E8A33D;}
+  .badge{color:#fff;}
+
+  /* ===== 改修: iPhoneノッチ・ダイナミックアイランド対応 ===== */
+  body{padding-top:calc(env(safe-area-inset-top) + 12px);}
+  .safetop{position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#141C2A; z-index:60; pointer-events:none;}
+  .levelbar{top:env(safe-area-inset-top);}
+
+  /* ===== 改修: 表示モード切替ボタン ===== */
+  .themebtn{
+    margin-left:auto; flex-shrink:0;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    font-size:20px; line-height:1; padding:9px 11px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ===== 改修: ライトモード ===== */
+  :root[data-theme="light"]{
+    --navy:#F1F4F9; --navy2:#FFFFFF; --navy3:#E2E8F1; --navy4:#C8D3E2;
+    --white:#1A2332; --ice:#33435F; --muted:#66768E; --amber:#A8690F;
+  }
+  :root[data-theme="light"] .tabbar{background:rgba(255,255,255,.97); border-top-color:var(--navy4);}
+  :root[data-theme="light"] .task.done{background:#EFF3F8;}
+  :root[data-theme="light"] .card, :root[data-theme="light"] details.acc,
+  :root[data-theme="light"] .task, :root[data-theme="light"] .rolestat,
+  :root[data-theme="light"] .tel, :root[data-theme="light"] .link-item, :root[data-theme="light"] .sr{
+    box-shadow:0 1px 3px rgba(26,35,50,.08);
+  }
+</style>
 </head>
 <body>
+<div class="safetop"></div>
 
 <header>
   <div class="badge">水防</div>
@@ -325,6 +405,7 @@
     <h1>西消防署 水防タスク</h1>
     <p>令和８年度 風水害対応｜役割別チェックリスト</p>
   </div>
+  <button id="themeBtn" class="themebtn" aria-label="表示モードを切り替え">🌙</button>
 </header>
 
 <div class="levelbar" id="levelbar">
@@ -344,7 +425,11 @@
     <h2>🕐 実施記録（クロノロジー）</h2>
     <div class="log" id="logList"><p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p></div>
     <div class="btnrow">
-      <button class="btn" id="copyLog">📋 記録をコピー</button>
+      <button class="btn" id="copyLog">📋 コピー</button>
+      <button class="btn" id="wordLog">📝 Word</button>
+      <button class="btn" id="excelLog">📊 Excel</button>
+    </div>
+    <div class="btnrow">
       <button class="btn danger" id="resetBtn">🆕 新しい事案を開始（記録クリア）</button>
     </div>
   </div>
@@ -1185,6 +1270,70 @@
   });
 
   /* ---- 一括描画 ---- */
+
+  /* ---- 表示モード（ライト／ダーク） ---- */
+  (function(){
+    var THEME_KEY = "cs-theme"; // 水防・震災アプリで共通の設定
+    var btn = document.getElementById("themeBtn");
+    function isLight(){ return document.documentElement.getAttribute("data-theme") === "light"; }
+    function refresh(){
+      btn.textContent = isLight() ? "☀️" : "🌙";
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.content = isLight() ? "#F1F4F9" : "#1A2332";
+    }
+    try { if (localStorage.getItem(THEME_KEY) === "light") document.documentElement.setAttribute("data-theme", "light"); } catch(e){}
+    btn.addEventListener("click", function(){
+      if (isLight()) document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "light");
+      try { localStorage.setItem(THEME_KEY, isLight() ? "light" : "dark"); } catch(e){}
+      refresh();
+    });
+    refresh();
+  })();
+
+  /* ---- 記録のWord・Excel出力 ---- */
+  function logRows(){
+    return logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? { time: fmtTime(en.ts), role: info.role.name, task: info.task.t } : null;
+    }).filter(Boolean);
+  }
+  function downloadBlob(filename, blob){
+    var a = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function fileStamp(){
+    var d = new Date();
+    function z(n){ return (n<10?"0":"")+n; }
+    return d.getFullYear() + z(d.getMonth()+1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes());
+  }
+  document.getElementById("wordLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    var html = '<html xmlns:w="urn:schemas-microsoft-com:office:word" lang="ja"><head><meta charset="utf-8"><title>水防タスク 実施記録</title></head><body>' +
+      '<h1 style="font-size:16pt;">水防タスク 実施記録</h1>' +
+      '<p>出力日時：' + esc(new Date().toLocaleString("ja-JP")) + '</p>' +
+      '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; font-size:10.5pt;">' +
+      '<tr style="background:#E2E8F1;"><th>時刻</th><th>役割</th><th>実施内容</th></tr>' +
+      rows.map(function(r){
+        return '<tr><td style="white-space:nowrap;">' + esc(r.time) + '</td><td style="white-space:nowrap;">' + esc(r.role) + '</td><td>' + esc(r.task) + '</td></tr>';
+      }).join("") +
+      '</table></body></html>';
+    downloadBlob("水防タスク実施記録_" + fileStamp() + ".doc", new Blob(["\ufeff", html], { type: "application/msword" }));
+  });
+  document.getElementById("excelLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    function q(v){ return '"' + String(v).replace(/"/g, '""') + '"'; }
+    var csv = "時刻,役割,実施内容\r\n" + rows.map(function(r){
+      return [q(r.time), q(r.role), q(r.task)].join(",");
+    }).join("\r\n");
+    downloadBlob("水防タスク実施記録_" + fileStamp() + ".csv", new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" }));
+  });
+
   function renderAll(){
     renderLevels();
     renderStatus();
