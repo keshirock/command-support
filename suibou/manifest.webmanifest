@@ -1,6 +1,6 @@
 {
-  "name": "西消防署 水防計画｜風水害対応",
-  "short_name": "水防計画",
+  "name": "西消防署 水防タスク｜風水害対応",
+  "short_name": "水防タスク",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
