@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>西消防署 水防計画｜風水害対応</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="水防計画">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>
+  // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
+  // file:// で直接開いた場合は登録せず、通常のローカルHTMLとして動作します。
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* 失敗してもアプリ本体は動く */ });
+    });
+  }
+</script>
+<style>
+  :root{
+    --navy:#1A2332; --navy2:#232F42; --navy3:#2C3A52; --navy4:#364763;
+    --red:#C8102E; --red-bright:#E5484D; --blue:#4C9AFF;
+    --amber:#E8A33D; --ice:#C9D6E3; --muted:#8A97A8; --white:#FFFFFF;
+    --green:#3DBE7B; --yellow:#E8C93D; --orange:#E8823D; --purple:#A46BE8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy);
+    color:var(--white);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:12px 12px calc(78px + env(safe-area-inset-bottom));
+    max-width:860px; margin:0 auto;
+    line-height:1.65;
+  }
+  header{display:flex; align-items:center; gap:12px; padding:4px 2px 14px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--red); display:flex;align-items:center;justify-content:center;
+    font-size:15px; font-weight:800; flex-shrink:0; letter-spacing:.02em;
+  }
+  header h1{font-size:19px; font-weight:800; letter-spacing:.02em; line-height:1.25;}
+  header p{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  /* ---- タブ ---- */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:rgba(20,28,42,.97);
+    border-top:1px solid var(--navy3);
+    display:flex; justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(8px);
+  }
+  .tabbar button{
+    flex:1; max-width:120px;
+    background:none; border:none; color:var(--muted);
+    font-family:inherit; font-size:10.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:4px 0; cursor:pointer; border-radius:10px;
+  }
+  .tabbar button .ico{font-size:19px; line-height:1;}
+  .tabbar button.active{color:var(--white);}
+  .tabbar button.active .ico{transform:scale(1.08);}
+  .tabbar button.active::after{content:""; width:18px; height:3px; border-radius:2px; background:var(--red-bright); margin-top:2px;}
+
+  .tab{display:none;}
+  .tab.active{display:block; animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  /* ---- カード / アコーディオン ---- */
+  .card{background:var(--navy2); border-radius:14px; padding:16px 14px; margin-bottom:12px;}
+  .card h2{font-size:14px; font-weight:800; color:var(--ice); margin-bottom:10px; letter-spacing:.04em;}
+  .card h2 .step{color:var(--amber); margin-right:8px;}
+  .lead{font-size:13px; color:var(--ice);}
+
+  details.acc{
+    background:var(--navy2); border-radius:12px; margin-bottom:10px;
+    overflow:hidden; border-left:4px solid var(--navy3);
+  }
+  details.acc[open]{border-left-color:var(--red-bright);}
+  details.acc > summary{
+    list-style:none; cursor:pointer;
+    padding:13px 14px; font-size:13.5px; font-weight:800; color:var(--white);
+    display:flex; align-items:center; gap:8px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  details.acc > summary::-webkit-details-marker{display:none;}
+  details.acc > summary::after{
+    content:"＋"; margin-left:auto; color:var(--muted); font-weight:400; flex-shrink:0;
+  }
+  details.acc[open] > summary::after{content:"－";}
+  details.acc .body{padding:0 14px 14px; font-size:13px; color:var(--ice);}
+  details.acc .body p{margin-bottom:8px;}
+  details.acc .body ul, details.acc .body ol{margin:0 0 8px 1.3em;}
+  details.acc .body li{margin-bottom:4px;}
+  .sub{font-size:12.5px; font-weight:800; color:var(--amber); margin:12px 0 6px;}
+  .sub:first-child{margin-top:0;}
+  .note{
+    background:var(--navy3); border-radius:8px; padding:8px 10px;
+    font-size:12px; color:var(--ice); margin:8px 0;
+  }
+  .kb{color:var(--amber); font-weight:700;}
+
+  /* ---- 防災指令レベルカード ---- */
+  .lv{border-radius:12px; margin-bottom:10px; background:var(--navy2); overflow:hidden;}
+  .lv summary{
+    list-style:none; cursor:pointer; padding:12px 14px;
+    display:flex; align-items:center; gap:10px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lv summary::-webkit-details-marker{display:none;}
+  .lv .dot{width:14px; height:14px; border-radius:50%; flex-shrink:0;}
+  .lv .ttl{font-size:14px; font-weight:800;}
+  .lv .cap{font-size:11px; color:var(--muted); margin-left:auto; text-align:right;}
+  .lv .body{padding:0 14px 13px; font-size:13px; color:var(--ice);}
+  .lv .body .h{font-size:11.5px; font-weight:800; color:var(--muted); margin:8px 0 3px; letter-spacing:.05em;}
+  .lv-wait{border-left:4px solid var(--muted);}   .lv-wait .dot{background:var(--muted);}
+  .lv-watch{border-left:4px solid var(--yellow);} .lv-watch .dot{background:var(--yellow);}
+  .lv-1{border-left:4px solid var(--orange);}     .lv-1 .dot{background:var(--orange);}
+  .lv-2{border-left:4px solid var(--red-bright);} .lv-2 .dot{background:var(--red-bright);}
+  .lv-3{border-left:4px solid var(--purple);}     .lv-3 .dot{background:var(--purple);}
+
+  /* ---- トリアージ ---- */
+  .tri{border-radius:12px; padding:12px 14px; margin-bottom:10px; font-size:13px;}
+  .tri .t{font-size:14px; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:8px;}
+  .tri .t .dot{width:14px;height:14px;border-radius:50%;}
+  .tri-r{background:rgba(229,72,77,.14); border:1px solid rgba(229,72,77,.5);}
+  .tri-r .dot{background:var(--red-bright);}
+  .tri-y{background:rgba(232,201,61,.10); border:1px solid rgba(232,201,61,.45);}
+  .tri-y .dot{background:var(--yellow);}
+  .tri-g{background:rgba(61,190,123,.10); border:1px solid rgba(61,190,123,.45);}
+  .tri-g .dot{background:var(--green);}
+
+  /* ---- クイックリンク（ホーム） ---- */
+  .quick{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .quick a{
+    background:var(--navy2); border-radius:12px; padding:14px 12px;
+    color:var(--white); text-decoration:none; font-size:13px; font-weight:800;
+    display:flex; flex-direction:column; gap:4px;
+    border-left:4px solid var(--red-bright);
+  }
+  .quick a small{font-size:10.5px; color:var(--muted); font-weight:400;}
+  .quick a .qi{font-size:20px;}
+
+  /* ---- 検索 ---- */
+  .searchbox{
+    display:flex; align-items:center; gap:8px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .searchbox input{
+    flex:1; background:none; border:none; outline:none;
+    color:var(--white); font-family:inherit; font-size:14px;
+  }
+  .searchbox input::placeholder{color:var(--muted);}
+  #searchResults{margin-bottom:12px;}
+  .sr{
+    display:block; width:100%; text-align:left;
+    background:var(--navy2); border:none; border-left:4px solid var(--blue);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    color:var(--white); font-family:inherit; cursor:pointer;
+  }
+  .sr .t{font-size:13px; font-weight:800;}
+  .sr .s{font-size:11.5px; color:var(--muted); margin-top:2px; display:block;}
+  .sr .tab-name{font-size:10px; color:var(--blue); font-weight:700;}
+  mark{background:var(--amber); color:#1A2332; border-radius:2px; padding:0 1px;}
+
+  /* ---- 表 ---- */
+  .tbl-wrap{overflow-x:auto; margin:8px 0;}
+  table{border-collapse:collapse; width:100%; font-size:12px; min-width:420px;}
+  th,td{border:1px solid var(--navy4); padding:7px 8px; text-align:left; vertical-align:top; color:var(--ice);}
+  th{background:var(--navy3); color:var(--white); font-size:11.5px; white-space:nowrap;}
+
+  /* ---- 連絡先 ---- */
+  .tel-group{margin-bottom:14px;}
+  .tel-group .g{font-size:12px; font-weight:800; color:var(--amber); margin-bottom:6px; letter-spacing:.05em;}
+  .tel{
+    background:var(--navy2); border-radius:12px; padding:11px 13px; margin-bottom:8px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .tel .info{flex:1; min-width:0;}
+  .tel .n{font-size:13px; font-weight:800;}
+  .tel .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .tel .num{display:flex; flex-direction:column; gap:5px; align-items:flex-end; flex-shrink:0;}
+  .tel a.call, .tel span.ext{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--navy3); border-radius:999px; padding:5px 11px;
+    color:var(--white); text-decoration:none; font-size:12.5px; font-weight:700;
+    white-space:nowrap;
+  }
+  .tel a.call{background:rgba(76,154,255,.18); border:1px solid rgba(76,154,255,.5);}
+  .tel a.call::before{content:"📞"; font-size:11px;}
+  .tel span.ext{color:var(--ice);}
+
+  .link-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    color:var(--white); text-decoration:none;
+  }
+  .link-item .li-ico{font-size:18px;}
+  .link-item .n{font-size:13px; font-weight:800;}
+  .link-item .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .link-item::after{content:"↗"; margin-left:auto; color:var(--muted);}
+
+  .foot{
+    margin-top:20px; padding-top:12px; border-top:1px solid var(--navy3);
+    font-size:10.5px; color:var(--muted); line-height:1.7;
+  }
+  .pill{display:inline-block; background:var(--navy3); border-radius:999px; padding:2px 9px; font-size:10.5px; color:var(--ice); margin:0 2px 4px 0;}
+  .highlight-target{animation:hl 2s ease;}
+  @keyframes hl{0%{box-shadow:0 0 0 3px var(--amber);} 100%{box-shadow:0 0 0 0 transparent;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">水防</div>
+  <div>
+    <h1>西消防署 水防計画</h1>
+    <p>令和８年度 風水害対応（水防計画書ベース）</p>
+  </div>
+</header>
+
+<!-- ============ ホーム ============ -->
+<section class="tab active" id="tab-home">
+
+  <div class="searchbox">
+    <span>🔍</span>
+    <input type="search" id="q" placeholder="計画書内を検索（例：避難指示 / トリアージ / 量水標）" autocomplete="off">
+  </div>
+  <div id="searchResults"></div>
+
+  <div id="homeDefault">
+  <div class="quick">
+    <a href="#" data-jump="tab-shirei" data-open="lv-cards">
+      <span class="qi">🚨</span>防災指令 早見
+      <small>発令基準と配置職員</small>
+    </a>
+    <a href="#" data-jump="tab-unyo" data-open="acc-triage">
+      <span class="qi">🔴</span>災害トリアージ
+      <small>赤・黄・緑の区分と対応</small>
+    </a>
+    <a href="#" data-jump="tab-unyo" data-open="acc-hinan-handan">
+      <span class="qi">📢</span>避難指示の判断
+      <small>発令基準・範囲・解除</small>
+    </a>
+    <a href="#" data-jump="tab-renraku" data-open="">
+      <span class="qi">📞</span>関係機関 連絡先
+      <small>タップで発信</small>
+    </a>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">１</span>目的</h2>
+    <p class="lead">この計画は、神戸市地域防災計画、神戸市水防計画及び神戸市消防局風水害対応計画に基づき、西区における風水害に係る西消防署の処理すべき業務に関して必要な事項を定め、迅速かつ適切な水防活動の実施を図ることを目的とする。</p>
+  </div>
+
+  <div class="card">
+    <h2>🌐 気象・水位 監視リンク</h2>
+    <a class="link-item" href="https://www.jma.go.jp/bosai/risk/" target="_blank" rel="noopener">
+      <span class="li-ico">🌧</span>
+      <span><span class="n">キキクル（気象庁）</span><br><span class="d">大雨・洪水・土砂の危険度分布</span></span>
+    </a>
+    <a class="link-item" href="https://www.river.go.jp/" target="_blank" rel="noopener">
+      <span class="li-ico">🏞</span>
+      <span><span class="n">川の防災情報（国土交通省）</span><br><span class="d">河川水位・レーダ雨量</span></span>
+    </a>
+    <a class="link-item" href="https://www.hazardmap.pref.hyogo.jp/" target="_blank" rel="noopener">
+      <span class="li-ico">🗺</span>
+      <span><span class="n">兵庫県C.G.ハザードマップ</span><br><span class="d">浸水想定・土砂災害警戒区域</span></span>
+    </a>
+    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82%E6%B0%B4%E9%98%B2%E6%83%85%E5%A0%B1%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0+FISKO" target="_blank" rel="noopener">
+      <span class="li-ico">💧</span>
+      <span><span class="n">神戸市水防情報システム（FISKO）</span><br><span class="d">検索で開く（署内共有URLがあればそちらを優先）</span></span>
+    </a>
+    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82+%E6%B2%B3%E5%B7%9D%E3%83%A2%E3%83%8B%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E3%82%AB%E3%83%A1%E3%83%A9" target="_blank" rel="noopener">
+      <span class="li-ico">📷</span>
+      <span><span class="n">神戸市河川モニタリングカメラ</span><br><span class="d">検索で開く</span></span>
+    </a>
+    <a class="link-item" href="https://www.google.com/search?q=%E5%85%B5%E5%BA%AB%E7%9C%8C+%E5%9C%B0%E5%9F%9F%E5%88%A5%E5%9C%9F%E7%A0%82%E7%81%BD%E5%AE%B3%E5%8D%B1%E9%99%BA%E5%BA%A6" target="_blank" rel="noopener">
+      <span class="li-ico">⛰</span>
+      <span><span class="n">兵庫県 地域別土砂災害危険度</span><br><span class="d">検索で開く</span></span>
+    </a>
+    <p class="note">※ 外部リンクはオンライン時のみ利用できます。</p>
+  </div>
+
+  <div class="card">
+    <h2>📌 平常時（非常警備前）の水防体制</h2>
+    <details class="acc" id="acc-kansi" data-tab="tab-home" data-title="気象情報・河川水位等の監視">
+      <summary>（１）気象情報・河川水位等の監視</summary>
+      <div class="body">
+        <p class="sub">実施時期（次のいずれかに該当するとき）</p>
+        <ul>
+          <li>管制室から指示があった場合</li>
+          <li>神戸市域に大雨又は洪水注意報が発表された場合</li>
+          <li>降雨が予想される場合又は現に認められる場合</li>
+        </ul>
+        <p class="sub">活用ウェブサイト</p>
+        <ul>
+          <li>神戸市水防情報システム（FISKO）</li>
+          <li>神戸市河川モニタリングカメラシステム</li>
+          <li>キキクル（気象庁）</li>
+          <li>兵庫県地域別土砂災害危険度</li>
+          <li>川の防災情報（国土交通省）</li>
+          <li>兵庫県C.G.ハザードマップ</li>
+        </ul>
+      </div>
+    </details>
+    <details class="acc" id="acc-patrol" data-tab="tab-home" data-title="パトロールの実施">
+      <summary>（２）パトロールの実施</summary>
+      <div class="body">
+        <p class="sub">実施時期（監視により次のいずれかに該当するとき）</p>
+        <ul>
+          <li>河川の急激な水位上昇が予想される場合</li>
+          <li>土砂災害の危険度が高まっていると予想される場合</li>
+          <li>水防団待機水位を超えた場合</li>
+        </ul>
+        <p class="sub">巡視箇所・巡視要領</p>
+        <p>別紙５－１・２参照。（巡視箇所の詳細は別紙６－１・２、別紙７、別紙８、別紙９－１・２に記載）</p>
+      </div>
+    </details>
+    <details class="acc" id="acc-souko" data-tab="tab-home" data-title="水防倉庫・水防資材・土のう砂採取場所">
+      <summary>（３）水防倉庫・水防資材・土のう砂採取場所</summary>
+      <div class="body">
+        <p>（別紙３－１・２・３参照）</p>
+        <p>水防資材を使用、または破損及び紛失など備蓄数に変更がある場合は、<span class="kb">《水防様式１》水防資材消費（使用）報告書</span>により警防課長に報告する。</p>
+        <p>なお、土のう用砂採取場所は西建設事務所が管理する別紙３－３の場所で行うこと。</p>
+      </div>
+    </details>
+  </div>
+  </div><!-- /homeDefault -->
+</section>
+
+<!-- ============ 防災指令 ============ -->
+<section class="tab" id="tab-shirei">
+  <div class="card" id="lv-cards">
+    <h2><span class="step">３</span>非常警備｜防災指令</h2>
+    <p class="lead" style="margin-bottom:10px;">（別紙１－１　水防様式３ 署本部編成表参照）</p>
+
+    <details class="lv lv-wait" id="lv-wait" data-tab="tab-shirei" data-title="連絡員待機指令">
+      <summary><span class="dot"></span><span class="ttl">連絡員待機指令</span><span class="cap">当務員</span></summary>
+      <div class="body">
+        <p class="h">発令基準</p>
+        <p>気象、地震または津波に関する情報が発表され、災害に備える必要があるとき。</p>
+        <p class="h">配置につくべき職員</p>
+        <p>当務員</p>
+      </div>
+    </details>
+
+    <details class="lv lv-watch" id="lv-watch" data-tab="tab-shirei" data-title="警戒指令">
+      <summary><span class="dot"></span><span class="ttl">警戒指令</span><span class="cap">レベル３ 見込み</span></summary>
+      <div class="body">
+        <p class="h">発令基準</p>
+        <p>レベル３氾濫警報、レベル３大雨警報、レベル３土砂災害警報、レベル３高潮警報のいずれかが発表されることが見込まれ、災害に備える必要があるとき</p>
+        <p class="h">配置につくべき職員</p>
+        <ul><li>当務係員</li><li>係長含む署員１名以上</li></ul>
+      </div>
+    </details>
+
+    <details class="lv lv-1" id="lv-1" data-tab="tab-shirei" data-title="防災指令第１号">
+      <summary><span class="dot"></span><span class="ttl">防災指令 第１号</span><span class="cap">レベル３／高齢者避難</span></summary>
+      <div class="body">
+        <p class="h">発令基準</p>
+        <p>レベル３氾濫警報、レベル３大雨警報、レベル３土砂災害警報、レベル３高潮警報のいずれかが発表されることが見込まれ、または発表され、<span class="kb">高齢者避難</span>の発令が必要なとき</p>
+        <p class="h">配置につくべき職員</p>
+        <ul><li>当務係員全員</li><li>課長職以上１名、係長を含む４名以上</li></ul>
+      </div>
+    </details>
+
+    <details class="lv lv-2" id="lv-2" data-tab="tab-shirei" data-title="防災指令第２号">
+      <summary><span class="dot"></span><span class="ttl">防災指令 第２号</span><span class="cap">レベル４／避難指示</span></summary>
+      <div class="body">
+        <p class="h">発令基準</p>
+        <p>レベル４氾濫警報、レベル４大雨警報、レベル４土砂災害警報、レベル４高潮警報のいずれかが発表されることが見込まれ、または発表され、<span class="kb">避難指示</span>の発令が必要なとき</p>
+        <p class="h">配置につくべき職員</p>
+        <p>署本部（指揮班・情報班）を設置、運用及び増強部隊を編成できる人員を配備。</p>
+        <ul>
+          <li>当務係員全員</li>
+          <li>毎日勤務者半数以上で署長が定める数（課長職以上１名、係長職以上１名以上を含む）</li>
+          <li>係長または担当係長を含む非番係員の半数以上（発令が５時00分以降の場合は、当日出勤予定の当務係員）</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="lv lv-3" id="lv-3" data-tab="tab-shirei" data-title="防災指令第３号">
+      <summary><span class="dot"></span><span class="ttl">防災指令 第３号</span><span class="cap">レベル５／緊急安全確保</span></summary>
+      <div class="body">
+        <p class="h">発令基準</p>
+        <p>レベル５氾濫警報、レベル５大雨警報、レベル５土砂災害警報、レベル５高潮警報のいずれかが発表されることが見込まれ、または発表され、<span class="kb">緊急安全確保</span>の発令が必要なとき</p>
+        <p class="h">配置につくべき職員</p>
+        <p><span class="kb">全職員</span></p>
+      </div>
+    </details>
+  </div>
+
+  <details class="acc" id="acc-haibi" data-tab="tab-shirei" data-title="配備基準・備考（招集除外等）">
+    <summary>配備基準・備考</summary>
+    <div class="body">
+      <p class="sub">配備基準</p>
+      <ol>
+        <li>全ての行政区に同一の防災指令が発令された場合、指令区分とする。</li>
+        <li>行政区ごと異なる防災指令が発令された場合、消防署は所属行政区の指令区分とする。</li>
+      </ol>
+      <p class="sub">備考</p>
+      <ol>
+        <li>防災センターで研修中の職員は、センター長が必要と認める場合を除き、防災指令第２号までの招集を除外する。</li>
+        <li>救急救命士の資格に関する病院研修中の職員は、救急部長が必要と認める場合を除き、防災指令第２号までの招集を除外する。ただし、防災指令第３号発令時は、各所属等へ参集する。</li>
+        <li>再任用職員は防災指令第２号までの招集を除外する。</li>
+        <li>西97小隊に関しては、防災指令第２号まで招集を免除とする。</li>
+      </ol>
+      <p class="sub">防災指令発令時の招集人数（毎日勤務者）</p>
+      <ul>
+        <li><b>警戒指令</b>：当務員全員</li>
+        <li><b>１号発令時</b>：総務査察課＝係長１名・係員３名／消防防災課＝消防団係１名</li>
+        <li><b>２号発令時</b>：総務査察課＝係長２名・係員５名／消防防災課＝消防団係２名（消防団に係る業務）、救急係長・地域防災担当者（指揮活動班業務）</li>
+        <li><b>３号発令時</b>：全員</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-syosyu" data-tab="tab-shirei" data-title="招集（職員・消防団員）">
+    <summary>招集の方法</summary>
+    <div class="body">
+      <p class="sub">職員</p>
+      <ul>
+        <li>職員の招集は、別途定める西消防署緊急連絡網により行う。職員は、防災指令の発令前であっても発令の可能性があると判断した場合は情報収集に努め、発令に備える。</li>
+        <li>交替制勤務者は、防災指令第２号発令の際、各係１班・２班と交互に招集する。なお、防災指令が長期化し非番が連続する場合は、班を入れ替える。</li>
+        <li>日勤者は、２班交替として事案の都度班を入れ替える。防災指令が長期化する場合は、８時45分に班を交替する。</li>
+        <li>参集しなくてはならない班に旅行届等で参集できない職員がいる場合は、違う班から参集人員を確保する。この場合の参集者は、災害待機手当での処理とする。</li>
+      </ul>
+      <p class="sub">消防団員</p>
+      <ul>
+        <li>署長は、警防規程第53条第３項第４号に基づき、消防団長に消防団を招集し、警備を実施するよう依頼するものとする。</li>
+        <li>消防団長は、防災指令第１号発令時、消防団員を招集して各支団本部を各区役所出張所内に設置する。招集の方法は、支団ごとに予め定められた連絡計画に基づく。なお、消防団の活動等に関することは消防団水防計画書に定める。</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="card">
+    <h2><span class="step">４</span>署本部の設置</h2>
+    <details class="acc" id="acc-setti" data-tab="tab-shirei" data-title="署本部の設置基準">
+      <summary>（１）設置基準</summary>
+      <div class="body">
+        <p>署長は、消防対策本部が設置された旨の通知があった場合又は必要と認める場合は、署本部を消防署内に設置する。</p>
+      </div>
+    </details>
+    <details class="acc" id="acc-han" data-tab="tab-shirei" data-title="各班構成員">
+      <summary>（２）各班構成員</summary>
+      <div class="body">
+        <p>（別紙１－３　西消防署本部業務分担表参照）</p>
+        <div class="tbl-wrap"><table>
+          <tr><th>班</th><th>構成員</th></tr>
+          <tr><td><b>指揮活動班</b></td><td>指揮隊長、中隊長、指揮隊員、救急係長、地域防災調整担当係長と担当係員</td></tr>
+          <tr><td><b>消防団支援班</b></td><td>消防団担当係長、消防団担当係員</td></tr>
+          <tr><td><b>情報班</b></td><td>査察係長、総務査察課員</td></tr>
+          <tr><td><b>後方支援班</b></td><td>総務係長、総務査察課員</td></tr>
+        </table></div>
+      </div>
+    </details>
+    <details class="acc" id="acc-soshiki" data-tab="tab-shirei" data-title="署本部の組織">
+      <summary>（３）署本部の組織</summary>
+      <div class="body">
+        <div class="tbl-wrap"><table>
+          <tr><th>役職</th><th>担当</th></tr>
+          <tr><td>大隊長</td><td>署長</td></tr>
+          <tr><td>副大隊長</td><td>副署長／消防防災課長</td></tr>
+          <tr><td>指揮隊長</td><td>当務指揮隊長／参集指揮隊長</td></tr>
+          <tr><td>指揮・活動班</td><td>班長：当務中隊長</td></tr>
+          <tr><td>消防団支援班</td><td>班長：消防団担当係長</td></tr>
+          <tr><td>情報班</td><td>班長：査察係長</td></tr>
+          <tr><td>後方支援班</td><td>班長：総務係長</td></tr>
+        </table></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ 署本部の運用 ============ -->
+<section class="tab" id="tab-unyo">
+  <div class="card">
+    <h2><span class="step">５</span>署本部の運用</h2>
+    <p class="lead">別紙１－３ 西消防署本部業務分担表参照。別紙１－４ 水防時体制業務分担表（必要事項記入用）を活用すること。</p>
+  </div>
+
+  <details class="acc" id="acc-shiki" data-tab="tab-unyo" data-title="指揮活動班の運用">
+    <summary>（１）指揮活動班の運用</summary>
+    <div class="body">
+      <p>当務指揮隊と参集指揮隊の任務（<span class="kb">当務指揮が優先する原則</span>）</p>
+      <p>防災指令第２号及び第３号の発令下において、以下の災害発生状況であれば参集指揮隊も指揮所運営を行う。</p>
+      <ul>
+        <li>当務指揮隊の出動</li>
+        <li>管内の災害対応件数が５件以上</li>
+        <li>避難指示事案の発生</li>
+        <li>河川水位の氾濫注意に達したとき</li>
+        <li>指揮活動班のローテーション</li>
+        <li>大隊長命による指示</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-joho" data-tab="tab-unyo" data-title="情報班の運用">
+    <summary>（２）情報班の運用</summary>
+    <div class="body">
+      <p>情報班にあっては、消防対策本部と署本部間の報告業務及び署本部の災害情報把握、活動状況の集約を主体とした運用とする。</p>
+      <ol>
+        <li>防災指令が発令され、署本部が設置された際、「水防活動時の部隊運用」を元に指揮活動班が署本部編成表<span class="kb">《様式３》</span>を作成するので、消防対策本部に報告する。（全庁ファイル内の警防課が指定するフォルダーへ格納）</li>
+        <li>降雨状況、河川の水位状況によって警戒パトロールを実施した場合、<span class="kb">《水防様式４》警戒パトロール状況</span>、<span class="kb">《水防様式５》水位観測表</span>にパトロールコース、水位等の情報を入力し、消防対策本部へ報告（全庁ファイル内の警防課指定のフォルダーへ格納）する。</li>
+        <li>災害が発生すれば、指揮班が作成した復命書を元に事案管理シート（Teams）又はホワイトボード（災害状況管理表）に記入し、危機管理システムに事案入力する。併せて<span class="kb">《水防様式７－２》災害状況管理表</span>に事案を入力する。災害トリアージを実施した場合は、事案毎にトリアージした色を記入し、様式７－２にも記載する。</li>
+        <li>災害に出動した出動隊の災害概要報告を受け、ＯＡシステムに災害概要を入力する。完了すれば消防対策本部情報班に連絡する。入力内容を変更した場合も同様とする。</li>
+        <li>避難指示が必要となった場合、避難指示を発令する場所、建物棟数、世帯数、人数等の情報を署本部内で管理、共有する。</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-triage" data-tab="tab-unyo" data-title="災害トリアージ（赤・黄・緑）">
+    <summary>（３）災害トリアージ</summary>
+    <div class="body">
+      <p class="sub">トリアージの目的</p>
+      <ol>
+        <li>管内の災害状況を把握し、署本部で追跡が必要な事案を明確化する。</li>
+        <li>管内の出動可能な部隊や転戦可能な部隊を把握するなかで、常駐警備隊が残り１隊の状況となれば続発対応を視野に入れ、災害内容を踏まえた出動体制とする。例えば、防災指令第２号では管内のポンプ隊５隊が増強され計10隊となるが、うち９隊が出動すれば水防出動の内容を精査し、内容により１線車での出動を一時見合わせる。重要な事案を最優先に対応するための事前対策である。</li>
+        <li>管制室が急報受信した事案は、管制室の状況（専用多数）によっては全て出動指令されるため、重複する事案が含まれることを念頭に置いた部隊運用を行う。</li>
+      </ol>
+      <p class="sub">トリアージ区分及び条件</p>
+      <div class="tri tri-r">
+        <div class="t"><span class="dot"></span>赤［高］</div>
+        <p>人的被害あり、又はその可能性がある。重要施設に被害あり、又はその可能性がある。</p>
+      </div>
+      <div class="tri tri-y">
+        <div class="t"><span class="dot"></span>黄［中］</div>
+        <p>物的被害あり（緊急性あり）、又はその可能性がある。</p>
+      </div>
+      <div class="tri tri-g">
+        <div class="t"><span class="dot"></span>緑［低］</div>
+        <p>上記以外。</p>
+      </div>
+      <p class="note">※トリアージに関しては、別添「事案情報の流れ」を活用する。<br><b>【重要施設とは】</b>情報通信・空港・鉄道・道路・電力・ガス・水道・行政・医療等の施設</p>
+      <p class="sub">指揮・活動班の対応</p>
+      <ul>
+        <li>出動可能な部隊数や転戦可能な部隊を把握、トリアージ赤［高］は最優先に対応</li>
+        <li>事案処理：未処理事案がないか常に確認、未処理（至急・不急）及び処理済みBOXの有効活用（チェック表の活用）</li>
+      </ul>
+      <p class="sub">続発時の対応（災害対応５件以上）</p>
+      <ul>
+        <li><b>赤［高］</b>：臨時小隊、当務隊に対して早期の転戦指示</li>
+        <li><b>黄［中］</b>：臨時小隊、広報車又は事案終了小隊の転戦</li>
+        <li><b>緑［低］</b>：後刻での対応（事案保留）又は消防団対応</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-hensei" data-tab="tab-unyo" data-title="部隊の編成">
+    <summary>（４）部隊の編成</summary>
+    <div class="body">
+      <p>西消防署本部編成表<span class="kb">《水防様式３》</span>に基づく。増強部隊編成の都度に管制室（432又は433）へ電話連絡し、西消防署本部編成表を作成後、全庁ファイルサーバに保存、併せて作戦室（459）へ電話連絡をする。</p>
+      <ol>
+        <li><b>警戒指令発令時</b>：当務員及び係長を含む１名以上を配置し、管内警備に当たる。</li>
+        <li><b>防災指令第１号発令時</b>：当務員及び参集者によって署本部各班及び西４を編成し、管内限定設定とする。</li>
+        <li><b>防災指令第２号発令時</b>：
+          <ul>
+            <li>当務員、日勤者（消防防災課員）及び参集者によって署本部各班の人員を増員し、本署で西４を編成、非番員参集者によって西１、西３、西15及び西５を各署所で編成する。</li>
+            <li>西１、西３及び西15は、兼務解除及び管内限定設定とする。（兼務解除登録も同様に、署から電話連絡を受けた管制室が実施する。）</li>
+            <li>西５で編成する小隊：救急要請等の状況によって救急隊を編成できるように努める／岩岡・神出地区の災害状況に応じて岩岡救急ステーションに配置する／特殊災害への対応（資機材搬送）ができること。</li>
+          </ul>
+        </li>
+        <li><b>防災指令第３号発令以降</b>：参集係員で広報車等を編成する。署本部の編成は防災指令第２号発令時を準用。</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-junshi" data-tab="tab-unyo" data-title="巡視監視の留意事項（量水標・ため池等）">
+    <summary>（５）巡視監視の留意事項</summary>
+    <div class="body">
+      <p class="sub">① 兵庫県地域別土砂災害危険度</p>
+      <p>２時間後に土砂災害警戒基準を超過すると予測されるエリア（１kmメッシュが<b>黄色</b>）又は１時間後に超過すると予測されるエリア（<b>橙色</b>）が管轄区域内に現れた場合にパトロールを実施する。パトロール後は、警戒パトロール状況<span class="kb">（水防様式４）</span>に記録する。</p>
+      <p class="sub">② 量水標の監視</p>
+      <ul>
+        <li><b>前川橋（伊川）</b>：テレメータ・モニタリングカメラのいずれも設置されていないため、監視員を派遣する必要がある。</li>
+        <li><b>山鳥橋</b>：量水標は令和４年度に再設置。「兵庫県河川ライブカメラシステム」映像配信あり（枦谷川福谷局）。山鳥橋量水計は参考目安として、福谷及び二ツ屋橋量水標で補完する。</li>
+        <li><b>上明石橋（明石川）</b>：モニタリングカメラのみの設置であり、正確に水位を把握するには監視員を派遣する必要がある。</li>
+        <li><b>消防対策本部への報告</b>：情報班は基準水位の超過時、又は消防対策本部の求めに応じて、<span class="kb">《水防様式５》水位観測表</span>を全庁ファイルサーバに保存、作戦室（459）へ電話連絡をする。</li>
+      </ul>
+      <p class="sub">③ 堤防巡視・監視（ため池）</p>
+      <ul>
+        <li>監視・巡視箇所は「防災重点ため池」の兵庫県防災工事等推進計画に指定されているため池15か所とする。</li>
+        <li>ため池管理者・ため池水利代表者から要請があったとき。</li>
+        <li>記録的短時間大雨情報が発表されたとき（発表基準110mm/h）または、顕著な大雨に関する情報（線状降水帯等）が発表されたとき。</li>
+        <li>神戸市地域防災計画では、ため池の監視は「ため池管理者・ため池水利代表者がパトロール等を行う」こととなっているが、上記のときは要請を待つことなく監視するものとする。</li>
+      </ul>
+      <p class="sub">④〜⑧ その他の留意事項</p>
+      <ul>
+        <li><b>災害対応</b>：マニュアル等資料１「水防活動時の部隊運用」に基づき実施する。</li>
+        <li><b>出動車両</b>：広域Ａモード時の水防指令に対しては、指揮班が選別する。</li>
+        <li><b>使用無線機</b>：増強部隊が使用する携帯無線機は、非常用携帯無線機とする。（別紙２－１西携帯無線配置一覧参照）</li>
+        <li><b>当務隊優先の原則</b>：当務部隊から優先的に水防活動にあてるものとし、増強部隊は続発災害に備えるものとする。水防事案以外の出動についても同様とする。</li>
+        <li><b>長期間活動における部隊交代</b>：指揮活動班は、現場活動が概ね３時間を超える（予想を含む）場合、現場交代を考慮する。現場交代は２交替又は３交替を基本としたローテーションを組み、交代決定時は次の事項を出動隊に周知・確認する。
+          <ul>
+            <li>災害状況（災害概要、活動場所、危険情報等）</li>
+            <li>気象状況（今後の降雨情報等の二次災害対策）</li>
+            <li>活動状況（現在までの進捗と活動内容、活動時間等）</li>
+            <li>体調管理（隊員の体調、事故発生時の連絡体制等）</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-syuyaku" data-tab="tab-unyo" data-title="活動状況の報告及び集約">
+    <summary>（６）活動状況の報告及び集約</summary>
+    <div class="body">
+      <ol>
+        <li><b>出動隊の決定</b>：署本部（情報班）は、水防指令の出動隊を消防対策本部に報告する。</li>
+        <li><b>現場の状況</b>：現場出動した隊は、現場対応後、水防情報集約シート復命書<span class="kb">《水防様式６》</span>を活用して災害現場の状況、被害の状況等を簡潔にまとめ、確実に署本部に伝達する。転戦する場合も無線、警防活動用スマートフォン、簡易AVM等を用いて署本部に連絡し、復命情報を伝達する。（復命情報は必ず解信をとるなど、情報共有に努めること。）</li>
+        <li><b>災害状況の入力報告</b>：署本部（情報班）は、出動隊から報告された情報を消防OAシステムに入力し、完了すれば消防対策本部情報班に連絡する。入力内容を変更した場合も同様とする。</li>
+        <li><b>危機管理システムのアプリ「災害記録」の活用</b>：現場写真や動画が署本部、消防対策本部、災害対策本部等と情報共有できるため、必要に応じて活用すること。危機管理システムのクロノロジーは、主として消防対策本部における市内の事案管理に活用するものであり、署本部で活用する場合は「水防時の消防OAシステム・危機管理システム入力マニュアル」を確認のうえ活用すること。</li>
+        <li><b>水防出動事案の管理</b>：署本部（情報班）は、管内の水防出動事案について、災害状況管理表<span class="kb">《水防様式７》</span>を活用し事案管理を行うこと。Teams「西消防署防災指令関係」内にある事案管理シートにも入力を行い、署本部と消防対策本部、各出張所及び西区役所を始めとする区内防災機関と情報共有を行うこと。</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-gentei" data-tab="tab-unyo" data-title="限定的地域における避難指示等発令の決定">
+    <summary>（７）限定的地域における避難指示等発令の決定</summary>
+    <div class="body">
+      <p>限定的な地域における河川での浸水危険や土砂災害等に対して、避難指示等を発令する場合は、署本部で検討し、発令地域、時刻等の情報について消防対策本部と連携を図ったうえで<span class="kb">署長が発令</span>する。署本部は、各種気象情報や河川水位監視を確実に行い、時期を逸することなく発令する。</p>
+      <p class="note">※避難指示等の発令は、神戸市地域防災計画風水害対策編の第５章「避難計画」に基づき発令。</p>
+      <p>次の事項が発生した場合、その初動対応についての検討は<b>署長室</b>で行う。</p>
+      <ul>
+        <li>避難指示の発令や解除</li>
+        <li>行方不明者・死者の発生</li>
+        <li>特に関係機関と連携強化する事案</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-hinan-handan" data-tab="tab-unyo" data-title="避難指示の判断（土砂・洪水・内水・ため池）">
+    <summary>（８）避難指示の判断</summary>
+    <div class="body">
+      <p>避難指示の主な判断基準は、<span class="kb">気象警報・予測情報、河川基準水位及び現場の状況・実被害</span>の３つを総合的に勘案して判断する。</p>
+
+      <p class="sub">① 避難指示等発令時期の判断基準</p>
+      <p><b>ア 土砂災害</b></p>
+      <ul>
+        <li>レベル４土砂災害危険警報が発表され、兵庫県の「地域別土砂災害危険度」で、１時間後もしくは２時間後に土砂災害警戒基準を超過すると予測されるエリア（オレンジもしくは黄）が出現した場合</li>
+        <li>現地確認により危険性が予測若しくは判断された場合。判断例：土砂移動現象、山鳴り、流木の流出、斜面の亀裂などの前兆現象を確認し、危険と判断し、より強く避難を促す必要がある場合</li>
+      </ul>
+      <p><b>イ 外水氾濫（洪水）</b></p>
+      <ul>
+        <li>氾濫危険水位に到達すると予測される場合または到達した場合</li>
+        <li>レベル４大雨危険警報が発表され、気象庁の「洪水キキクル」で危険（紫）が出現した場合</li>
+        <li>現地において災害発生の危険が高いと判断した場合</li>
+      </ul>
+      <p><b>ウ 内水氾濫</b></p>
+      <ul>
+        <li>内水氾濫の発生が現地で確認され、被害が発生する蓋然性が高いと判断される場合には避難指示等を発令する。内水氾濫は予測が困難であるため、広報車等による注意喚起を積極的に行う。（別紙13－１参照）</li>
+      </ul>
+      <p><b>エ ため池</b></p>
+      <p>消防職員及び消防団員は、現地確認の結果を署本部に報告する。署本部は、消防対策本部に報告し、危機管理局及び経済観光局農政計画課と情報共有、連携するものとする。ため池管理者からの緊急連絡系統は「神戸市地域防災計画」に基づく。</p>
+      <ul>
+        <li><b>防災重点ため池</b>：兵庫県防災工事等推進計画に指定されているため池15箇所を現地確認の結果、水位が上昇し堤防決壊による被害が発生する蓋然性が高いと判断される場合は、浸水想定区域に避難指示を発令する。（別紙11－１参照）</li>
+        <li><b>４号基準ため池</b>：４号基準ため池11箇所を現地確認の結果、水位が上昇し堤防決壊による被害、もしくは土砂流入による被害が発生する蓋然性が高いと判断される場合は、ため池の浸水想定区域に避難指示を発令する。（別紙11－２参照）</li>
+        <li><b>その他の特定ため池</b>：付近住民等から通報があった場合、現地確認を実施し被害が発生する蓋然性が高いと判断される場合は、浸水想定区域に対して避難指示を発令する。（別紙11－１参照）</li>
+      </ul>
+
+      <p class="sub">② 発令範囲</p>
+      <p><b>ア 土砂災害</b></p>
+      <ul>
+        <li>該当区の土砂災害警戒区域</li>
+        <li>現地確認により危険と判断した区域</li>
+      </ul>
+      <p><b>イ 外水氾濫（洪水）</b></p>
+      <ul>
+        <li>氾濫危険水位に到達すると予測される場合または到達した場合、レベル４大雨危険警報＋「洪水キキクル」危険（紫）出現の場合 → 当該河川の計画規模降雨による洪水浸水想定区域に発令（別紙９参照）</li>
+        <li>現地確認により危険と判断した地域：堤防決壊の予兆が認められる箇所又は決壊した箇所があるときは当該箇所が面する浸水想定区域に発令／一部閉鎖している橋梁があるときは当該橋梁が面する両岸の浸水想定区域に発令</li>
+      </ul>
+      <p><b>ウ 内水氾濫</b></p>
+      <ul><li>内水氾濫の確認された場所が含まれる浸水想定区域に発令する。</li></ul>
+
+      <p class="sub">③ 避難判断の資料</p>
+      <p><b>必要な情報</b></p>
+      <ul>
+        <li>避難世帯情報（世帯数と人員数）</li>
+        <li>要救助者情報（行方不明者・負傷者）</li>
+        <li>付近見取り図（避難区域がわかる地図。危機管理室と共有可能な図面）</li>
+        <li>現場被害状況の写真</li>
+        <li>避難先等の情報</li>
+        <li>必要な様式</li>
+      </ul>
+      <p class="note">※口頭や無線での情報伝達には限界があるため、情報を図示して撮影するなど、（署本部等への）確実な情報送信に努めること。</p>
+      <p><b>現場活動隊の留意事項</b></p>
+      <ul>
+        <li>現場での退避は避難指示ではない。消防法第28条の消防警戒区域が該当。消防法第36条で水災以外の災害でも準用できるとされているため、土砂災害等による現場での退避は消防警戒区域の設定による退避となる。水災は水防法で警戒区域の設定が規定されている。</li>
+        <li>避難指示は署長権限。現場の状況を署本部へ報告し、署本部で避難指示を発令すると判断すれば避難指示となる。</li>
+      </ul>
+
+      <p class="sub">④ 避難指示等の解除時期</p>
+      <p>災害による直接の危険が無いと署長が判断した以下基準を満たす場合とする。</p>
+      <ul>
+        <li>量水標における水位が避難判断水位や橋桁下１ｍを下回り、かつ、大雨や洪水に関する警報が解除されて、今後の水位上昇がないと予測されるとき。</li>
+        <li>土砂災害危険警報の発令が解除され、かつ、必要に応じて現地確認等を行い危険性が解消されたと予測されるとき。</li>
+      </ul>
+
+      <p class="sub">⑤ 消防対策本部・区本部への提議</p>
+      <p>限定的地域を越え、一つの区レベル以上の広域に避難指示等を発令する必要があると判断した場合、その旨を消防対策本部・区本部に提議する。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ============ 報告・様式 ============ -->
+<section class="tab" id="tab-hokoku">
+  <div class="card">
+    <h2><span class="step">６</span>業務（通報・報告）</h2>
+  </div>
+
+  <details class="acc" id="acc-tsuho" data-tab="tab-hokoku" data-title="消防局通報連絡体制（署本部と管制室）">
+    <summary>（１）消防局通報連絡体制（署本部と管制室）</summary>
+    <div class="body">
+      <div class="tbl-wrap"><table>
+        <tr><th>通報受信元</th><th>伝達手段</th><th>連絡先</th></tr>
+        <tr><td>管制室</td><td>・水防モード指令<br>・事務専用電話（必要時）<br>・受信票データ</td><td>各署指令系署所端末<br>各署内線電話（27番又は28番）</td></tr>
+        <tr><td>署本部</td><td>事務専用電話</td><td>434（防災指令発令時、管制室に設置）</td></tr>
+      </table></div>
+      <ul>
+        <li>連絡員待機指令時は通常指令となる。</li>
+        <li>署本部は出動車両の動態確認を確実に行う。</li>
+        <li>指令書には付加情報（文字情報）が明記、人命危険に関する事案は内線電話あり。</li>
+        <li>かけこみ通報等を受理した場合は、速やかに管制室（434）へ連絡すること。</li>
+        <li>内線電話（27番・28番）は、通報連絡以外に使用しないこと。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-johorenraku" data-tab="tab-hokoku" data-title="消防局情報連絡体制（報告一覧）">
+    <summary>（２）消防局情報連絡体制</summary>
+    <div class="body">
+      <div class="tbl-wrap"><table>
+        <tr><th>報告種別／様式</th><th>報告時期</th><th>報告方法</th></tr>
+        <tr><td>職員参集状況報告 ※1</td><td>危機管理室からの求め</td><td>危機管理システム</td></tr>
+        <tr><td>増強部隊の報告（各署→管制室）</td><td>増強部隊の編成の都度</td><td>管制室に電話連絡（432、433）</td></tr>
+        <tr><td>事案情報（速報）</td><td>復命情報を取得する都度</td><td>消防OAシステム</td></tr>
+        <tr><td>パトロールの状況《水防様式４》</td><td>本部からの要請</td><td rowspan="2">全庁ファイルサーバに保存し、保存後電話連絡する。使用不可の場合はFAX404で報告。</td></tr>
+        <tr><td>水位の状況《水防様式５》 ※2</td><td>基準水位の超過・減水時、又は消防対策本部の求め</td></tr>
+        <tr><td>避難情報発令状況《水防様式８》</td><td>避難指示等発令の検討・発令前に事前連絡を行う。</td><td>同上</td></tr>
+        <tr><td>死者調査速報《水防様式９》／行方不明者調査速報《水防様式10》／傷者調査速報《水防様式11》</td><td>事案発生の都度</td><td>同上</td></tr>
+        <tr><td>消防団参集・活動状況報告書《水防様式14》</td><td>本部からの要請に応じて</td><td>署情報班は、署本部の内線番号（ホットライン）を消防対策本部（情報班）に連絡する。</td></tr>
+        <tr><td>署別被害調査集計表《水防様式12》</td><td>消防対策本部からの要請に応じて</td><td>警防課へ報告（全庁ファイルサーバーに保存）</td></tr>
+        <tr><td>市水防実施状況報告書《水防様式13》</td><td>水防活動終了日から５日以内 ※3</td><td>警防課へ報告（全庁ファイルサーバーに保存）</td></tr>
+      </table></div>
+      <p class="sub">消防対策本部 情報班 専用電話</p>
+      <p>
+        <span class="pill">東灘 451</span><span class="pill">灘 452</span><span class="pill">中央 453</span><span class="pill">兵庫 454</span><span class="pill">北 455</span><span class="pill">長田 456</span><span class="pill">須磨 457</span><span class="pill">垂水 458</span><span class="pill">西 459</span><span class="pill">水上 460</span><span class="pill">各署専用電話未開設時 → 440</span>
+      </p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-ryui" data-tab="tab-hokoku" data-title="報告の留意事項">
+    <summary>（３）報告の留意事項</summary>
+    <div class="body">
+      <p class="sub">職員参集状況報告</p>
+      <p>職員配備数及び参集合計数は、当務員を含めた人数を入力する。職員配備数には、署本部編成表の警備人員欄の合計を入力する。危機管理システムが使用できない時は、警防規程様式第３（第59条関係）に従い報告する。</p>
+      <p class="sub">水位の状況報告</p>
+      <p>水位観測表<span class="kb">《水防様式５》</span>による記録は、各河川の量水標を現地で監視員が観測した場合に記録する。各河川で基準水位を超え避難指示等の発令を検討し始めた場合は、遅滞なく消防対策本部（情報班）に報告する。</p>
+      <p class="sub">水防作業の実施報告</p>
+      <p>消防職員、消防団員が出動して水防作業を実施した場合は、<span class="kb">《水防様式13》</span>にて報告する。水防作業とは、土嚢工法、排水ポンプによる排水等をいう。大規模な水防活動を実施した場合は、必要に応じて<span class="kb">《水防様式13－２》</span>により報告する。</p>
+      <p class="sub">局所的な地域に避難指示等を発令する場合</p>
+      <ul>
+        <li><b>発令の検討を始めたとき</b>：署本部（情報班）は、消防対策本部（情報班）に概要を事前に連絡するとともに、区役所、警察等と連絡を密にする。</li>
+        <li><b>発令を決定したとき</b>：
+          <ul>
+            <li>署本部（指揮活動班）は、消防対策本部（指揮班）へ電話連絡するとともに、避難情報発令状況<span class="kb">《水防様式８》</span>に必要事項を記入し、地図と合わせて全庁ファイルサーバに保存、もしくは作戦室にFAX（404）送信する。</li>
+            <li>対象地域住民への指示は、速やかに現場出動隊が行い、避難世帯数、避難人員数、避難エリアを水利地図に記載し、署本部へ報告する。</li>
+            <li>署本部においても、現場の状況が明確にわかるように、危機管理システム等を活用した情報共有を行うこと。</li>
+            <li>西中池（押部谷町押部吉谷）の避難指示に関しては、神戸電鉄運転指令へ電話連絡を行うこと。（電話番号は部外秘のため紙の計画書を参照）</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="card">
+    <h2><span class="step">７</span>避難指示等解除時の連絡体制</h2>
+    <details class="acc" id="acc-kaijo" data-tab="tab-hokoku" data-title="避難指示等解除時の連絡体制">
+      <summary>解除時の報告・伝達</summary>
+      <div class="body">
+        <p class="sub">局報告</p>
+        <ol>
+          <li>警防課に電話連絡（361）及び避難情報発令状況<span class="kb">《水防様式８》</span>を、全庁ファイルサーバに保存。</li>
+          <li>避難指示解除時は、署本部及び消防対策本部がいずれも閉鎖していると想定されるため、消防署から警防課への連絡としている。</li>
+        </ol>
+        <p class="sub">避難者への解除伝達</p>
+        <p>パトロール実施、口頭伝達、電話等の手段による。（別紙13－７）</p>
+        <p class="note">解除時の関係機関連絡先は「連絡先」タブを参照。</p>
+      </div>
+    </details>
+  </div>
+
+  <details class="acc" id="acc-yoshiki" data-tab="tab-hokoku" data-title="水防様式一覧">
+    <summary>📄 水防様式一覧</summary>
+    <div class="body">
+      <ul>
+        <li>《水防様式１》水防資材消費（使用）報告書</li>
+        <li>《水防様式２》避難指示等発令資料（まとめ）</li>
+        <li>《水防様式３》署本部編成表</li>
+        <li>《水防様式４》警戒パトロール状況</li>
+        <li>《水防様式５》水位観測表</li>
+        <li>《水防様式６》水防情報集約シート（復命書）</li>
+        <li>《水防様式７－１》災害状況管理表（ＯＡシステム様式）</li>
+        <li>《水防様式７－２》災害状況管理表（紙報告様式）</li>
+        <li>《水防様式８》避難情報発令状況</li>
+        <li>《水防様式９》死者調査速報</li>
+        <li>《水防様式10》行方不明者調査速報</li>
+        <li>《水防様式11》傷者調査速報</li>
+        <li>《水防様式12》署別被害調査集計表</li>
+        <li>《水防様式13》水防実施状況報告書１</li>
+        <li>《水防様式13－２》水防実施状況報告書２</li>
+        <li>《水防様式14》消防団参集・活動状況報告書</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-besshi" data-tab="tab-hokoku" data-title="別紙・マニュアル等資料一覧">
+    <summary>📎 別紙・資料一覧</summary>
+    <div class="body">
+      <p class="sub">別紙</p>
+      <ul>
+        <li>１－１　西消防署本部編成表（水防様式３）</li>
+        <li>１－２　西消防署本部配置図</li>
+        <li>１－３　水防時署本部業務分担表</li>
+        <li>１－４　水防時体制業務分担表（必要事項記入式）</li>
+        <li>２－１　西消防署携帯無線機配置一覧</li>
+        <li>２－２　西消防署加入線電話番号一覧</li>
+        <li>３－１　水防資材倉庫一覧</li>
+        <li>３－２　水防資機材一覧</li>
+        <li>３－３　土のう砂採取場所一覧</li>
+        <li>４　　　消防団役員一覧表（部外秘）</li>
+        <li>５－１　巡視箇所巡視要領</li>
+        <li>５－２　パトロール経路図</li>
+        <li>６－１　西区親水河川整備箇所一覧表</li>
+        <li>６－２　親水公園詳細図</li>
+        <li>７　　　道路冠水箇所一覧表</li>
+        <li>８　　　重要水防箇所一覧表</li>
+        <li>９－１　量水標一覧・モニタリングカメラ・避難対象区域一覧表</li>
+        <li>９－２　量水標位置図</li>
+        <li>10　　　堤防巡視 担当支団・班一覧表</li>
+        <li>11－１　西管内要監視ため池・防災重点農業用ため池一覧表</li>
+        <li>11－２　４号基準ため池 洪水浸水想定区域</li>
+        <li>12　　　防コミ（西区防災福祉コミュニティ）代表者一覧表（部外秘）</li>
+        <li>13－１～７　広報文例</li>
+      </ul>
+      <p class="sub">マニュアル等資料</p>
+      <ul>
+        <li>１　水防活動時の部隊運用</li>
+        <li>２　指令系端末装置 操作取扱説明書</li>
+        <li>３　水防時の消防OAシステム、危機管理システム入力マニュアル</li>
+        <li>４　危機管理システムアプリ「災害記録」操作マニュアル</li>
+        <li>５　2024年11月現在 土砂災害・水害ハザードマップ</li>
+      </ul>
+      <p class="sub">補完書類</p>
+      <ul>
+        <li>１　西消防署 土砂災害特別警戒区域等避難計画書（令和８年３月作成分）</li>
+        <li>２　令和７年度浸水想定区域実態調査書（西消防署）</li>
+      </ul>
+      <p class="note">別紙・様式の実物は紙の計画書及び全庁ファイルサーバを参照。部外秘資料はアプリに掲載していません。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ============ 連絡先 ============ -->
+<section class="tab" id="tab-renraku">
+  <div class="card">
+    <h2>📞 解除時の関係機関連絡先</h2>
+    <p class="lead" style="margin-bottom:8px;">番号をタップすると発信できます（市外局番078は自動付与）。内線・FAXは表示のみ。</p>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">区役所</div>
+    <div class="tel">
+      <div class="info"><div class="n">西区役所 地域協働課総務係</div><div class="d">西区糀台５丁目４－１｜内線91-74-919（西）総務係203・204・205</div></div>
+      <div class="num"><a class="call" href="tel:0789395617">939-5617</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">西区役所 地域協働課調査係</div><div class="d">内線 調査係206・207</div></div>
+      <div class="num"><a class="call" href="tel:0789395627">939-5627</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">西区役所 夜間受付・守衛室</div><div class="d">FAX 991-5538／991-5541</div></div>
+      <div class="num"><a class="call" href="tel:0789902511">990-2511</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">県土木</div>
+    <div class="tel">
+      <div class="info"><div class="n">神戸県民センター 神戸土木事務所 河川課</div><div class="d">長田区浪松町３丁目２－５（所轄区域・神戸市）</div></div>
+      <div class="num"><a class="call" href="tel:0787372157">737-2157</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">神戸土木事務所 公園砂防課</div><div class="d">同上</div></div>
+      <div class="num"><a class="call" href="tel:0787372164">737-2164</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">東播磨県民局 加古川土木事務所 河川砂防課</div><div class="d">加古川市加古川町寺家町 天神木97－1</div></div>
+      <div class="num"><a class="call" href="tel:0794219622">079-421-9622</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">加古川土木事務所 企画調整担当</div><div class="d">同上</div></div>
+      <div class="num"><a class="call" href="tel:0794219183">079-421-9183</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">建設局</div>
+    <div class="tel">
+      <div class="info"><div class="n">西建設事務所 安全推進係（工務担当）</div><div class="d">西区玉津町今津字宮の西333－１｜FAX 912-3749</div></div>
+      <div class="num"><a class="call" href="tel:0789123772">912-3772</a><a class="call" href="tel:0120086106">0120-086-106（夜間）</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">西水環境センター 玉津処理場（西神施設係）</div><div class="d">西区森友１丁目26｜FAX 924-2297</div></div>
+      <div class="num"><a class="call" href="tel:0789275078">927-5078</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">農政（ため池）</div>
+    <div class="tel">
+      <div class="info"><div class="n">経済観光局農政部 西農業振興センター</div><div class="d">西区伊川谷町潤和1058番 西神文化センター内｜FAX 975-6828</div></div>
+      <div class="num"><a class="call" href="tel:0789755800">975-5800</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">経済観光局農政計画課（土地改良担当）土地改良係</div><div class="d">中央区御幸通6丁目1-12 三宮ビル東館3階</div></div>
+      <div class="num"><a class="call" href="tel:0789840372">984-0372</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">警察</div>
+    <div class="tel">
+      <div class="info"><div class="n">神戸西警察署 警備課</div><div class="d">西区糀台５丁目12－２</div></div>
+      <div class="num"><a class="call" href="tel:0789920110">992-0110</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">都市計画</div>
+    <div class="tel">
+      <div class="info"><div class="n">都市局 内陸臨海振興課</div><div class="d">中央区浜辺通2丁目1-30 三ノ宮国際ビル9階</div></div>
+      <div class="num"><a class="call" href="tel:0785956676">595-6676</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">環境</div>
+    <div class="tel">
+      <div class="info"><div class="n">環境局 布施畑環境センター</div><div class="d">西区伊川谷町布施畑字丸畑1172－２</div></div>
+      <div class="num"><a class="call" href="tel:0789741501">974-1501</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">環境局業務部 西事業所</div><div class="d">西区平野町向井字祇園尾100</div></div>
+      <div class="num"><a class="call" href="tel:0789611414">961-1414</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">水道</div>
+    <div class="tel">
+      <div class="info"><div class="n">水道局 西部水道管理事務所</div><div class="d">須磨区大池町５丁目６－30</div></div>
+      <div class="num"><a class="call" href="tel:0787428831">742-8831（平日昼間）</a><a class="call" href="tel:0120330716">0120-330-716（休日・夜間）</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">電気</div>
+    <div class="tel">
+      <div class="info"><div class="n">関西電力送配電 明石配電営業所</div><div class="d">明石市東仲ノ町２－14｜コールセンター24h</div></div>
+      <div class="num"><a class="call" href="tel:08007778046">0800-777-8046</a><a class="call" href="tel:0789111968">911-1968（緊急時）</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">高圧ガス・ガス</div>
+    <div class="tel">
+      <div class="info"><div class="n">関西ガス(株) 兵庫事業本部保安指令センター</div><div class="d">西区森友４丁目</div></div>
+      <div class="num"><a class="call" href="tel:0789271655">927-1655</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">大阪ガス導管事業部 兵庫導管部 お客様センター</div><div class="d">中央区港島中町４丁目5-3</div></div>
+      <div class="num"><a class="call" href="tel:0120794817">0120-794-817</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">大阪ガス 中央保安指令室</div><div class="d"></div></div>
+      <div class="num"><a class="call" href="tel:0783037777">303-7777</a></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">ガス漏れフリーダイヤル</div><div class="d"></div></div>
+      <div class="num"><a class="call" href="tel:0120719424">0120-7-19424</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">保健衛生</div>
+    <div class="tel">
+      <div class="info"><div class="n">西区保健福祉課</div><div class="d">糀台５丁目４－１ 西区役所3階｜直通</div></div>
+      <div class="num"><a class="call" href="tel:0789395372">939-5372</a></div>
+    </div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">局内（内線・専用電話）</div>
+    <div class="tel">
+      <div class="info"><div class="n">管制室（増強部隊報告・兼務解除）</div><div class="d">事務専用電話</div></div>
+      <div class="num"><span class="ext">内線 432／433</span></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">管制室（署本部から・かけこみ通報連絡）</div><div class="d">防災指令発令時、管制室に設置</div></div>
+      <div class="num"><span class="ext">内線 434</span></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">作戦室（西・水位報告等）</div><div class="d">消防対策本部情報班 西担当</div></div>
+      <div class="num"><span class="ext">内線 459</span></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">警防課（解除時の局報告）</div><div class="d">避難情報発令状況《水防様式８》保存＋電話連絡</div></div>
+      <div class="num"><span class="ext">内線 361</span></div>
+    </div>
+    <div class="tel">
+      <div class="info"><div class="n">作戦室 FAX（様式報告・ファイルサーバ使用不可時）</div><div class="d"></div></div>
+      <div class="num"><span class="ext">FAX 404</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="foot">
+  本アプリは「令和８年度 水防計画書（案）西消防署」を基に作成した参照用ツールです。正本は紙の計画書・全庁ファイルサーバの資料とし、内容が異なる場合は正本を優先してください。部外秘情報（消防団役員一覧、防コミ代表者一覧、神戸電鉄連絡先等）は掲載していません。
+</div>
+
+<!-- ============ タブバー ============ -->
+<nav class="tabbar">
+  <button data-tab="tab-home" class="active"><span class="ico">🏠</span>ホーム</button>
+  <button data-tab="tab-shirei"><span class="ico">🚨</span>指令・体制</button>
+  <button data-tab="tab-unyo"><span class="ico">🎯</span>運用</button>
+  <button data-tab="tab-hokoku"><span class="ico">📋</span>報告・様式</button>
+  <button data-tab="tab-renraku"><span class="ico">📞</span>連絡先</button>
+</nav>
+
+<script>
+(function(){
+  var TAB_NAMES = {
+    "tab-home":"ホーム", "tab-shirei":"指令・体制", "tab-unyo":"運用",
+    "tab-hokoku":"報告・様式", "tab-renraku":"連絡先"
+  };
+
+  function switchTab(id){
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.id === id); });
+    document.querySelectorAll(".tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab === id); });
+    window.scrollTo({top:0});
+  }
+
+  document.querySelectorAll(".tabbar button").forEach(function(b){
+    b.addEventListener("click", function(){ switchTab(b.dataset.tab); });
+  });
+
+  // クイックリンク：タブ切替＋対象を開いてスクロール
+  function jumpTo(tabId, targetId){
+    switchTab(tabId);
+    if(!targetId) return;
+    var el = document.getElementById(targetId);
+    if(!el) return;
+    if(el.tagName === "DETAILS") el.open = true;
+    setTimeout(function(){
+      el.scrollIntoView({behavior:"smooth", block:"start"});
+      el.classList.remove("highlight-target");
+      void el.offsetWidth;
+      el.classList.add("highlight-target");
+    }, 60);
+  }
+  document.querySelectorAll("[data-jump]").forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      jumpTo(a.dataset.jump, a.dataset.open);
+    });
+  });
+
+  // ---- 検索 ----
+  var items = [];
+  document.querySelectorAll("details.acc, details.lv").forEach(function(d){
+    items.push({
+      id: d.id,
+      tab: d.dataset.tab,
+      title: d.dataset.title || (d.querySelector("summary") ? d.querySelector("summary").textContent.trim() : ""),
+      text: d.textContent.replace(/\s+/g, " ")
+    });
+  });
+
+  var q = document.getElementById("q");
+  var resBox = document.getElementById("searchResults");
+  var homeDefault = document.getElementById("homeDefault");
+
+  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+
+  q.addEventListener("input", function(){
+    var kw = q.value.trim();
+    resBox.innerHTML = "";
+    if(kw.length < 1){ homeDefault.style.display = ""; return; }
+    homeDefault.style.display = "none";
+    var kwLower = kw.toLowerCase();
+    var hits = items.filter(function(it){ return it.text.toLowerCase().indexOf(kwLower) >= 0 || it.title.toLowerCase().indexOf(kwLower) >= 0; });
+    if(hits.length === 0){
+      resBox.innerHTML = '<p class="note">「' + esc(kw) + '」に一致する項目はありません。</p>';
+      return;
+    }
+    hits.forEach(function(it){
+      var idx = it.text.toLowerCase().indexOf(kwLower);
+      var snippet = "";
+      if(idx >= 0){
+        var start = Math.max(0, idx - 20);
+        snippet = (start > 0 ? "…" : "") + it.text.slice(start, idx + kw.length + 40) + "…";
+        snippet = esc(snippet).replace(new RegExp(esc(kw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), function(m){ return "<mark>" + m + "</mark>"; });
+      }
+      var btn = document.createElement("button");
+      btn.className = "sr";
+      btn.innerHTML = '<span class="tab-name">' + (TAB_NAMES[it.tab] || "") + '</span><div class="t">' + esc(it.title) + '</div><span class="s">' + snippet + '</span>';
+      btn.addEventListener("click", function(){
+        q.blur();
+        jumpTo(it.tab, it.id);
+      });
+      resBox.appendChild(btn);
+    });
+  });
+})();
+</script>
+</body>
+</html>
