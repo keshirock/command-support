@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; manifest-src 'self'; worker-src 'self'; child-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>西消防署 震災タスク｜震災初動対応</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="震災タスク">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>
+  // クリックジャッキング対策：iframe内に埋め込まれた場合は表示しない。
+  try {
+    if (window.top !== window.self) { document.documentElement.style.display = "none"; }
+  } catch (e) { document.documentElement.style.display = "none"; }
+  // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* 失敗してもアプリ本体は動く */ });
+    });
+  }
+</script>
+<style>
+  :root{
+    --navy:#1A2332; --navy2:#232F42; --navy3:#2C3A52; --navy4:#364763;
+    --red:#C8102E; --red-bright:#E5484D; --blue:#4C9AFF;
+    --amber:#E8A33D; --ice:#C9D6E3; --muted:#8A97A8; --white:#FFFFFF;
+    --green:#3DBE7B; --yellow:#E8C93D; --orange:#D95B1E; --purple:#A46BE8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy);
+    color:var(--white);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:12px 12px calc(78px + env(safe-area-inset-bottom));
+    max-width:860px; margin:0 auto;
+    line-height:1.6;
+  }
+  header{display:flex; align-items:center; gap:12px; padding:4px 2px 10px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--orange); display:flex;align-items:center;justify-content:center;
+    font-size:15px; font-weight:800; flex-shrink:0; letter-spacing:.02em;
+  }
+  header h1{font-size:19px; font-weight:800; letter-spacing:.02em; line-height:1.25;}
+  header p{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  .levelbar{position:sticky; top:0; z-index:40; background:var(--navy); padding:6px 0 10px; margin:0 -2px;}
+  .levelbar .lab{font-size:10.5px; color:var(--muted); font-weight:700; margin:0 2px 5px; letter-spacing:.05em;}
+  .levels{display:flex; gap:6px; overflow-x:auto; padding:0 2px 4px; -webkit-overflow-scrolling:touch;}
+  .levels::-webkit-scrollbar{display:none;}
+  .levels button{
+    flex-shrink:0; background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:7px 13px; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent;
+  }
+  .levels button.cur{background:var(--orange); border-color:var(--orange); color:#fff;}
+  .levels button.passed{border-color:var(--navy4); color:var(--muted);}
+
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:rgba(20,28,42,.97); border-top:1px solid var(--navy3);
+    display:flex; justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(8px);
+  }
+  .tabbar button{
+    flex:1; max-width:120px; background:none; border:none; color:var(--muted);
+    font-family:inherit; font-size:10.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:4px 0; cursor:pointer; border-radius:10px; position:relative;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tabbar button .ico{font-size:19px; line-height:1;}
+  .tabbar button.active{color:var(--white);}
+  .tabbar button.active::after{content:""; width:18px; height:3px; border-radius:2px; background:var(--orange); margin-top:2px;}
+  .tabbar .nbadge{
+    position:absolute; top:0; right:calc(50% - 24px);
+    background:var(--red-bright); color:#fff; font-size:9.5px; font-weight:800;
+    min-width:16px; height:16px; border-radius:8px; padding:0 4px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tab{display:none;}
+  .tab.active{display:block; animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .card{background:var(--navy2); border-radius:14px; padding:16px 14px; margin-bottom:12px;}
+  .card h2{font-size:14px; font-weight:800; color:var(--ice); margin-bottom:10px; letter-spacing:.04em;}
+  .lead{font-size:12.5px; color:var(--ice);}
+  .note{background:var(--navy3); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--ice); margin:8px 0;}
+  .kb{color:var(--amber); font-weight:700;}
+  .sub{font-size:12.5px; font-weight:800; color:var(--amber); margin:12px 0 6px;}
+  .sub:first-child{margin-top:0;}
+
+  .rolestat{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .rolestat .ri{font-size:22px; flex-shrink:0;}
+  .rolestat .rm{flex:1; min-width:0;}
+  .rolestat .rn{font-size:13.5px; font-weight:800;}
+  .rolestat .bar{height:7px; background:var(--navy3); border-radius:4px; margin-top:6px; overflow:hidden;}
+  .rolestat .bar i{display:block; height:100%; border-radius:4px; background:var(--green); transition:width .3s;}
+  .rolestat .pct{font-size:10.5px; color:var(--muted); margin-top:3px;}
+  .rolestat .todo{flex-shrink:0; text-align:center; min-width:52px; background:var(--navy3); border-radius:10px; padding:6px 8px;}
+  .rolestat .todo b{display:block; font-size:17px; line-height:1.1;}
+  .rolestat .todo span{font-size:9.5px; color:var(--muted);}
+  .rolestat .todo.warn{background:rgba(229,72,77,.16); border:1px solid rgba(229,72,77,.5);}
+  .rolestat .todo.warn b{color:var(--red-bright);}
+  .rolestat .todo.done{background:rgba(61,190,123,.13); border:1px solid rgba(61,190,123,.45);}
+  .rolestat .todo.done b{color:var(--green);}
+
+  .log{font-size:12px;}
+  .log .li{display:flex; gap:8px; padding:6px 0; border-bottom:1px solid var(--navy3);}
+  .log .tm{color:var(--amber); font-weight:700; flex-shrink:0; font-variant-numeric:tabular-nums;}
+  .log .rl{color:var(--muted); flex-shrink:0;}
+  .log .tx{color:var(--ice);}
+  .btnrow{display:flex; gap:8px; margin-top:10px;}
+  .btn{
+    flex:1; background:var(--navy3); border:1px solid var(--navy4); border-radius:10px;
+    color:var(--white); font-family:inherit; font-size:12.5px; font-weight:800;
+    padding:11px 8px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .btn.danger{background:rgba(229,72,77,.14); border-color:rgba(229,72,77,.5); color:var(--red-bright);}
+
+  .rolechips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
+  .rolechips::-webkit-scrollbar{display:none;}
+  .rolechips button{
+    flex-shrink:0; position:relative;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:9px 13px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;
+  }
+  .rolechips button.cur{background:var(--navy4); border-color:var(--ice); color:#fff;}
+  .rolechips .cbadge{
+    background:var(--red-bright); color:#fff; font-size:10px; font-weight:800;
+    min-width:17px; height:17px; border-radius:9px; padding:0 4px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .roledesc{font-size:11.5px; color:var(--muted); margin:0 2px 10px;}
+
+  .filterrow{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .toggle{
+    display:flex; align-items:center; gap:7px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    padding:7px 13px; font-size:12px; font-weight:800; color:var(--ice);
+    cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .toggle .sw{width:32px; height:18px; border-radius:9px; background:var(--navy4); position:relative; transition:background .2s;}
+  .toggle .sw::after{
+    content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+    border-radius:50%; background:var(--muted); transition:left .2s, background .2s;
+  }
+  .toggle.on .sw{background:var(--green);}
+  .toggle.on .sw::after{left:16px; background:#fff;}
+
+  .phase{margin-bottom:14px;}
+  .phase .ph{display:flex; align-items:center; gap:8px; margin-bottom:7px; padding:0 2px;}
+  .phase .ph .pn{font-size:13px; font-weight:800; color:var(--white);}
+  .phase .ph .lv{font-size:10px; font-weight:800; color:var(--navy); background:var(--amber); border-radius:999px; padding:2px 8px;}
+  .phase .ph .cnt{margin-left:auto; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .phase.future{opacity:.5;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+
+  .task{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--navy2); border-radius:12px; padding:11px 12px; margin-bottom:7px;
+    cursor:pointer; border-left:4px solid var(--navy3); -webkit-tap-highlight-color:transparent;
+  }
+  .task .box{
+    width:22px; height:22px; border-radius:7px; flex-shrink:0; margin-top:1px;
+    border:2px solid var(--muted); display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:800; color:transparent; transition:all .15s;
+  }
+  .task .tx{flex:1; font-size:13px; color:var(--white);}
+  .task .dt{font-size:11px; color:var(--muted); margin-top:3px;}
+  .task .meta{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;}
+  .task .tag{font-size:10px; font-weight:700; background:var(--navy3); color:var(--ice); border-radius:999px; padding:1.5px 8px;}
+  .task .tag.rep{background:rgba(76,154,255,.16); color:var(--blue);}
+  .task .tag.tm{background:rgba(61,190,123,.14); color:var(--green); font-variant-numeric:tabular-nums;}
+  .task.due{border-left-color:var(--orange);}
+  .task.done{border-left-color:var(--green); background:rgba(35,47,66,.55);}
+  .task.done .box{background:var(--green); border-color:var(--green); color:#fff;}
+  .task.done .tx{color:var(--muted); text-decoration:line-through; text-decoration-color:rgba(138,151,168,.55);}
+  .task.done .dt{display:none;}
+
+  details.acc{background:var(--navy2); border-radius:12px; margin-bottom:10px; overflow:hidden; border-left:4px solid var(--navy3);}
+  details.acc[open]{border-left-color:var(--orange);}
+  details.acc > summary{
+    list-style:none; cursor:pointer; padding:13px 14px; font-size:13.5px; font-weight:800; color:var(--white);
+    display:flex; align-items:center; gap:8px; -webkit-tap-highlight-color:transparent;
+  }
+  details.acc > summary::-webkit-details-marker{display:none;}
+  details.acc > summary::after{content:"＋"; margin-left:auto; color:var(--muted); font-weight:400; flex-shrink:0;}
+  details.acc[open] > summary::after{content:"－";}
+  details.acc .body{padding:0 14px 14px; font-size:13px; color:var(--ice);}
+  details.acc .body p{margin-bottom:8px;}
+  details.acc .body ul, details.acc .body ol{margin:0 0 8px 1.3em;}
+  details.acc .body li{margin-bottom:4px;}
+
+  .tbl-wrap{overflow-x:auto; margin:8px 0;}
+  table{border-collapse:collapse; width:100%; font-size:12px; min-width:420px;}
+  th,td{border:1px solid var(--navy4); padding:7px 8px; text-align:left; vertical-align:top; color:var(--ice);}
+  th{background:var(--navy3); color:var(--white); font-size:11.5px; white-space:nowrap;}
+  .pill{display:inline-block; background:var(--navy3); border-radius:999px; padding:2px 9px; font-size:10.5px; color:var(--ice); margin:0 2px 4px 0;}
+
+  .searchbox{
+    display:flex; align-items:center; gap:8px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .searchbox input{flex:1; background:none; border:none; outline:none; color:var(--white); font-family:inherit; font-size:14px;}
+  .searchbox input::placeholder{color:var(--muted);}
+  #searchResults{margin-bottom:12px;}
+  .sr{
+    display:block; width:100%; text-align:left;
+    background:var(--navy2); border:none; border-left:4px solid var(--blue);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    color:var(--white); font-family:inherit; cursor:pointer;
+  }
+  .sr .t{font-size:13px; font-weight:800;}
+  .sr .s{font-size:11.5px; color:var(--muted); margin-top:2px; display:block;}
+  mark{background:var(--amber); color:#1A2332; border-radius:2px; padding:0 1px;}
+
+  .tel-group{margin-bottom:14px;}
+  .tel-group .g{font-size:12px; font-weight:800; color:var(--amber); margin-bottom:6px; letter-spacing:.05em;}
+  .tel{background:var(--navy2); border-radius:12px; padding:11px 13px; margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tel .info{flex:1; min-width:0;}
+  .tel .n{font-size:13px; font-weight:800;}
+  .tel .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .tel .num{display:flex; flex-direction:column; gap:5px; align-items:flex-end; flex-shrink:0;}
+  .tel span.ext{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--navy3); border-radius:999px; padding:5px 11px;
+    color:var(--ice); text-decoration:none; font-size:12.5px; font-weight:700; white-space:nowrap;
+  }
+
+  .link-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    color:var(--white); text-decoration:none;
+  }
+  .link-item .li-ico{font-size:18px;}
+  .link-item .n{font-size:13px; font-weight:800;}
+  .link-item .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .link-item::after{content:"↗"; margin-left:auto; color:var(--muted);}
+  .link-item.internal::after{content:"→";}
+
+  .foot{margin-top:20px; padding-top:12px; border-top:1px solid var(--navy3); font-size:10.5px; color:var(--muted); line-height:1.7;}
+  .highlight-target{animation:hl 2s ease;}
+  @keyframes hl{0%{box-shadow:0 0 0 3px var(--amber);} 100%{box-shadow:0 0 0 0 transparent;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">震災</div>
+  <div>
+    <h1>西消防署 震災タスク</h1>
+    <p>令和７年度 震災初動対応｜発災から72時間の役割別チェックリスト</p>
+  </div>
+</header>
+
+<div class="levelbar" id="levelbar">
+  <div class="lab">発災からの経過（タップで切替）</div>
+  <div class="levels" id="levels"></div>
+</div>
+
+<!-- ============ 状況 ============ -->
+<section class="tab active" id="tab-status">
+  <div class="card">
+    <h2>📊 役割別の進捗（タップで各タスクへ）</h2>
+    <div id="roleStats"></div>
+    <p class="note" id="statusHint"></p>
+  </div>
+
+  <div class="card">
+    <h2>🕐 実施記録（クロノロジー）</h2>
+    <div class="log" id="logList"><p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p></div>
+    <div class="btnrow">
+      <button class="btn" id="copyLog">📋 記録をコピー</button>
+      <button class="btn danger" id="resetBtn">🆕 新しい事案を開始（記録クリア）</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌐 情報収集リンク</h2>
+    <a class="link-item" href="https://www.jma.go.jp/bosai/map.html" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🌏</span>
+      <span><span class="n">気象庁 防災情報（地震・津波）</span><br><span class="d">震度分布・津波警報・余震情報</span></span>
+    </a>
+    <a class="link-item" href="https://www.google.com/search?q=%E7%A5%9E%E6%88%B8%E5%B8%82+%E6%B4%A5%E6%B3%A2%E9%98%B2%E7%81%BD+%E3%82%B3%E3%82%B3%E3%82%AF%E3%83%AB" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🌊</span>
+      <span><span class="n">神戸市津波防災「ココクル？」</span><br><span class="d">検索で開く（署内共有URLがあればそちらを優先）</span></span>
+    </a>
+    <a class="link-item" href="https://www.google.com/search?q=EMIS+%E5%BA%83%E5%9F%9F%E7%81%BD%E5%AE%B3%E6%95%91%E6%80%A5%E5%8C%BB%E7%99%82%E6%83%85%E5%A0%B1%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🏥</span>
+      <span><span class="n">EMIS（広域災害救急医療情報システム）</span><br><span class="d">検索で開く｜医療機関の受入体制</span></span>
+    </a>
+    <a class="link-item internal" href="../suibou/">
+      <span class="li-ico">💧</span>
+      <span><span class="n">水防タスク（風水害対応）</span><br><span class="d">ため池・河川の対策は水防計画書に準ずる</span></span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ タスク ============ -->
+<section class="tab" id="tab-tasks">
+  <div class="rolechips" id="roleChips"></div>
+  <p class="roledesc" id="roleDesc"></p>
+  <div class="filterrow">
+    <div class="toggle" id="filterToggle"><span class="sw"></span>未実施のみ表示</div>
+  </div>
+  <div id="taskList"></div>
+</section>
+
+<!-- ============ 資料 ============ -->
+<section class="tab" id="tab-shiryo">
+  <div class="searchbox">
+    <span>🔍</span>
+    <input type="search" id="q" placeholder="資料内を検索（例：津波 / 部隊編成 / 無線）" autocomplete="off" maxlength="60">
+  </div>
+  <div id="searchResults"></div>
+
+  <div id="shiryoBody">
+  <details class="acc" id="acc-soshiki" data-title="署本部の組織・事務分掌・代行順位">
+    <summary>🏢 署本部の組織・事務分掌・代行順位</summary>
+    <div class="body">
+      <p><b>設置基準</b>：署長は、震災消防本部設置の通知があった場合又は必要と認める場合、署長を大隊長とする震災署本部を設置する。設置場所は<span class="kb">本署３階事務所</span>（重大損傷時は署敷地内エアーテント、状況により出張所へ移転）。</p>
+      <p class="sub">大隊長（署長）代行順位</p>
+      <p><span class="pill">1 副署長</span><span class="pill">2 消防防災課長</span><span class="pill">3 指揮隊長</span><span class="pill">4 当務消防係長</span><span class="pill">5 救急係長</span><span class="pill">6 団担当係長</span></p>
+      <p class="sub">組織と主な事務分掌</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>班</th><th>班長</th><th>主な分掌</th></tr>
+        <tr><td>大隊長</td><td>署長（補佐：副署長・消防防災課長）</td><td>対応方針の決定／部隊増強の検討（応援要請）／外部機関との連携</td></tr>
+        <tr><td>指揮班</td><td>当務指揮隊長（補佐：参集指揮隊長）</td><td>署本部（指揮所）開設／警防活動方針の決定／部隊編成・増強／職員動員／部隊運用／応援隊調整本部の設置・応援部隊配置／防コミ連絡調整</td></tr>
+        <tr><td>活動班</td><td>当務中隊長（補佐：参集中隊長）</td><td>消火・救助・救急活動／避難情報・警戒区域の設定／初動時の情報収集／火災原因・損害調査</td></tr>
+        <tr><td>活動班（出張所）</td><td>当務出張所担当係長</td><td>本署との連絡調整／出張所の部隊運用</td></tr>
+        <tr><td>活動班（救急）</td><td>救急係長</td><td>医療機関・救護所／救急指揮所</td></tr>
+        <tr><td>消防団支援班</td><td>消防団担当係長</td><td>団員の動員／団の運用／区域外出動の調整／資機材調達／公務災害補償／他署応援団の調整</td></tr>
+        <tr><td>情報班</td><td>査察係長</td><td>被害情報の収集・集計・分析／防災情報システムによる伝達・報告／マスコミ広報／119受信業務／関係機関との連絡調整</td></tr>
+        <tr><td>後方支援班</td><td>総務係長</td><td>食料・寝具・衣料の調達／庁舎保全・修理／車両・燃料・資機材調達／応援部隊待機場所／職員・家族の安否確認／労務・健康管理／公務災害／ボランティア受入</td></tr>
+      </table></div>
+      <p class="note">地震発生直後は、指揮・活動班長が情報班長の任務を兼務する。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-hensei" data-title="部隊編成基準（第１〜第３順位）">
+    <summary>🚒 部隊編成基準</summary>
+    <div class="body">
+      <p class="sub">震度による2段階対応</p>
+      <ul>
+        <li><b>震度５強以下</b>：部隊編成の変更は行わず災害対応。参集状況に応じ増強。</li>
+        <li><b>震度６弱以上</b>：出張所及び日勤救急隊は活動を一旦休止し、本部通知をもって消防隊の兼務車両や非常用車両等へ乗換え、若しくは救急出動を継続。非常用車両不足時は査察広報車等に可搬ポンプを積載。救急隊再編は本部と協議。</li>
+      </ul>
+      <p class="note">大津波警報・津波警報が発表されれば、被害状況に関係なく震災モード（各署運用）。全市被害状況やシステム障害等により格上げ・格下げあり。</p>
+      <p class="sub">編成基準</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>順位</th><th>編成</th><th>部隊</th></tr>
+        <tr><td>署本部</td><td>当務指揮隊３名＋情報通信勤務員</td><td>西75（指揮隊）・情報通信連絡員・高所見張り要員</td></tr>
+        <tr><td rowspan="4">第１順位<br>（当務中隊）</td><td>本署 15名</td><td>西29（ポンプ）西33（救助）西90（救急）</td></tr>
+        <tr><td>伊川谷 ７名</td><td>西15（ポンプ）西91（救急）※岩岡：西97（救急）</td></tr>
+        <tr><td>押部谷 ７名</td><td>西11（ポンプ）西92（救急）</td></tr>
+        <tr><td>西神南 ７名</td><td>西21（ポンプ）西93（救急）</td></tr>
+        <tr><td>第２順位<br>（非常参集者・駆け付け順）</td><td>各隊３〜４名</td><td>本署：西４・西５・西10・西60・西61・西95／伊川谷：西14／押部谷：西３／西神南：西１</td></tr>
+        <tr><td>第３順位<br>（非常参集者・担当者）</td><td>各隊４〜６名</td><td>指揮担当・情報通信勤務、応急救護員の増強、各隊増強要員、交代要員</td></tr>
+      </table></div>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-hoshin" data-title="活動方針（火災・救助・救急の原則）">
+    <summary>🔥 活動方針（火災・救助・救急の原則）</summary>
+    <div class="body">
+      <p class="sub">地震災害における活動方針</p>
+      <ul>
+        <li><b>火災対応優先の原則</b>：火災の早期発見と一挙鎮圧を最優先。</li>
+        <li><b>各署対応の原則</b>：震度６弱以上又は大津波警報・津波警報発表時は各署対応による災害防御。</li>
+        <li><b>早期応援体制確保の原則</b>：西区に被害がなければ速やかに本部へ報告し他署応援。</li>
+        <li>各現場は小隊指揮の単体活動。自己隊の責任で対処する決意を持つ。</li>
+        <li>出動途上の未把握火災・救助は署本部へ連絡し原則命令現場へ（緊急人命危険は除く）。</li>
+      </ul>
+      <p class="sub">火災対応方針</p>
+      <ul>
+        <li><b>消火活動優先</b>：全組織力を挙げて消火活動に着手。</li>
+        <li><b>避難誘導優先</b>：消防力を超え延焼拡大時は避難誘導・避難場所/避難路確保を優先。</li>
+        <li><b>重点防御地域優先</b>：複数火災同時覚知時は「震災消防要図」の重点防御地域を参考に部隊投入。その他は消防団・防コミ等に委ねる。</li>
+        <li><b>火災出動</b>：地震直後は１火災２隊、同時多発時は１火災１隊で分散出動。大規模化時は中隊長指定で指揮強化。人命危険・延焼危険なしは自然鎮火に委ね転戦。</li>
+        <li><b>水利部署</b>：消火栓断水に備え緊急栓・自然水利（海・池・川・プール）を要図で確認して出動。</li>
+        <li><b>多口放水</b>：１隊２口以上（Ｂ２級以上）。人員不足は団員・防コミ・住民の協力。Ｂ３級以下は複数セット活用。</li>
+        <li><b>出動経路</b>：原則幅員８ｍ以上・倒壊障害の少ない経路。</li>
+        <li><b>現場広報</b>：出火防止・初期消火・火気禁止・消火協力を積極広報。</li>
+      </ul>
+      <p class="sub">救助活動</p>
+      <ul>
+        <li>消防力劣勢時は救助隊（西33）も消火優先。編成可能になれば直ちに救助活動。火災終息時は本署に消火隊１隊を残し他は救助活動。</li>
+        <li>優先順位：救命処置を要する重症者 → 火災現場付近 → 病院・社会福祉施設等の多数人命危険対象物 → 少数隊員で多数救助できる事案。</li>
+        <li>救出可能事案は住民等に協力要請し、技術を要する事案を救助隊が担当。</li>
+        <li>重複作業防止のため救助活動表示票（様式19）・救助済票（様式20）で現場表示。</li>
+      </ul>
+      <p class="sub">救急活動</p>
+      <ul>
+        <li>本署救急隊は震度に関係なく継続。出張所・日勤救急隊は震度６弱以上で一旦休止し本部通知に従う（震度５強までは本部運用、６弱からは各署運用）。</li>
+        <li>日勤救急隊継続時は岩岡日勤救急隊８名体制（勤務9:15〜17:00）を編成。</li>
+        <li>トリアージを行い重症者優先。特定行為は災害時指導医師等の指示で実施。</li>
+        <li>救護班・共助団体と連携し、軽症者は防コミ等共助・自助に委ねる。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-tsunami" data-title="津波対策（警報種別・退避方針・部隊シフト）">
+    <summary>🌊 津波対策</summary>
+    <div class="body">
+      <p class="sub">津波警報の種別</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>種類</th><th>発表基準</th><th>とるべき行動</th></tr>
+        <tr><td><b>大津波警報</b></td><td>予想高さ３ｍ超（発表：10ｍ超・10ｍ・５ｍ／巨大）</td><td>木造家屋が全壊・流失。沿岸部・川沿いはただちに高台や避難ビルへ避難</td></tr>
+        <tr><td><b>津波警報</b></td><td>予想高さ１ｍ超〜３ｍ以下（発表：３ｍ／高い）</td><td>標高の低い所で浸水被害。ただちに高台や避難ビルへ避難</td></tr>
+        <tr><td><b>津波注意報</b></td><td>予想高さ0.2ｍ以上１ｍ以下（発表：１ｍ）</td><td>海の中は速い流れ。ただちに海から上がり海岸から離れる</td></tr>
+      </table></div>
+      <p class="sub">出動管理・退避方針</p>
+      <ul>
+        <li>西区内に津波浸水想定地域はないが、部隊シフトで沿岸部に出動する場合：<b>大隊長が活動時間を明確に指示した後に出動</b>。避難路確保第一、退避情報を無線傍受。</li>
+        <li>退避は津波到達予想時間の<b>20分前</b>から住民避難誘導しつつ実施。到達時間不明時は<b>地震発生から60分後</b>に退避開始（管制室が60分目途に無線全波一斉送信）。</li>
+        <li>パトロールは浸水想定地域内優先・避難指示を広報。緊急退避は水平退避基本、間に合わなければ堅牢建物３階以上へ垂直退避。</li>
+        <li>避難は徒歩原則・水平避難基本。逃げ遅れ等は津波緊急待避所等の３階以上へ垂直退避。</li>
+        <li>津波は50〜60分間隔で何度も襲来、５〜６時間は潮位変動。最大波は第１波とは限らない。</li>
+        <li>警報継続中は浸水想定地域内での対応は行わない（本部・署本部調整のうえ大隊長命令で再開）。警報解除後も大隊長命令で再開。</li>
+      </ul>
+      <p class="sub">部隊シフト（他署応援・表１）</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>被応援署（無線波）</th><th>応援署所・車両</th><th>応援消防団</th></tr>
+        <tr><td>長田消防署（地域波１）</td><td>西神南出張所 西１</td><td>神出・岩岡支団</td></tr>
+        <tr><td>須磨消防署（地域波２）</td><td>押部谷出張所 西３</td><td>櫨谷・押部谷・平野支団</td></tr>
+        <tr><td>垂水消防署（全市２波）</td><td>伊川谷出張所 西14</td><td>玉津・伊川谷支団</td></tr>
+        <tr><td>被害の大きな署（被応援署の波）</td><td>西消防署 西４・西５</td><td>本部長の指示による</td></tr>
+      </table></div>
+      <p class="note">応援は管内に顕著な被害がない場合に限る。応援隊は１隊24時間限度で交代派遣。個人装備・予備燃料・非常食等は応援署で準備（ライフジャケット必須）。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-joho" data-title="情報収集項目・情報収集要領">
+    <summary>📡 情報収集項目・要領</summary>
+    <div class="body">
+      <p class="sub">署本部の情報収集項目（例示）</p>
+      <ol>
+        <li><b>地震・津波情報</b>：震源地、震度、津波の防災気象情報、到達時刻・高さ</li>
+        <li><b>火災情報</b>：件数、種別、発生場所、規模、延焼方向、防御状況、延焼阻止の可否、鎮圧・鎮火</li>
+        <li><b>二次災害情報</b>：危険物・都市ガス漏洩、液状化、土砂災害、水害等</li>
+        <li><b>部隊情報</b>：編成部隊数、増強部隊数、出動部隊数、過不足部隊数</li>
+        <li><b>人的被害情報</b>：要救助者数、発生場所、救出結果、搬送・病院情報</li>
+        <li><b>水利・活動障害情報</b>：消火栓使用可否、中継体制、道路通行障害、庁舎倒壊等</li>
+        <li><b>医療機関情報</b>：施設損害、受入可否、受入可能人数（赤・黄・緑）、可能科目、転院の必要性</li>
+        <li><b>避難・警戒情報</b>：警戒区域の設定及び避難状況等</li>
+      </ol>
+      <p class="sub">情報収集要領</p>
+      <ul>
+        <li>携帯電話開局：署加入電話は市民急報で使用困難のおそれ。無線困難地域の報告は携帯電話で行う。<b>開局番号・メールアドレスは非公開（取扱注意）のため紙のマニュアルを参照。</b></li>
+        <li>参集途上の職員情報は「災害情報記録表（様式16）」で報告。</li>
+        <li>消防団：分団長・副分団長が地域被害情報を収集→支団本部で集約→団本部へ報告。「消防団スマート情報システム」活用。</li>
+        <li>防災福祉コミュニティ：地域防災調整者が地区担当者と連携し情報収集。</li>
+        <li>医療機関：情報班長又は救急係長が管内病院の受入体制を調査（別表２）。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-musen" data-title="無線運用・無線通信系">
+    <summary>📻 無線運用・通信系</summary>
+    <div class="body">
+      <p class="sub">無線運用</p>
+      <ul>
+        <li>署運用に切替われば、西携帯75（デジタル携帯無線機）を３Ｆ事務所へ設置し、西署指定波<span class="kb">「全市３波」</span>への変更を確認。</li>
+        <li>本部との交信確保のため<span class="kb">「全市１波」</span>を開局（電話回線断絶時に本部・活動隊等と交信）。</li>
+        <li>無線運用は署本部（指揮所）の卓上で行い、被害情報の収集を優先。交信内容は様式16に記録。</li>
+        <li>無線不感地帯対策：各出張所の車載無線機・署所固定局・携帯電話で災害現場と署本部間を中継。</li>
+      </ul>
+      <p class="sub">通信系の指定</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>通信間</th><th>無線波</th></tr>
+        <tr><td>本部 ⇔ 署本部</td><td>260MHz 全市１波（デジタル）</td></tr>
+        <tr><td>署本部 ⇔ 消防隊・救助隊</td><td>260MHz 全市３波（デジタル）／400MHz ５ch（活動波）</td></tr>
+        <tr><td>署本部 ⇔ 救急隊</td><td>携帯電話等による有線連絡（主）／260MHz 全市４波（管制室中継・補助）</td></tr>
+        <tr><td>署本部 ⇔ 緊急消防援助隊（県外）</td><td>指揮支援本部長が指定する統制波（デジタル）</td></tr>
+        <tr><td>署本部 ⇔ 県内応援隊</td><td>主運用波３（デジタル）</td></tr>
+        <tr><td>署本部・西活動隊 ⇔ ヘリ</td><td>指揮支援本部長が指定する統制波（デジタル）</td></tr>
+        <tr><td>署本部 ⇔ 他機関</td><td>防災相互波（アナログ・西75積載）</td></tr>
+      </table></div>
+      <p>西の割当：デジタル260MHz＝全市３波／アナログ150MHz＝防災相互波（神消959）／活動波400MHz＝５ch（事務連絡６ch・救助活動２ch）</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-hokoku" data-title="報告要領・連絡体制・情報伝達時系列">
+    <summary>📋 報告要領・連絡体制</summary>
+    <div class="body">
+      <p class="sub">各種報告要領</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>報告種別</th><th>報告時期</th><th>報告方法</th></tr>
+        <tr><td>避難情報等状況《様式８》</td><td>発令後その都度（発令前に事前連絡）</td><td>事務専用電話＋全庁FS</td></tr>
+        <tr><td>死者《様式10》・行方不明《様式11》・傷者《様式12》</td><td>１時間毎（事案なしでもその旨電話連絡）</td><td>事務専用電話＋全庁FS</td></tr>
+        <tr><td>職員参集状況報告</td><td>職員参集の都度</td><td>危機管理システム（ダウン時は様式１→全庁FS＋事務専用電話）</td></tr>
+        <tr><td>集計表《様式７の１・７の２》</td><td>１時間毎</td><td>総務班がOA出力し全庁FSに公開（署本部は確認し未把握事案を管制室へ報告）</td></tr>
+        <tr><td>署別被害調査集計表《様式13》</td><td>本部の求めに応じ</td><td>全庁FS</td></tr>
+        <tr><td>区別被害状況《様式14》</td><td>本部の求めに応じ</td><td>事務専用電話＋全庁FS</td></tr>
+        <tr><td>非常招集参集結果報告《様式４》</td><td>防災指令解除から５日以内</td><td>原則電子決裁（司令課へ）</td></tr>
+      </table></div>
+      <p class="sub">情報伝達時系列（署本部→本部）</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>時期</th><th>火災情報</th><th>部隊情報</th><th>被害情報</th></tr>
+        <tr><td>発災〜15分</td><td>火災件数・発生場所（口頭）</td><td>庁舎の状況（口頭）</td><td>倒壊状況・負傷者数を「多数・有・不明」で口頭報告</td></tr>
+        <tr><td>〜１時間</td><td>延焼危険・街区火災（口頭）</td><td>出動隊数・職員参集状況（口頭随時）</td><td>救助事案・病院情報（様式10〜12を1時間毎）</td></tr>
+        <tr><td>〜４時間</td><td rowspan="2">対応状況・消火見込み（様式16）</td><td rowspan="2">不足隊数・増強部隊数<br>部隊増強は司令課432・433へ</td><td rowspan="2">仮救護所対応状況・人的被害情報（様式16、大規模事案対応計画）</td></tr>
+        <tr><td>〜24時間・72時間</td></tr>
+      </table></div>
+      <p class="sub">連絡体制</p>
+      <ul>
+        <li>本部⇒署本部／署本部⇒本部：事務専用電話＋全庁ファイルサーバー併用。投稿タイトルは「[○○署 ＊＊＊情報]」。</li>
+        <li>署本部⇔署本部：全庁ファイルサーバーで相互に情報提供。</li>
+        <li>署本部で覚知した災害事案→速やかに管制室へ電話連絡。調達関係・活動障害→本部情報班経由で本部工務班。</li>
+        <li>災害活動報告はOAシステム入力（通常どおり）。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-renkei" data-title="関係機関との連携・受援体制">
+    <summary>🤝 関係機関との連携・受援体制</summary>
+    <div class="body">
+      <p class="sub">消防団との連携</p>
+      <ul>
+        <li>署本部のもとに団震災消防本部、区役所連絡所等に支団震災消防本部を設置し指揮系統を一元化。活動は分団単位が原則。区域外活動は大隊長の要請に基づき団長が命令。</li>
+        <li>団員は自宅周辺の火災・救助に防コミと連携して対応後、分団詰所等に参集。支団本部役員は団本部・各支団本部へ参集。</li>
+        <li>支団間応援は団長判断で実施可（応援支団長が団長に人員・活動報告）。本部派遣要請時は職員を活動補助者として同行。</li>
+      </ul>
+      <p class="sub">防災福祉コミュニティとの連携</p>
+      <ul>
+        <li>被災情報の入手や消火・救助・救護活動等の支援を要請。代表者へは有線連絡で適時の情報提供を依頼。</li>
+        <li>防コミ資機材庫の資材を有効活用。不足時は隣接防コミから搬送。</li>
+      </ul>
+      <p class="sub">連携調整者（連携責任者：消防署長）</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>応援隊・機関等</th><th>署本部連携調整者</th></tr>
+        <tr><td>他都市消防隊（緊急消防援助隊等）／自衛隊・警察・海上保安庁</td><td>消防係長</td></tr>
+        <tr><td>民間事業者による活動支援（重機等）</td><td>総務係長</td></tr>
+        <tr><td>消防団</td><td>消防団担当係長</td></tr>
+        <tr><td>医療機関・救護関係</td><td>救急係長</td></tr>
+        <tr><td>防災福祉コミュニティ</td><td>地域防災調整担当係長</td></tr>
+      </table></div>
+      <p class="sub">受援体制</p>
+      <ul>
+        <li>応援部隊の受入は「神戸市消防受援計画」に基づく。県下応援要請時は署応援隊調整本部を設置（本部長：署長）。</li>
+        <li>設置場所：３階事務所東北（査察打合わせ場所）。活動準備拠点：４階体育練成室。交替制度は当署と同一に班分け。</li>
+        <li>任務：県下広域応援部隊の配備／関係機関との連絡調整／情報の集約整理／応援部隊の後方支援。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-rotation" data-title="長期活動体制・ローテーション（24時間以降）">
+    <summary>🔁 長期活動体制（24時間以降）</summary>
+    <div class="body">
+      <p>発災直後の24時間は全組織力で災害防御。その後は第１〜第３順位出動隊に編成し、<span class="kb">３部交替休息制</span>（1/3ずつ交替し休息）で長期活動に対応する。</p>
+      <ul>
+        <li><b>第１順位出動隊（即応部隊）</b>：優先的に管内災害に対応。</li>
+        <li><b>第２順位出動隊（増強部隊）</b>：第１順位が対応できない災害に対応。本署救急隊は救護所運営・救急隊補助。管外応援は原則第２順位から派遣。</li>
+        <li><b>第３順位出動隊（支援隊）</b>：第１・第２が対応できない災害に対応。災害対応不要時は後方支援・優先的に休息/帰宅。</li>
+      </ul>
+      <p class="note">ローテーション（別表12）：震災発生時の週休係→第１順位、非番係→第２順位、当務係→第３順位から12時間毎に循環。編成details別表13参照。救助活動は原則３日間で管内網羅・24時間体制（救助は原則７日間）。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-anzen" data-title="安全管理">
+    <summary>⛑ 安全管理</summary>
+    <div class="body">
+      <ul>
+        <li><b>的確な報告</b>：緊急を要する情報は時機を失せず上級指揮者に報告。</li>
+        <li><b>単独行動の禁止</b>：激震地の各種活動（情報収集パトロールを除く）は必ず２名以上。</li>
+        <li><b>交通事故防止</b>：道路陥没・工作物倒壊が予想される場所は徐行・誘導員配置。</li>
+        <li><b>余震の考慮</b>：倒壊建物進入時・高所作業時は余震を念頭に十分な安全策。危険が伴う活動は安全確保まで中止。</li>
+        <li><b>活動空間の安全確保</b>：火災警戒区域（消防法23条の2）、消防警戒区域（28条）、警戒区域（災対法63条）、交通規制（76条の3）等を臨機に措置。</li>
+        <li><b>退路の確保</b>：津波浸水想定地域・火災現場周辺では常に退路を考えた活動。風向・建物密集度・危険物施設・ガス漏洩に注意。</li>
+        <li><b>監視員の配置</b>：家屋倒壊・地滑り・がけ崩れ現場では必ず監視員を配置し、前兆現象の早期発見と避難時期・待避方向の明確な伝達。</li>
+        <li>署本部の実施事項は「重要実施事項チェックシート（様式22）」を用いて実施。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-yoshiki" data-title="様式・別表一覧">
+    <summary>📄 様式・別表一覧</summary>
+    <div class="body">
+      <p class="sub">様式（震災消防計画 震災初動対応指針より）</p>
+      <ul>
+        <li>様式１ 職員参集状況／様式２ 非常招集参集状況／様式３ 署本部編成表</li>
+        <li>様式４ 非常招集参集結果報告／様式７の１ 消防部被害状況集計表／様式７の２ 震災事案集計表</li>
+        <li>様式８ 避難情報等状況／様式９ 災害状況管理表</li>
+        <li>様式10 死者調査速報／様式11 行方不明者調査速報／様式12 傷者調査速報</li>
+        <li>様式13 署別被害調査集計表／様式14 区別被害状況／様式16 災害情報記録表</li>
+        <li>様式17 市内災害即報一覧表／様式18 作業員確保依頼表</li>
+        <li>様式19 救助活動表示票／様式20 救助済票</li>
+        <li>様式21 震災署本部 大隊編成表／様式22 重要実施事項チェックシート</li>
+      </ul>
+      <p class="sub">別表</p>
+      <ul>
+        <li>別表１ 西署本部配置図／別表２ 救急関係機関一覧／別表３ 消防車両等燃料一覧</li>
+        <li>別表４ 関係機関連絡先一覧／別表５ 西区ガソリンスタンド一覧／別表６ 市登録業者一覧</li>
+        <li>別表７ 西区内離着陸場リスト／別表８ 救急発生状況一覧／別表９ 災害用食料管理状況報告書</li>
+        <li>別表10 燃料提供確認書／別表11 西消防団震災活動マニュアル</li>
+        <li>別表12 24時間以降のローテーション／別表13 24時間以降の編成表</li>
+        <li>別表14 庁舎被災時における設備機器に関する注意事項／別表15 長時間停電時のシステム用発電機給油方法</li>
+      </ul>
+      <p class="note">様式・別表の実物は紙のマニュアル及び全庁ファイルサーバを参照。非公開情報（携帯電話開局番号等）はアプリに掲載していません。</p>
+    </div>
+  </details>
+  </div>
+</section>
+
+<!-- ============ 連絡先 ============ -->
+<section class="tab" id="tab-renraku">
+  <div class="card">
+    <h2>📞 連絡体制（事務専用電話・FAX）</h2>
+    <p class="lead" style="margin-bottom:8px;">局内の事務専用電話・FAXは内線のため表示のみです。</p>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">本部（事務専用電話）</div>
+    <div class="tel"><div class="info"><div class="n">本部 指揮班</div><div class="d"></div></div><div class="num"><span class="ext">441〜446</span></div></div>
+    <div class="tel"><div class="info"><div class="n">本部 情報班（作戦室）</div><div class="d">東灘451 灘452 中央453 兵庫454 北455 長田456 須磨457 垂水458 <b>西459</b> 水上460</div></div><div class="num"><span class="ext">450〜460</span></div></div>
+    <div class="tel"><div class="info"><div class="n">本部 総務班</div><div class="d"></div></div><div class="num"><span class="ext">447〜449</span></div></div>
+    <div class="tel"><div class="info"><div class="n">本部 工務班</div><div class="d">調達関係・活動障害は情報班経由</div></div><div class="num"><span class="ext">439</span></div></div>
+    <div class="tel"><div class="info"><div class="n">管制室</div><div class="d">署本部で覚知した災害事案の連絡先。作戦室開設前の報告は401／440</div></div><div class="num"><span class="ext">434</span></div></div>
+    <div class="tel"><div class="info"><div class="n">司令課（部隊増強報告）</div><div class="d"></div></div><div class="num"><span class="ext">432・433</span></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">FAX</div>
+    <div class="tel"><div class="info"><div class="n">作戦室⇔管制室</div><div class="d"></div></div><div class="num"><span class="ext">FAX 403</span></div></div>
+    <div class="tel"><div class="info"><div class="n">本部⇔署本部</div><div class="d"></div></div><div class="num"><span class="ext">FAX 404</span></div></div>
+    <div class="tel"><div class="info"><div class="n">管制室</div><div class="d"></div></div><div class="num"><span class="ext">FAX 401</span></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">署本部</div>
+    <div class="tel"><div class="info"><div class="n">署本部 事務専用電話</div><div class="d">通報連絡以外に使用しない</div></div><div class="num"><span class="ext">各署−27・28</span></div></div>
+    <div class="tel"><div class="info"><div class="n">署本部 FAX</div><div class="d"></div></div><div class="num"><span class="ext">各署−37</span></div></div>
+  </div>
+
+  <div class="card">
+    <h2>📱 携帯電話開局・関係機関</h2>
+    <p class="lead">中隊長・救急隊・指揮隊・消防隊・簡易AVMの携帯電話開局番号とメールアドレスは<b>非公開（取扱注意）のため掲載していません</b>。紙のマニュアル（第４章２情報収集要領）を参照してください。関係機関の連絡先は別表４「関係機関連絡先一覧」を参照。風水害関係の連絡先は<a href="../suibou/" style="color:var(--blue);">水防タスクの連絡先タブ</a>にあります。</p>
+  </div>
+</section>
+
+<div class="foot">
+  本アプリは「令和７年度 震災初動対応マニュアル（神戸市西消防署）」を基に作成した業務支援ツールです。正本は紙のマニュアル・全庁ファイルサーバの資料とし、内容が異なる場合は正本を優先してください。チェック状態はこの端末内のみに保存され、外部送信されません。非公開情報（携帯電話開局番号等）は掲載していません。
+</div>
+
+<!-- ============ タブバー ============ -->
+<nav class="tabbar">
+  <button data-tab="tab-status" class="active"><span class="ico">📊</span>状況</button>
+  <button data-tab="tab-tasks" id="tabTasksBtn"><span class="ico">✅</span>タスク<span class="nbadge" id="totalBadge" style="display:none;"></span></button>
+  <button data-tab="tab-shiryo"><span class="ico">📖</span>資料</button>
+  <button data-tab="tab-renraku"><span class="ico">📞</span>連絡先</button>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     データ定義
+     ・LEVELS: 発災からの経過フェーズ（インデックスが順序）
+     ・ROLES: 役割 → フェーズ → タスク
+     ・タスクIDは role.id-phase.id-連番 で自動採番し localStorage のキーになる。
+       既存IDを保つため、タスクは末尾追加のみとし途中挿入・削除をしないこと。
+     ========================================================= */
+  var LEVELS = [
+    { id:"l0", name:"発災直後" },
+    { id:"l1", name:"〜１時間" },
+    { id:"l2", name:"１〜４時間" },
+    { id:"l3", name:"４〜24時間" },
+    { id:"l4", name:"24〜72時間" }
+  ];
+
+  // r:true = 事案・状況の都度繰り返すタスク
+  var ROLES = [
+    {
+      id:"sanshu", name:"参集職員", icon:"🏃",
+      desc:"全職員対象。非常参集の原則と参集途上の行動（第３章）",
+      phases:[
+        { id:"p0", name:"参集判断", lv:0, tasks:[
+          { t:"震度６弱以上又は大津波警報 → 連絡網を待たず自発的参集（全市防災指令第３号発令とみなす）", d:"テレビ・ラジオ等で情報確認。津波警報時も全職員が自発的参集の対象" },
+          { t:"震度５弱・強 → 全市防災指令第２号自動発令。当務員全員＋指定された非番員・日勤者の各半数以上が参集", d:"参集計画は水防計画書「非常警備・非常招集」に準ずる" },
+          { t:"原則、自己の勤務する署所に参集（登庁するかの電話問い合わせはしない）", d:"参集に４時間以上要する者は事前に手段を確保" },
+          { t:"服装は動きやすい服装（活動服除く）。身分証明・着替え・飲料水・食料を携行" }
+        ]},
+        { id:"p1", name:"参集途上", lv:0, tasks:[
+          { t:"参集途上で情報収集（火災・倒壊・道路状況等）", r:true },
+          { t:"火災等に遭遇：処置可能なら処置。不可なら住民になすべき措置を簡潔に指示し、参集後速やかに署本部へ伝達", r:true }
+        ]},
+        { id:"p2", name:"参集後", lv:0, tasks:[
+          { t:"「非常招集参集状況（様式第２）」を記入" },
+          { t:"把握した情報を「災害情報記録表（様式第16）」に記録し、情報班へ報告・関係所属へ伝達" }
+        ]}
+      ]
+    },
+    {
+      id:"shiki", name:"指揮・活動班", icon:"🎖",
+      desc:"班長：当務指揮隊長（大隊長＝署長の判断を含む）。発災直後は情報班長を兼務",
+      phases:[
+        { id:"p0", name:"発災直後（〜15分）", lv:0, tasks:[
+          { t:"揺れが収まったら勤務者全員を署前ガレージに集合させ、負傷の有無を確認" },
+          { t:"負傷者には即座に応急処置。参集状況により部隊を編成し必要な対応" },
+          { t:"ガレージシャッターを開放（緊急通報受信時）。ガス漏れ・シャッター損壊等の出動支障は直ちに処置" },
+          { t:"各出張所：担当係長（代行）が当務係長へ職員安否・施設被害を報告" },
+          { t:"指揮・活動班を立ち上げ、班員に任務分担を指示。指揮所（３階事務所）に署震災消防要図を掲示" },
+          { t:"西携帯75を３階事務所へ設置し「全市３波」を確認。本部交信用に「全市１波」を開局" },
+          { t:"情報収集を最優先。第１報に惑わされず管内全域の被害情報を収集→防御活動計画→出動指令", d:"発災15分間は指令音・音声指令なし／指令書出力あり。情報系端末で指令状況を確認", r:true },
+          { t:"部隊運用を決定：震度５強以下＝編成変更なし／震度６弱以上＝出張所・日勤救急隊は一旦休止し本部通知で非常用車両へ乗換え等", d:"大津波警報・津波警報発表時は被害に関係なく震災モード（各署運用）" }
+        ]},
+        { id:"p1", name:"〜１時間（同時多発火災発生期）", lv:0, tasks:[
+          { t:"高所見張員の配置を判断（西本署屋上。伊川谷は西神文化センター屋上塔屋）", d:"デジカメ・携帯無線機・水利地図・飲料を携行。交代は１時間目処" },
+          { t:"庁舎損壊程度を応急確認し、設備機器を点検（別表14）" },
+          { t:"庁舎ライフラインを点検（電気＝自家発72時間・手動起動確認／水道／ガス／備蓄）", d:"燃料調達は別表３・５、発電機給油は別表15" },
+          { t:"確認事項（安否・庁舎・部隊）を出張所分含め整理し本部へ連絡" },
+          { t:"上位指揮者参集時は指揮権が自動移行（移行宣言は不要）" },
+          { t:"火災対応優先の原則で出動指令（１火災２隊、同時多発時は１火災１隊で分散出動）", d:"重点防御地域優先。詳細は資料「活動方針」", r:true },
+          { t:"延焼火災が大規模化すれば現場の中隊長を指定し指揮体制を強化", r:true },
+          { t:"避難情報の発令：防コミ・区本部・警察と連絡を密にし、本部情報班へ概要連絡。決定時は電話＋《様式８》＋地図で報告", d:"広域に及ぶ場合は本部と連携し区本部・市本部と協議", r:true }
+        ]},
+        { id:"p2", name:"１〜４時間（署本部立ち上げ後）", lv:2, tasks:[
+          { t:"部隊編成基準に基づき逐次増強。増強の都度、隊名を管制室（司令課432・433）へ電話連絡し《様式３》で把握", r:true },
+          { t:"管内パトロール隊・病院調査隊を編成（デジカメ携行、無線・携帯電話で署本部と連絡）" },
+          { t:"西区災害対策本部へ職員を派遣（総務査察課長又は情報班職員。携帯電話・携帯無線機を携行）" },
+          { t:"救急指揮所を３階事務所に開設（救急指揮者：救急係長）", d:"出動指令は《様式16》で下命、「救急発生状況一覧（別表８）」で動態把握" }
+        ]},
+        { id:"p3", name:"４〜24時間（市街地火災拡大期）", lv:3, tasks:[
+          { t:"管内に顕著な被害がなければ、他管内応援計画（表１）に基づき応援出動（受援署の要請を待たず）", d:"応援ポンプ隊は３〜４名乗組。装備・燃料・非常食は応援署で準備、ライフジャケット必須" },
+          { t:"応援時の無線切替を指示（応援先の運用波＋署本部との交信は全市３波。260MHz携帯無線機を携行）" },
+          { t:"応援隊は１隊24時間を限度に交代部隊を派遣", r:true }
+        ]},
+        { id:"p4", name:"24〜72時間（計画的救助・救急活動期）", lv:4, tasks:[
+          { t:"３部交替休息制へ移行（第１〜第３順位出動隊を編成。別表12・13）" },
+          { t:"救助活動を３日間で管内を網羅する体制とし、24時間体制を確保（救助は原則７日間）" }
+        ]}
+      ]
+    },
+    {
+      id:"joho", name:"情報班", icon:"🗂",
+      desc:"班長：査察係長（発災直後は指揮・活動班長が兼務）。被害情報の収集・報告・広報",
+      phases:[
+        { id:"p0", name:"発災直後〜１時間", lv:0, tasks:[
+          { t:"情報収集項目に沿って被害情報を収集（地震津波・火災・二次災害・部隊・人的被害・水利障害・医療機関・避難警戒）", d:"項目の詳細は資料「情報収集項目」", r:true },
+          { t:"無線等で受けた被害情報は《様式16》に記録し、指揮・活動班長へ提出", r:true },
+          { t:"火災情報を主とした被害状況の第１報を本部へ随時報告（倒壊・負傷者は「多数・有・不明」で報告）", r:true }
+        ]},
+        { id:"p1", name:"１〜４時間", lv:2, tasks:[
+          { t:"参集職員の途上情報（様式16）を集約" },
+          { t:"職員参集状況を危機管理システムに入力（当務員含む人数）", d:"ダウン時は《様式１》→全庁FS保存＋事務専用電話で本部へ連絡", r:true },
+          { t:"部隊・班の変更の都度、本部へ報告", r:true },
+          { t:"医療機関の受入体制を調査（EMIS。使用不能時は電話・パトロールで二次救病院を調査）→本部へ報告", d:"受入可能人数（赤・黄・緑）・処置可能程度・人員等。別表２参照" }
+        ]},
+        { id:"p2", name:"定時報告（発災後継続）", lv:1, tasks:[
+          { t:"死者《様式10》・行方不明者《様式11》・傷者《様式12》を１時間毎に報告（事案がなければその旨電話連絡）", r:true },
+          { t:"集計表《様式７の１・７の２》（総務班が全庁FSに公開）を確認し、本部未把握の事案は管制室へ報告", r:true },
+          { t:"署本部で覚知した災害事案は速やかに管制室へ電話連絡", r:true },
+          { t:"署別被害調査集計表《様式13》・区別被害状況《様式14》を本部の求めに応じ作成・報告" },
+          { t:"避難情報等状況《様式８》を発令の都度報告（発令前に事前連絡）", r:true }
+        ]},
+        { id:"p3", name:"事後報告", lv:4, tasks:[
+          { t:"非常招集参集結果報告《様式４》を防災指令解除から５日以内に司令課へ報告（原則電子決裁）" }
+        ]}
+      ]
+    },
+    {
+      id:"butai", name:"現場出動隊", icon:"🚒",
+      desc:"消防隊・救助隊・救急隊。小隊単位の単体活動を自己隊の責任で実施",
+      phases:[
+        { id:"p0", name:"出動時の原則（全期間）", lv:0, tasks:[
+          { t:"出動前に水利を確認（消火栓断水に備え、緊急栓・海・池・川・プール等を震災消防要図で確認）", r:true },
+          { t:"出動経路は幅員８ｍ以上・倒壊障害の少ない経路を選定", r:true },
+          { t:"出動途上の未把握火災・救助は署本部へ連絡し、原則命令を受けた現場へ（緊急人命危険がある場合を除く）", r:true },
+          { t:"出動途上・現場で積極広報（出火防止・初期消火・火気使用禁止・消火協力の依頼）", r:true },
+          { t:"２名以上での活動を原則とし（激震地の単独行動禁止）、余震と退路を常に考慮", d:"倒壊・崖崩れ現場では必ず監視員を配置", r:true }
+        ]},
+        { id:"p1", name:"消火活動", lv:0, tasks:[
+          { t:"消火活動優先で一挙鎮圧。１隊２口以上の多口放水（人員不足時は消防団員・防コミ・住民に協力要請）", r:true },
+          { t:"人命危険・延焼拡大危険なしと判断すれば自然鎮火に委ね、速やかに他の現場へ転戦", r:true },
+          { t:"火災が消防力を超え延焼拡大時は、住民の避難誘導・避難場所/避難路確保の活動を優先", r:true }
+        ]},
+        { id:"p2", name:"救助活動", lv:1, tasks:[
+          { t:"救助優先順位で活動：救命処置を要する重症者→火災現場付近→病院・社会福祉施設等→少数隊員で多数救助できる事案", r:true },
+          { t:"救出可能な事案は住民等へ協力要請し役割分担。技術を要する事案を救助隊が担当", r:true },
+          { t:"救助活動を行った場所・検索結果を現場の目立つ場所に表示（救助活動表示票《様式19》・救助済票《様式20》）", r:true }
+        ]},
+        { id:"p3", name:"救急活動", lv:0, tasks:[
+          { t:"本署救急隊は震度に関係なく救急業務を継続。出張所・日勤救急隊は震度６弱以上で一旦休止し、本部通知に従う" },
+          { t:"トリアージを行い、重症者を優先に処置・搬送", r:true },
+          { t:"特定行為は管制室の災害時指導医師の指示等、可能な手段で実施", r:true },
+          { t:"救護班・共助団体と積極連携。軽症者は防コミ等の共助・自助に委ねるよう努める", r:true }
+        ]},
+        { id:"p4", name:"津波浸水想定地域への部隊シフト時", lv:2, tasks:[
+          { t:"浸水想定地域内の活動は、大隊長の活動時間明示後に出動。避難路確保を第一とし退避情報を無線傍受", r:true },
+          { t:"退避：津波到達予想時間の20分前から住民の避難誘導を行いながら退避。到達時刻不明時は発災60分後に退避開始", d:"管制室が発災60分目途に無線全波で一斉送信。車両移動困難時は安全な場所に置き徒歩退避", r:true },
+          { t:"パトロールは浸水想定地域内を優先し避難を広報。緊急退避は水平退避基本、間に合わなければ堅牢建物３階以上へ垂直退避", r:true },
+          { t:"建物上階に避難した住民の位置・人数を可能な限り把握（津波終息後の活動に備える）", r:true }
+        ]},
+        { id:"p5", name:"24〜72時間", lv:4, tasks:[
+          { t:"３部交替休息制ローテーション（別表12）に従い活動・休息", r:true }
+        ]}
+      ]
+    },
+    {
+      id:"dan", name:"消防団支援班", icon:"🤝",
+      desc:"班長：消防団担当係長。団本部・支団本部の設置と消防団の運用調整",
+      phases:[
+        { id:"p0", name:"立ち上げ", lv:1, tasks:[
+          { t:"団震災消防本部の設置を支援（署本部のもと）。支団本部は区役所連絡所等に設置", d:"指揮系統の一元化と活動体制の早期確立。別表11 西消防団震災活動マニュアル" },
+          { t:"消防団員の動員状況を確認（団員は自宅周辺の初期消火・救出後、分団詰所等に参集）" }
+        ]},
+        { id:"p1", name:"活動中", lv:2, tasks:[
+          { t:"分団長→支団本部→団本部の情報集約を確認（参集状況・管内災害・詰所被害・対応状況・団員負傷）", r:true },
+          { t:"「消防団スマート情報システム」による震災消防本部への情報提供を確認", r:true },
+          { t:"消防団資機材の調達に対応", r:true }
+        ]},
+        { id:"p2", name:"応援調整", lv:3, tasks:[
+          { t:"区域外出動を調整（大隊長の要請に基づき団長が命令。活動は分団単位が原則）" },
+          { t:"支団間応援の実施報告を受理（応援支団長→西消防団長へ人員・活動報告）" },
+          { t:"本部から派遣要請があれば団長に可否確認→派遣計画に基づき派遣", d:"原則、職員を活動補助者として同行させ、受援署大隊長の所轄下で活動" }
+        ]},
+        { id:"p3", name:"継続対応", lv:4, tasks:[
+          { t:"団員の公務災害補償に対応（原則所属で手続き。多数時は本部総務班に連絡し指示を受ける）", r:true }
+        ]}
+      ]
+    },
+    {
+      id:"kouho", name:"後方支援班", icon:"📦",
+      desc:"班長：総務係長。庁舎・物資・職員支援と受援の後方調整",
+      phases:[
+        { id:"p0", name:"発災直後〜１時間", lv:0, tasks:[
+          { t:"庁舎・車両・通信施設等の損壊状況、程度及び応急復旧の可否を調査" },
+          { t:"水道・ガス・電気・排水設備の被害状況を調査。応急処置は署独自を原則とし、不可能なら本部工務班長へ応援要請" },
+          { t:"庁舎使用不能時：署敷地内にエアーテントを設営し通信設備を最低限確保（出張所への移転も考慮）" }
+        ]},
+        { id:"p1", name:"１〜４時間", lv:2, tasks:[
+          { t:"職員の活動長期化に備え、非常用食料・休息スペース等の確保を優先的に調整" },
+          { t:"燃料・消防機材の調達（長田消防署・市民防災総合センターの自家給油設備→活用不可なら緊急調達）", d:"関係先は別表４、燃料は別表５・10、重機等は別表６", r:true },
+          { t:"飲料水の備蓄を確認（一人当たり２Ｌ基準）。不足時は神出町の簡易水道組合へ提供依頼", d:"ガスは携帯用コンロで対応。災害用食料は別表９で管理" }
+        ]},
+        { id:"p2", name:"職員・家族支援", lv:2, tasks:[
+          { t:"職員・家族の安否確認（家族側から所属へ連絡が原則）。災害伝言ダイヤル等の利用可能システムを職員へ情報提供", r:true },
+          { t:"「宿所兼緊急連絡先届」（警防規程様式第５）の職員情報を整理し、安否不明時に備える" },
+          { t:"被災した職員家族の情報を取りまとめ、本部総務班と救援措置を調整" }
+        ]},
+        { id:"p3", name:"受援・応援対応", lv:3, tasks:[
+          { t:"応援部隊の受入準備（署応援隊調整本部＝３階事務所東北、活動準備拠点＝４階体育練成室）", d:"応援部隊の責任者を待機させ投入場所・作業内容を指示。交替制度は当署と同一に班分け" },
+          { t:"ボランティアの受け入れを調整", r:true }
+        ]},
+        { id:"p4", name:"24〜72時間", lv:4, tasks:[
+          { t:"３部交替に伴う職員の労務管理・健康管理", r:true },
+          { t:"公務災害等の手続き（原則所属で。多数で迅速処理不能時は本部総務班へ連絡し指示を受ける）", r:true }
+        ]}
+      ]
+    }
+  ];
+
+  // タスクIDを採番し索引を作る
+  var TASK_INDEX = {};
+  ROLES.forEach(function(role){
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(task, i){
+        task.id = role.id + "-" + ph.id + "-" + (i+1);
+        TASK_INDEX[task.id] = { role: role, phase: ph, task: task };
+      });
+    });
+  });
+
+  /* ---- 状態（localStorage） ---- */
+  var STORE_KEY = "shinsai-tasks-v1";
+  var state = { level: 0, checks: {}, filterTodo: false, curRole: ROLES[0].id };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    if (typeof saved.level === "number" && saved.level >= 0 && saved.level < LEVELS.length) state.level = saved.level;
+    if (saved.checks && typeof saved.checks === "object") state.checks = saved.checks;
+    if (typeof saved.filterTodo === "boolean") state.filterTodo = saved.filterTodo;
+    if (typeof saved.curRole === "string" && ROLES.some(function(r){ return r.id === saved.curRole; })) state.curRole = saved.curRole;
+  } catch(e) { /* 破損時は初期状態 */ }
+
+  function save(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) { /* 容量超過等は無視 */ }
+  }
+
+  function fmtTime(ts){
+    var d = new Date(ts);
+    function z(n){ return (n<10?"0":"")+n; }
+    return z(d.getMonth()+1) + "/" + z(d.getDate()) + " " + z(d.getHours()) + ":" + z(d.getMinutes());
+  }
+
+  function roleCounts(role){
+    var due = 0, dueDone = 0, total = 0, done = 0;
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(t){
+        total++;
+        var c = !!state.checks[t.id];
+        if (c) done++;
+        if (ph.lv <= state.level) { due++; if (c) dueDone++; }
+      });
+    });
+    return { due: due, dueDone: dueDone, dueTodo: due - dueDone, total: total, done: done };
+  }
+
+  var levelsEl = document.getElementById("levels");
+  function renderLevels(){
+    levelsEl.innerHTML = "";
+    LEVELS.forEach(function(lv, i){
+      var b = document.createElement("button");
+      b.textContent = lv.name;
+      if (i === state.level) b.className = "cur";
+      else if (i < state.level) b.className = "passed";
+      b.addEventListener("click", function(){ state.level = i; save(); renderAll(); });
+      levelsEl.appendChild(b);
+    });
+  }
+
+  var roleStatsEl = document.getElementById("roleStats");
+  var statusHintEl = document.getElementById("statusHint");
+  function renderStatus(){
+    roleStatsEl.innerHTML = "";
+    var totalTodo = 0;
+    ROLES.forEach(function(role){
+      var c = roleCounts(role);
+      totalTodo += c.dueTodo;
+      var div = document.createElement("div");
+      div.className = "rolestat";
+      var pct = c.due ? Math.round(c.dueDone / c.due * 100) : 0;
+      var todoCls = c.due === 0 ? "" : (c.dueTodo === 0 ? "done" : "warn");
+      div.innerHTML =
+        '<span class="ri">' + role.icon + '</span>' +
+        '<span class="rm"><span class="rn">' + role.name + '</span>' +
+        '<span class="bar"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="pct">現フェーズまでに実施すべき ' + c.dueDone + '／' + c.due + ' 件完了（全' + c.total + '件）</span></span>' +
+        '<span class="todo ' + todoCls + '"><b>' + (c.due === 0 ? "－" : c.dueTodo) + '</b><span>未実施</span></span>';
+      div.addEventListener("click", function(){
+        state.curRole = role.id; save();
+        switchTab("tab-tasks");
+        renderAll();
+      });
+      roleStatsEl.appendChild(div);
+    });
+    statusHintEl.innerHTML = "現在のフェーズ：<b>" + LEVELS[state.level].name + "</b>。フェーズを進めると、そこまでに実施すべきタスクが集計されます。";
+
+    var badge = document.getElementById("totalBadge");
+    if (totalTodo > 0) { badge.style.display = ""; badge.textContent = totalTodo > 99 ? "99+" : totalTodo; }
+    else badge.style.display = "none";
+  }
+
+  var logListEl = document.getElementById("logList");
+  function logEntries(){
+    return Object.keys(state.checks)
+      .map(function(id){ return { id: id, ts: state.checks[id] }; })
+      .sort(function(a,b){ return a.ts - b.ts; });
+  }
+  function renderLog(){
+    var entries = logEntries();
+    if (entries.length === 0) {
+      logListEl.innerHTML = '<p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p>';
+      return;
+    }
+    logListEl.innerHTML = "";
+    entries.forEach(function(en){
+      var info = TASK_INDEX[en.id];
+      if (!info) return;
+      var div = document.createElement("div");
+      div.className = "li";
+      div.innerHTML = '<span class="tm">' + fmtTime(en.ts) + '</span>' +
+        '<span class="rl">[' + info.role.name + ']</span>' +
+        '<span class="tx"></span>';
+      div.querySelector(".tx").textContent = info.task.t;
+      logListEl.appendChild(div);
+    });
+  }
+
+  document.getElementById("copyLog").addEventListener("click", function(){
+    var lines = logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? (fmtTime(en.ts) + "　[" + info.role.name + "]　" + info.task.t) : null;
+    }).filter(Boolean);
+    if (lines.length === 0) { alert("コピーする記録がありません。"); return; }
+    var text = "【西消防署 震災タスク 実施記録】\n" + lines.join("\n");
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); alert("記録をコピーしました。"); } catch(e){ alert("コピーできませんでした。"); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ alert("記録をコピーしました。"); }, fallback);
+    } else fallback();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if (!confirm("チェックと実施記録をすべてクリアして、新しい事案を開始しますか？\n（この操作は取り消せません）")) return;
+    state.checks = {};
+    state.level = 0;
+    save(); renderAll();
+  });
+
+  var roleChipsEl = document.getElementById("roleChips");
+  var roleDescEl = document.getElementById("roleDesc");
+  var taskListEl = document.getElementById("taskList");
+  var filterToggleEl = document.getElementById("filterToggle");
+
+  filterToggleEl.addEventListener("click", function(){
+    state.filterTodo = !state.filterTodo; save(); renderTasks();
+  });
+
+  function renderTasks(){
+    roleChipsEl.innerHTML = "";
+    ROLES.forEach(function(role){
+      var c = roleCounts(role);
+      var b = document.createElement("button");
+      if (role.id === state.curRole) b.className = "cur";
+      b.innerHTML = role.icon + " " + role.name + (c.dueTodo > 0 ? ' <span class="cbadge">' + c.dueTodo + '</span>' : "");
+      b.addEventListener("click", function(){ state.curRole = role.id; save(); renderTasks(); });
+      roleChipsEl.appendChild(b);
+    });
+
+    filterToggleEl.classList.toggle("on", state.filterTodo);
+
+    var role = ROLES.filter(function(r){ return r.id === state.curRole; })[0] || ROLES[0];
+    roleDescEl.textContent = role.desc;
+
+    taskListEl.innerHTML = "";
+    role.phases.forEach(function(ph){
+      var due = ph.lv <= state.level;
+      var tasks = ph.tasks.filter(function(t){ return !state.filterTodo || !state.checks[t.id]; });
+      if (tasks.length === 0 && state.filterTodo) return;
+
+      var phDone = ph.tasks.filter(function(t){ return state.checks[t.id]; }).length;
+
+      var sec = document.createElement("div");
+      sec.className = "phase" + (due ? "" : " future");
+      var head = document.createElement("div");
+      head.className = "ph";
+      head.innerHTML = '<span class="pn">' + ph.name + '</span>' +
+        '<span class="lv">' + (due ? "実施フェーズ" : LEVELS[ph.lv].name + "から実施") + '</span>' +
+        '<span class="cnt">' + phDone + '／' + ph.tasks.length + '</span>';
+      sec.appendChild(head);
+
+      tasks.forEach(function(t){
+        var checked = !!state.checks[t.id];
+        var div = document.createElement("div");
+        div.className = "task" + (checked ? " done" : (due ? " due" : ""));
+        var meta = "";
+        if (t.r) meta += '<span class="tag rep">↻ 都度実施</span>';
+        if (checked) meta += '<span class="tag tm">✓ ' + fmtTime(state.checks[t.id]) + '</span>';
+        div.innerHTML = '<span class="box">✓</span>' +
+          '<span class="tx-wrap" style="flex:1;min-width:0;"><span class="tx"></span>' +
+          (t.d ? '<div class="dt"></div>' : "") +
+          (meta ? '<div class="meta">' + meta + '</div>' : "") + '</span>';
+        div.querySelector(".tx").textContent = t.t;
+        if (t.d) div.querySelector(".dt").textContent = t.d;
+        div.addEventListener("click", function(){
+          if (state.checks[t.id]) delete state.checks[t.id];
+          else state.checks[t.id] = Date.now();
+          save(); renderAll();
+        });
+        sec.appendChild(div);
+      });
+      taskListEl.appendChild(sec);
+    });
+  }
+
+  var levelbarEl = document.getElementById("levelbar");
+  function switchTab(id){
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.id === id); });
+    document.querySelectorAll(".tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab === id); });
+    levelbarEl.style.display = (id === "tab-status" || id === "tab-tasks") ? "" : "none";
+    window.scrollTo({top:0});
+  }
+  document.querySelectorAll(".tabbar button").forEach(function(b){
+    b.addEventListener("click", function(){ switchTab(b.dataset.tab); });
+  });
+
+  /* ---- 資料検索 ---- */
+  var items = [];
+  document.querySelectorAll("#shiryoBody details.acc").forEach(function(d){
+    items.push({ id: d.id, title: d.dataset.title || "", text: d.textContent.replace(/\s+/g, " ") });
+  });
+  var q = document.getElementById("q");
+  var resBox = document.getElementById("searchResults");
+  var shiryoBody = document.getElementById("shiryoBody");
+  function esc(s){ return s.replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  q.addEventListener("input", function(){
+    var kw = q.value.trim();
+    resBox.innerHTML = "";
+    if (kw.length < 1) { shiryoBody.style.display = ""; return; }
+    shiryoBody.style.display = "none";
+    var kwLower = kw.toLowerCase();
+    var hits = items.filter(function(it){ return it.text.toLowerCase().indexOf(kwLower) >= 0 || it.title.toLowerCase().indexOf(kwLower) >= 0; });
+    if (hits.length === 0) {
+      resBox.innerHTML = '<p class="note">「' + esc(kw) + '」に一致する項目はありません。</p>';
+      return;
+    }
+    hits.forEach(function(it){
+      var idx = it.text.toLowerCase().indexOf(kwLower);
+      var snippet = "";
+      if (idx >= 0) {
+        var start = Math.max(0, idx - 20);
+        snippet = (start > 0 ? "…" : "") + it.text.slice(start, idx + kw.length + 40) + "…";
+        snippet = esc(snippet).replace(new RegExp(esc(kw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), function(m){ return "<mark>" + m + "</mark>"; });
+      }
+      var btn = document.createElement("button");
+      btn.className = "sr";
+      btn.innerHTML = '<div class="t">' + esc(it.title) + '</div><span class="s">' + snippet + '</span>';
+      btn.addEventListener("click", function(){
+        q.value = ""; resBox.innerHTML = ""; shiryoBody.style.display = "";
+        var el = document.getElementById(it.id);
+        if (el) {
+          el.open = true;
+          setTimeout(function(){
+            el.scrollIntoView({behavior:"smooth", block:"start"});
+            el.classList.remove("highlight-target"); void el.offsetWidth; el.classList.add("highlight-target");
+          }, 60);
+        }
+      });
+      resBox.appendChild(btn);
+    });
+  });
+
+  function renderAll(){
+    renderLevels();
+    renderStatus();
+    renderLog();
+    renderTasks();
+  }
+  renderAll();
+})();
+</script>
+</body>
+</html>
