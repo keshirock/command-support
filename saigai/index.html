@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; manifest-src 'self'; worker-src 'self'; child-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>西消防署 災害活動支援｜災害別部隊活動方針</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="災害活動支援">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>
+  // クリックジャッキング対策：iframe内に埋め込まれた場合は表示しない。
+  try {
+    if (window.top !== window.self) { document.documentElement.style.display = "none"; }
+  } catch (e) { document.documentElement.style.display = "none"; }
+  // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* 失敗してもアプリ本体は動く */ });
+    });
+  }
+</script>
+<style>
+  :root{
+    --navy:#1A2332; --navy2:#232F42; --navy3:#2C3A52; --navy4:#364763;
+    --red:#C8102E; --red-bright:#E5484D; --blue:#4C9AFF;
+    --amber:#E8A33D; --ice:#C9D6E3; --muted:#8A97A8; --white:#FFFFFF;
+    --green:#3DBE7B; --yellow:#E8C93D; --orange:#E8823D; --purple:#A46BE8;
+    --accent:#4C9AFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy);
+    color:var(--white);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:12px 12px calc(78px + env(safe-area-inset-bottom));
+    max-width:860px; margin:0 auto;
+    line-height:1.6;
+  }
+  header{display:flex; align-items:center; gap:12px; padding:4px 2px 10px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--accent); display:flex;align-items:center;justify-content:center;
+    font-size:15px; font-weight:800; flex-shrink:0; letter-spacing:.02em;
+  }
+  header h1{font-size:19px; font-weight:800; letter-spacing:.02em; line-height:1.25;}
+  header p{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  /* ---- 活動段階バー ---- */
+  .levelbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--navy);
+    padding:6px 0 10px;
+    margin:0 -2px;
+  }
+  .levelbar .lab{font-size:10.5px; color:var(--muted); font-weight:700; margin:0 2px 5px; letter-spacing:.05em;}
+  .levels{display:flex; gap:6px; overflow-x:auto; padding:0 2px 4px; -webkit-overflow-scrolling:touch;}
+  .levels::-webkit-scrollbar{display:none;}
+  .levels button{
+    flex-shrink:0;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:7px 13px; cursor:pointer; white-space:nowrap;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .levels button.cur{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .levels button.passed{border-color:var(--navy4); color:var(--muted);}
+
+  /* ---- タブ ---- */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:rgba(20,28,42,.97);
+    border-top:1px solid var(--navy3);
+    display:flex; justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(8px);
+  }
+  .tabbar button{
+    flex:1; max-width:120px;
+    background:none; border:none; color:var(--muted);
+    font-family:inherit; font-size:10.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:4px 0; cursor:pointer; border-radius:10px; position:relative;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tabbar button .ico{font-size:19px; line-height:1;}
+  .tabbar button.active{color:var(--white);}
+  .tabbar button.active::after{content:""; width:18px; height:3px; border-radius:2px; background:var(--accent); margin-top:2px;}
+  .tabbar .nbadge{
+    position:absolute; top:0; right:calc(50% - 24px);
+    background:var(--red-bright); color:#fff; font-size:9.5px; font-weight:800;
+    min-width:16px; height:16px; border-radius:8px; padding:0 4px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tab{display:none;}
+  .tab.active{display:block; animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  /* ---- カード ---- */
+  .card{background:var(--navy2); border-radius:14px; padding:16px 14px; margin-bottom:12px;}
+  .card h2{font-size:14px; font-weight:800; color:var(--ice); margin-bottom:10px; letter-spacing:.04em;}
+  .lead{font-size:12.5px; color:var(--ice);}
+  .note{background:var(--navy3); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--ice); margin:8px 0;}
+  .kb{color:var(--amber); font-weight:700;}
+  .sub{font-size:12.5px; font-weight:800; color:var(--amber); margin:12px 0 6px;}
+  .sub:first-child{margin-top:0;}
+
+  /* ---- 状況：災害種別ごとの進捗 ---- */
+  .catlabel{font-size:11.5px; font-weight:800; color:var(--amber); letter-spacing:.05em; margin:12px 2px 6px;}
+  .catlabel:first-child{margin-top:0;}
+  .rolestat{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .rolestat .ri{font-size:22px; flex-shrink:0;}
+  .rolestat .rm{flex:1; min-width:0;}
+  .rolestat .rn{font-size:13.5px; font-weight:800;}
+  .rolestat .bar{height:7px; background:var(--navy3); border-radius:4px; margin-top:6px; overflow:hidden;}
+  .rolestat .bar i{display:block; height:100%; border-radius:4px; background:var(--green); transition:width .3s;}
+  .rolestat .pct{font-size:10.5px; color:var(--muted); margin-top:3px;}
+  .rolestat .todo{
+    flex-shrink:0; text-align:center; min-width:52px;
+    background:var(--navy3); border-radius:10px; padding:6px 8px;
+  }
+  .rolestat .todo b{display:block; font-size:17px; line-height:1.1;}
+  .rolestat .todo span{font-size:9.5px; color:var(--muted);}
+  .rolestat .todo.warn{background:rgba(229,72,77,.16); border:1px solid rgba(229,72,77,.5);}
+  .rolestat .todo.warn b{color:var(--red-bright);}
+  .rolestat .todo.done{background:rgba(61,190,123,.13); border:1px solid rgba(61,190,123,.45);}
+  .rolestat .todo.done b{color:var(--green);}
+
+  /* ---- ログ ---- */
+  .log{font-size:12px;}
+  .log .li{display:flex; gap:8px; padding:6px 0; border-bottom:1px solid var(--navy3);}
+  .log .tm{color:var(--amber); font-weight:700; flex-shrink:0; font-variant-numeric:tabular-nums;}
+  .log .rl{color:var(--muted); flex-shrink:0;}
+  .log .tx{color:var(--ice);}
+  .btnrow{display:flex; gap:8px; margin-top:10px;}
+  .btn{
+    flex:1; background:var(--navy3); border:1px solid var(--navy4); border-radius:10px;
+    color:var(--white); font-family:inherit; font-size:12.5px; font-weight:800;
+    padding:11px 8px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .btn.danger{background:rgba(229,72,77,.14); border-color:rgba(229,72,77,.5); color:var(--red-bright);}
+
+  /* ---- タスク：カテゴリ・災害種別チップ ---- */
+  .catchips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 8px; -webkit-overflow-scrolling:touch;}
+  .catchips::-webkit-scrollbar{display:none;}
+  .catchips button{
+    flex-shrink:0;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:7px 13px; cursor:pointer; white-space:nowrap;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .catchips button.cur{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .rolechips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
+  .rolechips::-webkit-scrollbar{display:none;}
+  .rolechips button{
+    flex-shrink:0; position:relative;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:9px 13px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:6px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .rolechips button.cur{background:var(--navy4); border-color:var(--ice); color:#fff;}
+  .rolechips .cbadge{
+    background:var(--red-bright); color:#fff; font-size:10px; font-weight:800;
+    min-width:17px; height:17px; border-radius:9px; padding:0 4px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .roledesc{font-size:11.5px; color:var(--muted); margin:0 2px 10px;}
+
+  .filterrow{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .toggle{
+    display:flex; align-items:center; gap:7px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    padding:7px 13px; font-size:12px; font-weight:800; color:var(--ice);
+    cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .toggle .sw{
+    width:32px; height:18px; border-radius:9px; background:var(--navy4); position:relative; transition:background .2s;
+  }
+  .toggle .sw::after{
+    content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+    border-radius:50%; background:var(--muted); transition:left .2s, background .2s;
+  }
+  .toggle.on .sw{background:var(--green);}
+  .toggle.on .sw::after{left:16px; background:#fff;}
+
+  /* ---- フェーズ・タスク ---- */
+  .phase{margin-bottom:14px;}
+  .phase .ph{
+    display:flex; align-items:center; gap:8px; margin-bottom:7px; padding:0 2px;
+  }
+  .phase .ph .pn{font-size:13px; font-weight:800; color:var(--white);}
+  .phase .ph .lv{
+    font-size:10px; font-weight:800; color:var(--navy); background:var(--amber);
+    border-radius:999px; padding:2px 8px;
+  }
+  .phase .ph .cnt{margin-left:auto; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .phase.future{opacity:.5;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+
+  .task{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--navy2); border-radius:12px; padding:11px 12px; margin-bottom:7px;
+    cursor:pointer; border-left:4px solid var(--navy3);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .task .box{
+    width:22px; height:22px; border-radius:7px; flex-shrink:0; margin-top:1px;
+    border:2px solid var(--muted); display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:800; color:transparent; transition:all .15s;
+  }
+  .task .tx{flex:1; font-size:13px; color:var(--white);}
+  .task .dt{font-size:11px; color:var(--muted); margin-top:3px;}
+  .task .meta{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;}
+  .task .tag{font-size:10px; font-weight:700; background:var(--navy3); color:var(--ice); border-radius:999px; padding:1.5px 8px;}
+  .task .tag.rep{background:rgba(76,154,255,.16); color:var(--blue);}
+  .task .tag.tm{background:rgba(61,190,123,.14); color:var(--green); font-variant-numeric:tabular-nums;}
+  .task.due{border-left-color:var(--accent);}
+  .task.done{border-left-color:var(--green); background:rgba(35,47,66,.55);}
+  .task.done .box{background:var(--green); border-color:var(--green); color:#fff;}
+  .task.done .tx{color:var(--muted); text-decoration:line-through; text-decoration-color:rgba(138,151,168,.55);}
+  .task.done .dt{display:none;}
+
+  /* ---- 資料（アコーディオン） ---- */
+  details.acc{
+    background:var(--navy2); border-radius:12px; margin-bottom:10px;
+    overflow:hidden; border-left:4px solid var(--navy3);
+  }
+  details.acc[open]{border-left-color:var(--accent);}
+  details.acc > summary{
+    list-style:none; cursor:pointer;
+    padding:13px 14px; font-size:13.5px; font-weight:800; color:var(--white);
+    display:flex; align-items:center; gap:8px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  details.acc > summary::-webkit-details-marker{display:none;}
+  details.acc > summary::after{content:"＋"; margin-left:auto; color:var(--muted); font-weight:400; flex-shrink:0;}
+  details.acc[open] > summary::after{content:"－";}
+  details.acc .body{padding:0 14px 14px; font-size:13px; color:var(--ice);}
+  details.acc .body p{margin-bottom:8px;}
+  details.acc .body ul, details.acc .body ol{margin:0 0 8px 1.3em;}
+  details.acc .body li{margin-bottom:4px;}
+
+  .tbl-wrap{overflow-x:auto; margin:8px 0;}
+  table{border-collapse:collapse; width:100%; font-size:12px; min-width:420px;}
+  th,td{border:1px solid var(--navy4); padding:7px 8px; text-align:left; vertical-align:top; color:var(--ice);}
+  th{background:var(--navy3); color:var(--white); font-size:11.5px; white-space:nowrap;}
+  .pill{display:inline-block; background:var(--navy3); border-radius:999px; padding:2px 9px; font-size:10.5px; color:var(--ice); margin:0 2px 4px 0;}
+
+  /* ---- 検索 ---- */
+  .searchbox{
+    display:flex; align-items:center; gap:8px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .searchbox input{flex:1; background:none; border:none; outline:none; color:var(--white); font-family:inherit; font-size:14px;}
+  .searchbox input::placeholder{color:var(--muted);}
+  #searchResults{margin-bottom:12px;}
+  .sr{
+    display:block; width:100%; text-align:left;
+    background:var(--navy2); border:none; border-left:4px solid var(--blue);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    color:var(--white); font-family:inherit; cursor:pointer;
+  }
+  .sr .t{font-size:13px; font-weight:800;}
+  .sr .s{font-size:11.5px; color:var(--muted); margin-top:2px; display:block;}
+  mark{background:var(--amber); color:#1A2332; border-radius:2px; padding:0 1px;}
+
+  /* ---- 連絡先 ---- */
+  .tel-group{margin-bottom:14px;}
+  .tel-group .g{font-size:12px; font-weight:800; color:var(--amber); margin-bottom:6px; letter-spacing:.05em;}
+  .tel{background:var(--navy2); border-radius:12px; padding:11px 13px; margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tel .info{flex:1; min-width:0;}
+  .tel .n{font-size:13px; font-weight:800;}
+  .tel .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .tel .num{display:flex; flex-direction:column; gap:5px; align-items:flex-end; flex-shrink:0;}
+  .tel a.call, .tel span.ext{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--navy3); border-radius:999px; padding:5px 11px;
+    color:var(--white); text-decoration:none; font-size:12.5px; font-weight:700; white-space:nowrap;
+  }
+  .tel a.call{background:rgba(76,154,255,.18); border:1px solid rgba(76,154,255,.5);}
+  .tel a.call::before{content:"📞"; font-size:11px;}
+  .tel span.ext{color:var(--ice);}
+
+  .link-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    color:var(--white); text-decoration:none;
+  }
+  .link-item .li-ico{font-size:18px;}
+  .link-item .n{font-size:13px; font-weight:800;}
+  .link-item .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .link-item::after{content:"↗"; margin-left:auto; color:var(--muted);}
+  .link-item.internal::after{content:"→";}
+
+  .foot{margin-top:20px; padding-top:12px; border-top:1px solid var(--navy3); font-size:10.5px; color:var(--muted); line-height:1.7;}
+  .highlight-target{animation:hl 2s ease;}
+  @keyframes hl{0%{box-shadow:0 0 0 3px var(--amber);} 100%{box-shadow:0 0 0 0 transparent;}}
+</style>
+<style>
+  /* ===== 視認性向上（フォント・アイコン拡大）：既存アプリと同一サイズ ===== */
+  .badge{width:50px; height:50px; font-size:17px;}
+  header h1{font-size:21px;}
+  header p{font-size:12px;}
+  .levelbar .lab{font-size:11.5px;}
+  .levels button{font-size:13.5px; padding:9px 15px;}
+  .tabbar button{font-size:12px;}
+  .tabbar button .ico{font-size:23px;}
+  .card h2{font-size:15.5px;}
+  .lead{font-size:13.5px;}
+  .note{font-size:13px;}
+  .sub{font-size:13.5px;}
+  .catlabel{font-size:12.5px;}
+  .rolestat .ri{font-size:26px;}
+  .rolestat .rn{font-size:15px;}
+  .rolestat .pct{font-size:11.5px;}
+  .rolestat .todo b{font-size:19px;}
+  .rolestat .todo span{font-size:10.5px;}
+  .log{font-size:13px;}
+  .btn{font-size:13.5px;}
+  .catchips button{font-size:13px; padding:8px 14px;}
+  .rolechips button{font-size:13.5px; padding:10px 15px;}
+  .roledesc{font-size:12.5px;}
+  .toggle{font-size:13px;}
+  .phase .ph .pn{font-size:14.5px;}
+  .phase .ph .lv{font-size:11px; background:#E8A33D; color:#1A2332;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+  .phase .ph .cnt{font-size:12px;}
+  .task .box{width:26px; height:26px; font-size:16px;}
+  .task .tx{font-size:14.5px;}
+  .task .dt{font-size:12px;}
+  .task .tag{font-size:11px;}
+  details.acc > summary{font-size:14.5px;}
+  details.acc .body{font-size:14px;}
+  table{font-size:13px;}
+  th{font-size:12.5px;}
+  .searchbox input{font-size:15px;}
+  .sr .t{font-size:14px;}
+  .sr .s{font-size:12.5px;}
+  .tel .n{font-size:14px;}
+  .tel .d{font-size:12px;}
+  .tel a.call, .tel span.ext{font-size:13.5px;}
+  .link-item .n{font-size:14px;}
+  .link-item .d{font-size:12px;}
+  .link-item .li-ico{font-size:22px;}
+  .foot{font-size:11.5px;}
+  .pill{font-size:11.5px;}
+
+  /* ===== iPhoneノッチ・ダイナミックアイランド対応 ===== */
+  body{padding-top:calc(env(safe-area-inset-top) + 12px);}
+  .safetop{position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#141C2A; z-index:60; pointer-events:none;}
+  .levelbar{top:env(safe-area-inset-top);}
+
+  /* ===== 表示モード切替ボタン ===== */
+  .themebtn{
+    margin-left:auto; flex-shrink:0;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    font-size:20px; line-height:1; padding:9px 11px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ===== ライトモード ===== */
+  :root[data-theme="light"]{
+    --navy:#F1F4F9; --navy2:#FFFFFF; --navy3:#E2E8F1; --navy4:#C8D3E2;
+    --white:#1A2332; --ice:#33435F; --muted:#66768E; --amber:#A8690F;
+  }
+  :root[data-theme="light"] .tabbar{background:rgba(255,255,255,.97); border-top-color:var(--navy4);}
+  :root[data-theme="light"] .task.done{background:#EFF3F8;}
+  :root[data-theme="light"] .card, :root[data-theme="light"] details.acc,
+  :root[data-theme="light"] .task, :root[data-theme="light"] .rolestat,
+  :root[data-theme="light"] .tel, :root[data-theme="light"] .link-item, :root[data-theme="light"] .sr{
+    box-shadow:0 1px 3px rgba(26,35,50,.08);
+  }
+  mark{background:#E8A33D;}
+  .badge{color:#fff;}
+</style>
+</head>
+<body>
+<div class="safetop"></div>
+
+<header>
+  <div class="badge">災活</div>
+  <div>
+    <h1>西消防署 災害活動支援</h1>
+    <p>災害別部隊活動方針（火災編・災害編・危機事象対応編）｜指揮カード</p>
+  </div>
+  <button id="themeBtn" class="themebtn" aria-label="表示モードを切り替え">🌙</button>
+</header>
+
+<div class="levelbar" id="levelbar">
+  <div class="lab">現在の活動段階（タップで切替）</div>
+  <div class="levels" id="levels"></div>
+</div>
+
+<!-- ============ 状況 ============ -->
+<section class="tab active" id="tab-status">
+  <div class="card">
+    <h2>📊 災害種別ごとの進捗（タップで指揮カードへ）</h2>
+    <div id="roleStats"></div>
+    <p class="note" id="statusHint"></p>
+  </div>
+
+  <div class="card">
+    <h2>🕐 実施記録（クロノロジー）</h2>
+    <div class="log" id="logList"><p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p></div>
+    <div class="btnrow">
+      <button class="btn" id="copyLog">📋 コピー</button>
+      <button class="btn" id="wordLog">📝 Word</button>
+      <button class="btn" id="excelLog">📊 Excel</button>
+    </div>
+    <div class="btnrow">
+      <button class="btn danger" id="resetBtn">🆕 新しい事案を開始（記録クリア）</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌐 外部情報リンク</h2>
+    <a class="link-item" href="https://www.jma.go.jp/bosai/risk/" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🌧</span>
+      <span><span class="n">キキクル（気象庁）</span><br><span class="d">大雨・洪水・土砂の危険度分布</span></span>
+    </a>
+    <a class="link-item" href="https://www.jma.go.jp/bosai/map.html" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🌀</span>
+      <span><span class="n">気象庁 防災情報</span><br><span class="d">警報・注意報・台風・地震情報</span></span>
+    </a>
+    <a class="link-item" href="https://www.hazardmap.pref.hyogo.jp/" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🗺</span>
+      <span><span class="n">兵庫県C.G.ハザードマップ</span><br><span class="d">浸水想定・土砂災害警戒区域</span></span>
+    </a>
+    <a class="link-item internal" href="../suibou/" style="border-left:4px solid var(--red);">
+      <span class="li-ico">🌊</span>
+      <span><span class="n">水防タスク（風水害対応）</span><br><span class="d">風水害の署本部運営・避難指示はこちら</span></span>
+    </a>
+    <a class="link-item internal" href="../shinsai/" style="border-left:4px solid var(--orange);">
+      <span class="li-ico">🌏</span>
+      <span><span class="n">震災タスク（震災初動対応）</span><br><span class="d">地震・津波発生時はこちら</span></span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ タスク ============ -->
+<section class="tab" id="tab-tasks">
+  <div class="catchips" id="catChips"></div>
+  <div class="rolechips" id="roleChips"></div>
+  <p class="roledesc" id="roleDesc"></p>
+  <div class="filterrow">
+    <div class="toggle" id="filterToggle"><span class="sw"></span>未実施のみ表示</div>
+  </div>
+  <div id="taskList"></div>
+</section>
+
+<!-- ============ 資料 ============ -->
+<section class="tab" id="tab-shiryo">
+  <div class="searchbox">
+    <span>🔍</span>
+    <input type="search" id="q" placeholder="資料内を検索（例：屋内進入 / ゾーニング / 泡消火）" autocomplete="off" maxlength="60">
+  </div>
+  <div id="searchResults"></div>
+
+  <div id="shiryoBody">
+  <details class="acc" id="acc-kosei" data-title="本資料の構成と指揮カードの使い方">
+    <summary>📚 本資料の構成と指揮カードの使い方</summary>
+    <div class="body">
+      <p>本アプリは神戸市消防局「災害別部隊活動方針」３編を指揮カード化したものです。</p>
+      <ul>
+        <li><b>火災編</b>（令和７年３月改正）：24種別の火災（一般地区建物火災〜石油コンビナート火災）</li>
+        <li><b>災害編</b>（平成31年３月改正）：15種別の事故・災害（交通事故〜水災・土砂災害）</li>
+        <li><b>危機事象発生時の対応編</b>（平成27年７月）：活動中の隊員受傷等の緊急事態対応</li>
+      </ul>
+      <p class="sub">使い方</p>
+      <ol>
+        <li>出動指令の種別に応じた指揮カード（タスクタブ）を選ぶ。</li>
+        <li>上部の活動段階（出動指令→現場到着→活動中→収束・引揚げ）を進める。</li>
+        <li>実施した項目をタップしてチェックする（時刻が記録され、状況タブのクロノロジーに反映）。</li>
+      </ol>
+      <p class="note">各カードの「状況把握」は現場到着時から、「活動」「安全管理」は活動中、「部隊整理・その他」は収束段階のタスクとして色分けされます。安全管理は活動全般を通じて常に意識してください。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-shutsudo" data-title="出動基準の見方（任務分類・出動区分）">
+    <summary>🚒 出動基準の見方（任務分類・出動区分）</summary>
+    <div class="body">
+      <p>各災害種別の出動基準は、<b>任務分類</b>（指揮／消火（火災警戒）／救助／救急／その他特殊）ごとに隊名と隊数を定め、<b>第１出動→第２出動→第３出動</b>と災害の拡大に応じて増強されます。</p>
+      <p class="sub">例：一般地区建物火災</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>任務分類</th><th>隊名</th><th>第1</th><th>第2</th><th>第3</th></tr>
+        <tr><td>指揮</td><td>統括指揮隊／指揮隊群</td><td>1／1</td><td></td><td></td></tr>
+        <tr><td>消火</td><td>放水隊</td><td>4</td><td>3</td><td>2</td></tr>
+        <tr><td>救助</td><td>特別高度救助隊／専任救助隊／消防救助隊</td><td>1／1</td><td>1／1</td><td></td></tr>
+        <tr><td>救急</td><td>救急隊</td><td>1</td><td></td><td></td></tr>
+        <tr><td>その他特殊</td><td>はしご隊・空気充填照明隊・航空機動隊・特殊災害隊</td><td>1〜</td><td></td><td></td></tr>
+      </table></div>
+      <p>種別により、タンク・化学隊（工場地区）、消防艇隊・水上指揮隊（沿岸・船舶）、大型水槽隊（山岳・林野・ずい道）、泡原液搬送隊・大型化学隊（タンクローリー・航空機・コンビナート）等が加わります。詳細は紙の資料の各出動基準表を参照してください。</p>
+      <p class="sub">特殊災害出動（放射性物質・毒劇物）</p>
+      <p>第１出動10隊・第２出動19隊。除染活動隊は方面特災隊配備本署の放水隊を放水活動より優先して駆付け順で選出。</p>
+      <p class="sub">警戒出動</p>
+      <p>ガス災害＝指揮隊群・放水隊・消防救助隊・特殊災害隊・方面特殊災害隊の計５隊。危険物流出事故＝放水隊１隊。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-shinnyu" data-title="屋内進入統制・屋内進入５ポイント">
+    <summary>🚪 屋内進入統制・屋内進入５ポイント</summary>
+    <div class="body">
+      <p class="sub">屋内進入５ポイント（工場・倉庫火災）</p>
+      <ol>
+        <li>到着時、<b>屋内進入統制</b></li>
+        <li><b>黒煙は、屋内進入不可</b></li>
+        <li>屋内進入時は、筒先１口に<b>２名以上</b>配置</li>
+        <li><b>白煙から黒煙への変化は、早期退避</b></li>
+        <li>携帯警報機の作動は、確実に</li>
+      </ol>
+      <p class="sub">大規模空間（倉庫等）の進入判断</p>
+      <p>黒煙確認の場合は<span class="kb">原則、屋内進入禁止</span>。燃焼範囲が限定的かつ延焼緩慢な状況で、<b>中隊長以上の指揮者</b>が消火可能と判断した場合に限り、２隊以上連携し援護注水態勢を確保した上で進入させる。緊急退出要領・二次救出態勢を事前に確保する。</p>
+      <p class="sub">建物用途が特殊・不明な場合</p>
+      <p>災害実態（要救助者情報・建物構造・収容物品・延焼状況）が把握できるまでは厳しく進入を統制する。内装表示マーク・ＦＤカード・対象物防御計画書を活用する。</p>
+      <p class="sub">工場・倉庫の活動危険</p>
+      <ul>
+        <li>吊り天井（断熱パネル等）・荷役機械・クレーン等の落下危険</li>
+        <li>サンドイッチパネル（断熱材を金属薄板で挟んだ建材）は急速な燃焼拡大・爆燃に注意</li>
+        <li>木粉・澱粉・小麦粉等への直状注水は粉塵爆発のおそれ</li>
+        <li>アルミニウム粉等の禁水性物質は乾燥砂等で覆い自然鎮火させる（延焼防止主眼）</li>
+        <li>溶鉱炉は水蒸気爆発の危険があるため<span class="kb">注水厳禁</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-daikibo" data-title="大規模災害運用への移行目安">
+    <summary>🚨 大規模災害運用への移行目安</summary>
+    <div class="body">
+      <p>多数傷病者が発生した場合は「大規模災害運用要綱」の体制へ移行を検討する。</p>
+      <ul>
+        <li>要救助者等 <b>５〜20名</b>：救急ユニット命令出動</li>
+        <li><b>30名</b>：大規模災害第１出動</li>
+        <li><b>50名</b>：大規模災害第２出動</li>
+      </ul>
+      <p class="note">航空機火災（海上事故）は消防艇を加えた大規模災害第１出動を指令し、以後は命令出動で対応。集結・活動地点は現場最高指揮者の判断による。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-zoning" data-title="特殊災害のゾーニング・防護（放射性物質・毒劇物）">
+    <summary>☣️ 特殊災害のゾーニング・防護</summary>
+    <div class="body">
+      <p class="sub">活動区域（ゾーニング）</p>
+      <ul>
+        <li><b>コールドゾーン</b>：消防警戒区域。現場指揮所・救急指揮所・現場救護所を開設。汚染物を持ち出さない。</li>
+        <li><b>ウォームゾーン</b>：前進指揮所（進入隊員の管理・交替・活動指示）。除染所を設営し、汚染検査・除染体制を確保。</li>
+        <li><b>ホットゾーン</b>：防護措置をした最小限の隊員のみ進入。設定要件＝放射線量<span class="kb">0.1mSv/h以上</span>・汚染区画等（放射性物質）／許容濃度・可燃性ガス<span class="kb">30％LEL</span>・区画等（毒劇物）。</li>
+      </ul>
+      <p class="sub">外部被ばく防護三原則</p>
+      <ol>
+        <li>活動<b>時間</b>を短く</li>
+        <li>放射線源から<b>距離</b>をとる</li>
+        <li><b>遮蔽物</b>を利用する</li>
+      </ol>
+      <p>活動上の被ばく線量限度は原則<span class="kb">10mSv以下</span>。人命救助等やむを得ない場合に限り<span class="kb">100mSv</span>。進入は風上・風横から。</p>
+      <p class="sub">協力連携機関</p>
+      <ul>
+        <li>放射性物質：神戸薬科大学／神戸大学研究基盤センター／日本メジフィジックス(株)兵庫工場</li>
+        <li>毒劇物：海上災害防止センター／神戸学院大学</li>
+      </ul>
+      <p class="note">要請の窓口・連絡方法は紙の資料及び管制室経由によること。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-gas" data-title="ガス災害・酸欠の基礎データ（爆発範囲・警戒区域）">
+    <summary>💨 ガス災害・酸欠の基礎データ</summary>
+    <div class="body">
+      <p class="sub">ガス爆発の３条件</p>
+      <ol>
+        <li>ガスと空気の混合割合が爆発範囲内（<b>都市ガス：約５〜15％／LPガス：約２〜９％</b>）</li>
+        <li>着火源（必要なエネルギー）があること</li>
+        <li>密閉された空間内であること</li>
+      </ol>
+      <p>LPガスは空気より重く<b>低所に滞留</b>し爆発混合気を形成しやすい。</p>
+      <p class="sub">区域設定</p>
+      <ul>
+        <li><b>火災警戒区域</b>：漏洩量・測定値を考慮して設定。火気使用禁止・関係者以外の退去命令・出入り禁止又は制限。</li>
+        <li><b>爆発危険区域</b>：可燃性ガス濃度が<span class="kb">LELの30％</span>を超える場所。原則進入制限。緊急時は静電気発生防止・防爆資機材・ガス拡散・援護注水等の措置のうえ必要最小限で進入。</li>
+      </ul>
+      <p class="sub">酸欠事故</p>
+      <ul>
+        <li>危険区域の目安：酸素濃度<span class="kb">21％未満</span></li>
+        <li>進入は環境測定を実施しながら、空気呼吸器着装・２名以上１組</li>
+        <li>検索ロープ設定・二次救出班の待機・進入退出時間の管理</li>
+        <li>換気時はガス排出方向の安全管理（毒性・爆発危険がある場合は注意）</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-suinan" data-title="水難救助活動の要件（８要件）">
+    <summary>🤿 水難救助活動の要件</summary>
+    <div class="body">
+      <ol>
+        <li>潜水深度は<b>20ｍ未満</b></li>
+        <li>流速は<b>毎秒0.5ｍ以下</b></li>
+        <li>暴風・波浪・高潮・大雨・洪水の各警報が発令されていないこと（現場最高指揮者が安全を確保できると判断した場合を除く）</li>
+        <li>水中の視界は<b>0.5ｍ以上</b></li>
+        <li>潜水可能範囲は陸上又は舟艇から水平距離<b>30ｍ以内</b></li>
+        <li>水温は<b>摂氏７度以上</b>（ドライスーツ着装時を除く）</li>
+        <li>安全を確保できない水没船・水没車両へは進入しない（浮きドック・大型船の下への潜水も同様）</li>
+        <li>潜水時間は、潜水深度における最大潜水時間内とする</li>
+      </ol>
+      <p class="note">潜水隊員の活動時間管理とスタンバイダイバーの配置、陸上と水上（水中・海面）の連携体制と安全管理員の配置を徹底する。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-rinya" data-title="林野火災の安全管理（危険区域・ポケット地帯）">
+    <summary>🌲 林野火災の安全管理</summary>
+    <div class="body">
+      <ul>
+        <li>建物火災の数倍〜数十倍の速さで拡大する。火先から<span class="kb">100ｍ（風速により200〜400ｍ）前方は危険区域</span>とする。</li>
+        <li>火の指の間にできる<b>ポケット地帯に進入してはならない</b>。</li>
+        <li>延焼方向の側面から活動し、<b>風下以外の２方向退路</b>を確保する。</li>
+        <li>山頂・稜線等に警戒員、前線活動には監視員を配置する。</li>
+        <li>一時避難場所に窪地を確保し、簡単な防火線を設定する。</li>
+        <li>ヘリが現場近傍に着陸可能なら上空から延焼範囲・方向・部隊配置を確認し指揮に活用する。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-tunnel" data-title="ずい道・洞道火災の留意事項と監視所一覧">
+    <summary>🛣 ずい道・洞道火災の留意事項</summary>
+    <div class="body">
+      <p class="sub">基本</p>
+      <ul>
+        <li>現場指揮所は原則<b>給気側坑口</b>に開設し、進入も原則給気側とする。</li>
+        <li>化学車を火点直近に部署し、放水隊が中継送水する。洞道内の放水体形は消火と援護の２口以上。</li>
+        <li>トンネル外に無線中継隊を指定し通信手段を確保。誘導ロープ・照明を確保して進入。</li>
+        <li>警戒区域はずい道内すべてとする。</li>
+      </ul>
+      <p class="sub">洞道（電力ケーブル等）火災の留意事項（平成28年12月14日消防庁通知）</p>
+      <ul>
+        <li>洞道管理者・敷設者へ迅速に<b>送電停止を要請</b>する。</li>
+        <li>マンホール等の消火に有効な開口部の早期開放を要請し、周辺マンホールへの筒先配備と警戒区域を設定する。</li>
+        <li>送電停止確認までは周囲建物への延焼阻止主眼。確認後、大量放水又は大量泡放射で一挙鎮滅。</li>
+        <li>ＯＦケーブル（油入ケーブル）は絶縁油が大量流出している可能性。早期給油停止を要請し泡放射主眼、泡消火剤の早期集結を考慮。</li>
+      </ul>
+      <p class="sub">長大ずい道（概ね１km以上）の監視所</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>監視所</th><th>対象トンネル</th></tr>
+        <tr><td>阪神高速 京橋監視所</td><td>北神戸線・山手線・新神戸トンネル</td></tr>
+        <tr><td>神戸市道路公社 箕谷監視所</td><td>六甲山トンネル・六甲北有料道路・山麓バイパス</td></tr>
+        <tr><td>本四連絡橋 垂水監視所</td><td>神戸淡路鳴門自動車道舞子トンネル</td></tr>
+        <tr><td>神戸市みなと総局 港島監視所</td><td>港島トンネル</td></tr>
+      </table></div>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-awa" data-title="泡消火の要点（薬剤選択・必要量算式）">
+    <summary>🧯 泡消火の要点</summary>
+    <div class="body">
+      <ul>
+        <li>泡消火薬剤の選択：高分子ゲル生成フッ素界面活性剤／フッ化たんぱく泡／合成界面活性剤</li>
+        <li>薬剤は<span class="kb">単体使用（原液の混合は厳禁）</span>。泡放射の併用は高分子ゲルとフッ化たんぱくは可。</li>
+        <li>アルコール火災には泡原液「耐アルコール火災用」（メガフォーム）を使用する。</li>
+        <li>タンクローリー等は土嚢・土砂で流出拡大防止、高発泡シールで着火防止措置。</li>
+      </ul>
+      <p class="sub">必要泡消火薬剤量（石油コンビナート）</p>
+      <p class="note">必要量（Ｌ）＝タンク半径（ｍ）×タンク半径（ｍ）×3.14×6.5（Ｌ）×30（分）×0.03</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-kikijisho" data-title="危機事象発生時の活動方針（隊員受傷等の緊急事態）">
+    <summary>🆘 危機事象発生時の活動方針</summary>
+    <div class="body">
+      <p><b>活動方針：隊員の救出を第一とする。</b>対応中の災害事象を「第１現場」、危機事象を「第２現場」と捉えて対処する。</p>
+      <p class="sub">指揮体制</p>
+      <ul>
+        <li>現場最高指揮者が中隊長の場合は、指揮権を直ちに<b>指揮隊長以上</b>に移行する。</li>
+        <li>第１現場（災害事象）＝所轄中隊長、第２現場（危機事象）＝指揮隊長、統括指揮＝<b>大隊長以上</b>が原則。</li>
+        <li>指揮支援・前進（局面）指揮のため指揮隊の増強を要請する。</li>
+      </ul>
+      <p class="sub">９つの基本方針</p>
+      <ol>
+        <li>危機事象認知時の対応（周知・該当小隊の確認・活動休止の措置・部隊整理）</li>
+        <li>指揮体制（上級指揮者への指揮権移行・各事象の指揮権・指揮隊の増強）</li>
+        <li>部隊編成と増強（検索・救助班の編成・部隊増強）</li>
+        <li>二次災害防止を最優先（施設構造を把握しかつ安全と判明するまで進入させない）</li>
+        <li>必要資器材の早期要請（重機等は時機を失することなく）</li>
+        <li>長時間活動時の対応（活動・休憩時間を区分し部隊交代）</li>
+        <li>報道対応等（広報内容は本部と協議・調整。広報場所は本部又は所轄署で）</li>
+        <li>情報収集体制の充実（初期段階から）</li>
+        <li>職員のメンタルヘルスケア（早期回復を補助する環境づくり）</li>
+      </ol>
+      <p class="note">危機事象発生宣言の周知手段：無線送信・伝令・モーターサイレン・拡声器・警笛。ゴシック太字の確認事項は事故対策本部（又は消防局）が早期に必要な隊（職員）等を配置して行わせること。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-jiko" data-title="事故対応の参考（レッカー・列車・感電距離）">
+    <summary>🚙 事故対応の参考事項</summary>
+    <div class="body">
+      <ul>
+        <li>交通事故のレッカーは「あかつきレッカー」等と協力体制あり。<b>連絡は現場警察官又は管制室を介して要請</b>する。</li>
+        <li>発煙筒は<b>50ｍ以上後方</b>に設置。カーブ・雨天時は消防車両の配置位置を考慮。</li>
+        <li>列車事故：救助資器材は電車の重量を考慮し<b>原則２基以上を同時使用</b>（外れ・滑りに注意）。ＪＲの列車運行権限は駅長ではなく<b>運転指令所の区長</b>にある。</li>
+        <li>感電危険区域の安全距離は<b>２ｍ（配電線6600Ｖ）</b>。高電圧の場合は広範囲に設定（送・配電線「離隔距離」参照）。電路遮断は原則、電気事業者が行う。</li>
+        <li>昇降機事故は原則、専門技術者を待つ。活動前に必ず電路遮断。扉開放後、要救助者のみで脱出させない（ピット転落防止）。</li>
+        <li>山岳事故はヘリを活用（活動時間は日没まで）。中継搬送時は地上安全管理員を配置。「119通報プレート」（命の道標）で発生場所を確認。</li>
+        <li>建物・工作物事故：破壊活動は現場最高指揮者の命令による。緊急を要しない破壊進入は原則、警察官・所有者の立会いのもとで実施し、記録を残す。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-suisai" data-title="水災対応の要点（避難水位・土砂災害の前兆）">
+    <summary>💧 水災対応の要点</summary>
+    <div class="body">
+      <p class="sub">避難の目安となる水位</p>
+      <ul>
+        <li>氾濫水位（避難指示の目安）／特別警戒水位（避難勧告の目安）／警戒水位（避難準備勧告の目安）／水防団待機水位</li>
+        <li>津波：津波注意報（呼びかけ）／津波警報（避難勧告の目安）／大津波警報（避難指示の目安）</li>
+      </ul>
+      <p class="sub">高潮・津波</p>
+      <ul>
+        <li>南海トラフ地震の避難誘導は水平避難を原則とし、<b>津波到達時刻の30分前</b>には津波被害警戒区域外へ退避する。</li>
+        <li>防潮施設の閉鎖活動は各管理者が概ね30分前には完了し安全な場所へ退避。</li>
+      </ul>
+      <p class="sub">土砂災害</p>
+      <ul>
+        <li>通報に「土石流」という言葉は無い。<span class="kb">「山・川から土砂」「茶色い水」「家がのまれた」</span>等のキーワードから疑う。</li>
+        <li>発生区域を包含する<b>扇形エリア</b>を避難対象区域とし避難指示。土石流は同一山系で同時多発するため広域避難を判断。</li>
+        <li>斜面監視員を配置：亀裂・オーバーハング・湧水・流水の量と色・樹木の揺れを監視し、異常時は緊急退避の合図。</li>
+        <li>緊急退避は①水平避難経路②家屋上階への垂直避難経路をあらかじめ確保。合図は大雨・轟音中でも聞こえる方法で。</li>
+        <li>救助指令の要請基準：歩行者・車両巻き込みの形跡／土砂流入家屋で安否不明／生き埋め・閉じ込め情報。</li>
+      </ul>
+      <p class="note">水防体制・署本部運営・避難指示発令の詳細は「水防タスク」アプリを参照してください。</p>
+    </div>
+  </details>
+  </div>
+</section>
+
+<!-- ============ 連絡先 ============ -->
+<section class="tab" id="tab-renraku">
+  <div class="card">
+    <h2>📞 関係機関連絡先</h2>
+    <p class="lead" style="margin-bottom:8px;">番号をタップすると発信できます。内線・表示のみの番号は発信できません。特殊災害の協力機関（大学等）への要請は紙の資料・管制室経由で行ってください。</p>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">局内（内線・専用電話）</div>
+    <div class="tel"><div class="info"><div class="n">管制室（部隊増強・関係機関要請）</div><div class="d">事務専用電話</div></div><div class="num"><span class="ext">内線 432／433</span></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">災害時協力（重量物排除）</div>
+    <div class="tel"><div class="info"><div class="n">あかつきレッカー</div><div class="d">連絡は現場警察官又は管制室を介して要請する</div></div><div class="num"><a class="call" href="tel:0789752120">975-2120</a></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">警察</div>
+    <div class="tel"><div class="info"><div class="n">神戸西警察署</div><div class="d">西区糀台５丁目12－２</div></div><div class="num"><a class="call" href="tel:0789920110">992-0110</a></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">電気</div>
+    <div class="tel"><div class="info"><div class="n">関西電力送配電 明石配電営業所</div><div class="d">コールセンター24h／電路遮断は原則、電気事業者が実施</div></div><div class="num"><a class="call" href="tel:08007778046">0800-777-8046</a><a class="call" href="tel:0789111968">911-1968（緊急時）</a></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">ガス</div>
+    <div class="tel"><div class="info"><div class="n">大阪ガス 中央保安指令室</div><div class="d"></div></div><div class="num"><a class="call" href="tel:0783037777">303-7777</a></div></div>
+    <div class="tel"><div class="info"><div class="n">ガス漏れフリーダイヤル（大阪ガス）</div><div class="d"></div></div><div class="num"><a class="call" href="tel:0120719424">0120-7-19424</a></div></div>
+    <div class="tel"><div class="info"><div class="n">関西ガス(株) 兵庫事業本部保安指令センター</div><div class="d">西区森友４丁目</div></div><div class="num"><a class="call" href="tel:0789271655">927-1655</a></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">水道</div>
+    <div class="tel"><div class="info"><div class="n">水道局 西部水道管理事務所</div><div class="d"></div></div><div class="num"><a class="call" href="tel:0787428831">742-8831（平日昼間）</a><a class="call" href="tel:0120330716">0120-330-716（休日・夜間）</a></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">特殊災害 協力機関（要請は管制室経由）</div>
+    <div class="tel"><div class="info"><div class="n">放射性物質災害</div><div class="d">神戸薬科大学／神戸大学研究基盤センター／日本メジフィジックス(株)兵庫工場</div></div><div class="num"><span class="ext">紙の資料参照</span></div></div>
+    <div class="tel"><div class="info"><div class="n">毒劇物災害</div><div class="d">海上災害防止センター／神戸学院大学</div></div><div class="num"><span class="ext">紙の資料参照</span></div></div>
+  </div>
+</section>
+
+<div class="foot">
+  本アプリは神戸市消防局「災害別部隊活動方針（火災編・災害編・危機事象発生時の対応編）」を基に作成した業務支援ツールです。正本は紙の資料とし、内容が異なる場合は正本を優先してください。チェック状態はこの端末内のみに保存され、外部送信されません。部外秘情報は掲載していません。
+</div>
+
+<!-- ============ タブバー ============ -->
+<nav class="tabbar">
+  <button data-tab="tab-status" class="active"><span class="ico">📊</span>状況</button>
+  <button data-tab="tab-tasks" id="tabTasksBtn"><span class="ico">✅</span>タスク<span class="nbadge" id="totalBadge" style="display:none;"></span></button>
+  <button data-tab="tab-shiryo"><span class="ico">📖</span>資料</button>
+  <button data-tab="tab-renraku"><span class="ico">📞</span>連絡先</button>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     データ定義
+     ・LEVELS: 活動段階（インデックスが順序）
+     ・CATS: 災害カテゴリ（指揮カードの分類）
+     ・ROLES: 災害種別（指揮カード）→ フェーズ → タスク
+     ・タスクIDは role.id-phase.id-連番 で自動採番し localStorage のキーになる。
+       既存IDを保つため、タスクは末尾追加のみとし途中挿入・削除をしないこと。
+     ========================================================= */
+  var LEVELS = [
+    { id:"l0", name:"出動指令" },
+    { id:"l1", name:"現場到着" },
+    { id:"l2", name:"活動中" },
+    { id:"l3", name:"収束・引揚げ" }
+  ];
+
+  var CATS = [
+    { id:"fire",    name:"🔥 火災" },
+    { id:"jiko",    name:"🚑 救助・事故" },
+    { id:"tokusai", name:"☣️ 特殊災害" },
+    { id:"suisai",  name:"💧 水災" },
+    { id:"kiki",    name:"🆘 危機事象" }
+  ];
+
+  // フェーズ共通名：p1 状況把握(lv1) / p2 活動(lv2) / p3 安全管理(lv1) / p4 部隊整理・その他(lv3)
+  // r:true = 状況の変化の都度繰り返すタスク
+  var ROLES = [
+
+  /* ================= 火災編（令和７年３月改正） ================= */
+  {
+    id:"f01", cat:"fire", name:"一般地区建物火災", icon:"🏠",
+    desc:"第１出動10隊（計20隊）｜延焼阻止ライン：木造＝発生棟、耐火造等＝一の防火区画。人命救助最優先・水損防止",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者の有無・延焼危険・地水利状況・活動危険を確認し、災害状況を本部へ報告する", r:true },
+        { t:"高次出動の要請を判断する", d:"延焼拡大・要救助者多数の場合" },
+        { t:"要救助者情報によりブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、継続して情報収集する" },
+        { t:"水利統制を行う" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"検索区域を指定し、援護注水隊を指定する", d:"人命情報の収集・人命救助は何よりも優先する" },
+        { t:"筒先配備と延焼阻止線を設定する", d:"木造＝発生棟、耐火造等＝一の防火区画" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導を行う", r:true },
+        { t:"水損防止隊・飛火警戒隊を指定する" },
+        { t:"負傷者を救護する（救急隊は指揮補助も）", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる", d:"鎮圧後は二次災害の発生率が高いことを念頭に安全管理を徹底" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し、再燃火災防止対策要綱に基づき残火整理と警戒を実施する", d:"チェックカードの活用" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者による監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f02", cat:"fire", name:"木造密集地区建物火災", icon:"🏘",
+    desc:"第１出動13隊（計23隊・放水隊６）｜延焼阻止主眼。延焼危険方向（風下・風横）へ優先的に筒先配備、多口放水",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者の有無・延焼危険・地水利状況・活動危険を確認し、災害状況を本部へ報告する", r:true },
+        { t:"高次出動の要請を判断する", d:"乾燥時・強風時は延焼・飛火危険が著しく高い" },
+        { t:"要救助者情報によりブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保する" },
+        { t:"水利統制を行う", d:"狭隘道路・一方偏差地域では水利不足・部隊配置の障害が多い" },
+        { t:"特殊車（照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"検索区域を指定し、援護注水隊を指定する", d:"人命検索・救助は何よりも優先。要援護者の割合が高い地域" },
+        { t:"延焼危険方向（風下側・風横側）へ優先的に筒先を配備し、多口放水で延焼阻止を図る", d:"大量放水が必要な場合は第２出動隊も水利部署させる" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"飛火警戒隊を指定する", d:"ヘリ・管制室監視カメラ等も活用" },
+        { t:"火災の推移により筒先移動させる", r:true },
+        { t:"後着隊の水利誘導・水損防止隊の指定を行う" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"飛火等により火勢が回り込み退路を断たれるおそれに留意し、退路を確保する" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f03", cat:"fire", name:"工場地区建物火災", icon:"🏭",
+    desc:"第１出動13隊（計23隊・タンク化学隊２）｜２個１戦法による緊急放水体形。危険物判明時は出動基準切替",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火・延焼建物の状況、要救助者・延焼危険・活動危険・地水利状況を確認し、災害状況を報告する", r:true },
+        { t:"対象物特性（工場・倉庫・高層等）があれば出動指令の切り換えと戦術の転換を明確に指示する", d:"危険物火災と判明した場合は直ちに対応する出動基準へ切替" },
+        { t:"高次出動の要請を判断する" },
+        { t:"関係者を確保する" },
+        { t:"緊急放水態勢（２個１戦法）をとり、中継送水隊を指定する", d:"先着放水隊は直近水利に部署しタンク車への中継を優先" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"検索区域を指定し、援護注水隊を指定する" },
+        { t:"早期放水態勢（２個１戦法）を確立し、筒先配備と延焼阻止線を設定する" },
+        { t:"建物用途が特殊・不明な場合は災害実態把握まで進入を厳しく統制する", d:"内装表示マーク・ＦＤカード等の活用" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる", d:"危険物・高圧ガス等取扱施設が近くに存在する地域特性に留意" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者による監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f04", cat:"fire", name:"沿岸地区建物火災", icon:"⚓",
+    desc:"第１出動13隊（計23隊・水上指揮隊／消防艇隊）｜消防艇とポンプ車の連携による遠距離放水体形（海水利用）",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火・延焼建物の状況、要救助者・延焼危険・活動危険を確認し、災害状況を報告する", r:true },
+        { t:"対象物特性（工場・倉庫等）があれば指令の切り換えと戦術の転換を行う", d:"倉庫・工場は「倉庫・工場火災」の指揮カードを活用。必要により化学車隊・放水塔車隊の出動を考慮" },
+        { t:"高次出動の要請を判断する" },
+        { t:"関係者を確保する" },
+        { t:"収容物等の性状を早期に把握し、海水の利用可否を判断する" },
+        { t:"水利遠方・不足の場合は消防艇からの放水と連携隊を指定する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"検索区域を指定し、援護注水隊を指定する" },
+        { t:"消防艇とポンプ車との連携（連携隊の指定）による遠距離放水体形を確立する" },
+        { t:"筒先配備と延焼阻止線を設定する" },
+        { t:"建物用途が特殊・不明な場合は災害実態把握まで進入を厳しく統制する", d:"内装表示マーク・ＦＤカード等の活用" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる", d:"倉庫・工場が多く多様な危険が存在。違法駐車・水利不足地域" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者による監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f05", cat:"fire", name:"西区・北区建物火災", icon:"🌾",
+    desc:"第１出動12隊（計21隊・放水隊５）｜水利不足→大型水槽車（10ｔ）・中継体形・ため池活用。消防団と連携",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者の有無・延焼危険・水利・地勢・活動危険・隣接応援隊の有無を確認し、災害状況を報告する", r:true },
+        { t:"水利不足の場合は大型水槽車（10ｔタンク車）の出動を要請する", d:"ため池・農業用配水バルブ（40mm）も水利として活用可能な場合がある" },
+        { t:"水利部署（中継送水・ため池等）を指示する", d:"遠距離送水となる場合は中継体形を考慮" },
+        { t:"高次出動の要請を判断する", d:"応援隊の到着に時間を要するため少数部隊での活動になることに留意" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する", d:"農村部は道路狭隘で大型車進入困難な地域が多い" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する", d:"「消防団火災現場活動要領」に基づき消防団と連携。応援協定に基づく他本部との連携・無線統制に注意" },
+        { t:"検索区域を指定し、援護注水隊を指定する" },
+        { t:"大型水槽車（10ｔタンク車）等の部署位置を指示する" },
+        { t:"筒先配備と延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"ヘリを活用し、上空からの情報収集・車両誘導・無線中継を行う" },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する" },
+        { t:"負傷者を救護する（救急隊は消防隊支援・指揮補助も）", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"飛火警戒隊を指定する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f06", cat:"fire", name:"山ろく地区建物火災", icon:"🌄",
+    desc:"第１出動11隊（計21隊）｜山火事同様の長距離送水・中継態勢。木造密集・飛火・高齢者世帯の人命危険が高い",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者の有無・延焼危険・水利・地勢・活動危険を確認し、本部へ報告する", r:true },
+        { t:"高次出動の要請を判断する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制・増水手配を行う", d:"水利が悪いため山火事と同様の活動を考慮" },
+        { t:"各車両の進入方向・部署位置の指定・水利統制を明確に指示する", d:"狭隘・行き止まり道路は火点を通過して水利部署する等、後続隊の進入を考慮" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示し、ヘリの活用を判断する", d:"無線不感地帯が多い" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"延焼建物及び周囲の建物に、隊と範囲を指定して確実に人命検索を行わせる", d:"高齢者世帯が多く人命危険が高い" },
+        { t:"援護注水隊を指定する" },
+        { t:"中継送水・大型水槽車（10ｔタンク車）を活用する", d:"基幹水道配管消火栓等からの中継態勢" },
+        { t:"筒先配備と延焼阻止線を設定し、延焼危険がある場合は隣接建物に予備注水を行う" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する", d:"飛び火による火災拡大の危険性が高い" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f07", cat:"fire", name:"山岳地区建物火災（六甲山等）", icon:"🗻",
+    desc:"第１出動12隊（計21隊・大型水槽隊）｜水利不足→大型水槽車・中継態勢。ヘリ活用。林野への延焼危険を考慮",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者の有無・延焼危険・水利・地勢・活動危険を確認し、災害状況を報告する", r:true },
+        { t:"高次出動の要請を判断する", d:"繁忙期は保養所・ホテル等に多くの観光客が宿泊" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う", d:"池が多数あるため小型動力ポンプの積載も考慮" },
+        { t:"消防隊到着までの活動として消防団を要請し、自衛消防隊等へ活動指示を行う", d:"灘消防団第８分団は小型動力ポンプ積載車を保有" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する", d:"「消防団火災現場活動要領」に基づき連携" },
+        { t:"検索区域を指定し、援護注水隊を指定する" },
+        { t:"中継送水・大型水槽車（10ｔタンク車）を活用する", d:"長距離送水となる場合は中継態勢" },
+        { t:"筒先配備と延焼阻止線を設定する", d:"林野への延焼危険を考慮" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"ヘリを活用し、上空からの情報収集・車両誘導・救助活動・無線中継を行う" },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する", d:"飛び火による火災拡大の危険性が高い" },
+        { t:"負傷者を救護し、必要により現場救護所を開設する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f08", cat:"fire", name:"病院火災", icon:"🏥",
+    desc:"第１出動18隊（計30隊・救急隊３）｜自力避難困難者・ＲＩ・危険物情報の早期収集。防火区画による水平避難",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況（ＩＣＵ・手術室）・要救助者・延焼危険・地水利・活動危険（ＲＩ・危険物等）を確認する", r:true },
+        { t:"自力避難困難者やＲＩ・危険物等の情報を早期に収集する", d:"手術室・ＩＣＵ等の患者は原則移動不可と考える。夜間・休日は職員が少ない" },
+        { t:"高次出動を要請し、災害状況を報告する" },
+        { t:"防災センター及び消防用設備等（ＳＰ・連結送水管・屋内栓・非常放送）を活用する", d:"ＳＰ作動時は制御弁の位置を確認" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、自衛消防隊の活動状況を確認する" },
+        { t:"水利統制を行い、特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所・前進指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"防火扉等の閉鎖による防火区画の形成で避難路を確保し、防火区画を利用した水平方向への避難を原則とする" },
+        { t:"検索区域を指定し、援護注水隊を指定する。はしご車を活用する" },
+        { t:"防火区画を設定し、筒先配備と延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊の指定を行う" },
+        { t:"応急救護所を開設し、医師・看護師と連携する", d:"エアーテント・応急処置資機材の調達" },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる", d:"ＲＩ・危険物・可燃性ガスを取扱い。出入口施錠で避難・進入が困難な場合がある" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f09", cat:"fire", name:"木造市場火災", icon:"🏬",
+    desc:"第１出動15隊（計23隊・放水隊６）｜防火壁（1000㎡区画）を延焼阻止に活用。アーケード上への筒先配備を早期考慮",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況（防火壁・アーケード・天井面・店舗配置・居住状況）を確認する", r:true },
+        { t:"要救助者（居住者）の有無・延焼危険・地水利・活動危険・自衛消防隊の活動状況を確認する", d:"店舗上階に居住している場合がある" },
+        { t:"高次出動を要請し、災害状況を報告する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する。はしご車・ヘリを活用する" },
+        { t:"検索区域を指定し、援護注水隊を指定する" },
+        { t:"筒先配備と延焼阻止線（防火壁）を設定する", d:"1000㎡ごとの防火壁を延焼阻止に活用。大量放水が必要な場合は第２出動隊も水利部署" },
+        { t:"アーケード上への筒先配備を早期に行う", d:"アーケードに乾式連結送水管が設置されている場合がある" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"筒先移動に備えて余裕（予備）ホースを確保する" },
+        { t:"後着隊の水利誘導・水損防止隊・飛火警戒隊を指定する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"退路遮断に備え予備注水と複数の退路を確保させる", d:"通路は狭く複雑。アーケードで覆われ老朽木造が隙間なく建つ" },
+        { t:"火災が広範囲に及ぶ場合は各方面に指揮者と安全管理員を配置する" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理し、警戒区域を設定する（消防団と連携）", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f10", cat:"fire", name:"工場・倉庫火災", icon:"📦",
+    desc:"第１出動15隊（計24隊・化学隊／放水塔隊）｜最優先＝災害実態の把握。黒煙は原則屋内進入禁止・進入５ポイント",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"「最優先事項」災害実態（要救助者・建物構造・収容物品・延焼状況）を把握し、高次出動を要請する", r:true },
+        { t:"必要な関係者・責任者を確保する（指揮隊車両等に確保し継続して情報収集）" },
+        { t:"要救助者情報により救助隊・援護注水隊とサポート隊を配置する" },
+        { t:"燃焼拡大（黒煙）の場合は進入統制（屋内進入禁止等）を行う", d:"燃焼範囲限定・燃焼緩慢なら中隊長以上の判断で２隊以上連携・援護注水・緊急退出要領・二次救出態勢確保後に進入可" },
+        { t:"対象物防御計画書・内装表示マーク・ＦＤカードを確認し、関係者と建物構造・用途・収容物を早期把握する", d:"内装表示マークが無い場合でも建物用途等から危険側を判断" },
+        { t:"天井・壁体の構造（サンドイッチパネル・吊り天井・荷役機械・クレーン）と消防用設備の作動を確認する", d:"各種構造物の落下・爆燃危険を予測。ドレンチャー・窒息消火設備等" },
+        { t:"活動危険情報（粉じん爆発・禁水性物質・酸欠予測・ピット・溶鉱炉の水蒸気爆発）を把握し全隊へ周知徹底する" },
+        { t:"防火区画の有無を確認する", d:"明確でない場合は一棟として対応（他棟への延焼阻止を優先）" },
+        { t:"重機の必要な活動（開口部設定・収容物除去・排煙破壊・残火整理）を明確にし要請する" },
+        { t:"大量放水（ターレット・放水銃・スクワート車）・泡消火（化学車・泡原液車）の要否を判断し早期要請する" },
+        { t:"交替要員（非常招集等）・毒劇物等災害の有無・専門技術者の要否を確認する", d:"毒劇物等は特殊災害対応を考慮" },
+        { t:"特殊車（はしご車・高所放水塔車・照明・ボンベ充填）の部署位置と活動を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、重要局面（複数）に局面指揮者・前進指揮所を配置する", d:"広範囲な場合は四周に指揮者の目となる者を配置" },
+        { t:"局面指揮・安全管理員を指名し全隊へ周知する。無線中継・消防団との連携を確立する" },
+        { t:"特殊化学対応：毒劇物等の防護装備の着装指示・可燃性ガス濃度測定・風下警戒を行う" },
+        { t:"救助の進入は中隊長以上指揮者の判断により、二次救出隊・援護注水隊を指定・準備する", d:"白煙から黒煙に変化（燃焼拡大）→緊急退出" },
+        { t:"筒先配備と延焼阻止線を設定する", d:"防火区画が明確でない場合は一棟を延焼阻止ラインとする" },
+        { t:"屋内進入は中隊長以上指揮者の指示による（黒煙は進入させない）", r:true },
+        { t:"倉庫内物品の移動・除去が可能なら関係者と協力し早期に実施する（重機の活用）" },
+        { t:"危険物の除去等拡大防止措置を指示する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"排煙態勢を確立し、重機等を調達する" },
+        { t:"付近住民への広報・避難誘導を指示し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止。警戒区域・危険区域（爆発・毒劇物）を設定する" },
+        { t:"屋内進入隊員の管理・複数退路の確保・退出隊員の体調確認を徹底する", r:true },
+        { t:"進入させる場合は２隊以上連携し援護注水態勢を確保する（必要により増隊）" },
+        { t:"緊急退避体制を確立する", d:"白煙から黒煙への変化（燃焼拡大）→緊急退出" },
+        { t:"安全管理員を建物四周に配置し、状況変化を確認する", r:true },
+        { t:"内部進入隊との連絡体制を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f11", cat:"fire", name:"社会福祉施設火災", icon:"🛏",
+    desc:"第１出動16隊（計28隊・救急隊２）｜自力歩行困難者情報の早期収集。防火区画形成による避難路確保",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者・延焼危険と煙・地水利・活動危険・自衛消防隊の活動状況を確認する", r:true },
+        { t:"自力歩行困難者や危険物等の情報を早期に収集する", d:"夜間・休日は職員が少ない。自力避難できない入所者が多数存在" },
+        { t:"高次出動を要請し、災害状況を報告する" },
+        { t:"防災センター及び消防用設備等（ＳＰ・連結送水管・屋内栓・非常放送）を活用する", d:"ＳＰ作動時は制御弁位置確認。回廊型バルコニー・避難器具の設置あり" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"防火扉等の閉鎖による防火区画の形成で避難路を確保する" },
+        { t:"検索区域を指定し、援護注水隊を指定する。はしご車を活用する" },
+        { t:"防火区画を設定し、筒先配備と延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊の指定を行う" },
+        { t:"応急救護所を開設し、介護福祉士等と連携する", d:"エアーテント・応急処置資機材の調達" },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる", d:"出入口施錠等で避難・進入が困難な場合がある" },
+        { t:"屋内進入隊員を管理する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f12", cat:"fire", name:"大規模物販店火災", icon:"🛒",
+    desc:"第１出動17隊（計28隊・はしご隊４）｜不特定多数来店・パニック予想。落下危険→警戒区域を広範囲に設定",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者・延焼危険と煙・地水利・活動危険・自衛消防隊の活動状況を確認する", r:true },
+        { t:"高次出動を要請し、災害状況を報告する", d:"不特定多数が来店。パニックの発生が予想される" },
+        { t:"防災センター及び消防用設備等（ＳＰ・連結送水管・屋内栓・非常放送）を活用する", d:"ＳＰ制御弁の位置を確認。燃焼荷重が大きく泡消火も考慮" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する", d:"はしご車の部署位置（非常用進入口等）を確保" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所・前進指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"防火扉等の閉鎖による防火区画の形成で避難路を確保し、避難誘導を行う" },
+        { t:"検索区域を指定し、援護注水隊を指定する。はしご車・ヘリを活用する" },
+        { t:"防火区画を設定し、防火扉閉鎖により煙の拡散と延焼拡大を阻止する" },
+        { t:"筒先配備と延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"後着隊の水利誘導・水損防止隊の指定を行う" },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"窓ガラス・看板等の落下危険に備え、警戒区域を広範囲に設定する（消防団と連携）" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f13", cat:"fire", name:"高層建物火災", icon:"🏢",
+    desc:"第１出動13隊（計24隊）｜特別避難階段で避難誘導・非常用ＥＶ活用。加圧排煙機による活動を考慮",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者・延焼危険と煙・地水利・活動危険・自衛消防隊の活動状況を確認する", r:true },
+        { t:"高次出動を要請し、災害状況を報告する", d:"パニックの発生が予想される" },
+        { t:"防災センター及び消防用設備等（自火報・ＳＰ・連結送水管・屋内栓・非常放送・非常用ＥＶ）を活用する", d:"ＳＰ制御弁の位置を確認。電算室等はガス系固定消火設備あり" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行い、避難場所を指示する" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する", d:"はしご車等の部署位置（非常用進入口等）を確保" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所・前進指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"防火区画の形成により避難路を確保し、特別避難階段を活用して避難誘導する", d:"自力避難困難者等には非常用エレベーターを活用" },
+        { t:"検索区域を指定し、援護注水隊を指定する。はしご車・ヘリを活用する" },
+        { t:"防火区画を設定し、筒先配備と延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"加圧排煙機による活動を考慮する" },
+        { t:"後着隊の水利誘導・水損防止隊の指定を行う" },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"窓ガラス・看板等の落下危険に備え、警戒区域を広範囲に設定する（消防団と連携）" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f14", cat:"fire", name:"高層（共同住宅）建物火災", icon:"🏙",
+    desc:"第１出動13隊（計24隊）｜出火室（防火区画）を延焼阻止線に。上階・隣接区画へ警戒筒先。水損防止を徹底",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火建物の状況・要救助者・延焼危険と煙・地水利・活動危険を確認する", r:true },
+        { t:"高次出動を要請し、災害状況を報告する", d:"超高層住宅等では「高層建物火災」編を準用" },
+        { t:"避難場所を指定して居住者から情報を収集する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"特殊車（はしご車・照明・ボンベ充填）の部署位置を指示する", d:"はしご車の部署位置を確保" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携・無線中継・消防団との連携を確立する" },
+        { t:"検索区域を指定し、援護注水隊を指定する。はしご車を活用する" },
+        { t:"出火室（防火区画）を延焼阻止線として設定し、火点室及び上下階への警戒筒先を配備する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"水損防止用ノズルの使用を徹底し、早期に水損防止活動を実施する（水損防止隊の指定）", d:"「水損防止対策要綱」参照" },
+        { t:"加圧排煙機による活動を考慮する" },
+        { t:"後着隊の活動を指示する", r:true },
+        { t:"負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"窓ガラス・看板等の落下危険に備え、警戒区域を設定する（消防団と連携）" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"屋内進入隊員を管理する", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者による監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f15", cat:"fire", name:"地下街火災", icon:"🚇",
+    desc:"第１出動17隊（計29隊・放水隊５／照明隊２）｜給気側を進入口に指定し進入統制。集結場所を指示し明確な任務指定",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火場所の状況・要救助者・延焼危険と煙・活動危険・地水利・自衛消防隊の活動状況を確認する", r:true },
+        { t:"集結場所を指定し、明確な任務指定を行う", d:"不特定多数が在館。パニック・煙の大量発生と早い拡散が予想される" },
+        { t:"高次出動を要請し、災害状況を報告する" },
+        { t:"隊を指定して防災センターで情報収集する" },
+        { t:"防災センター及び消防用設備等（ＳＰ・連結送水管・屋内栓・非常放送）を活用する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"関係者を確保し、水利統制を行う" },
+        { t:"特殊車（指揮救援車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所・前進指揮所を開設し、任務指定・防御方針を全隊に徹底する" },
+        { t:"無線通信補助設備・無線中継装置を活用し、地上又は防災センターと地下との連絡体制を確保する" },
+        { t:"検索区域を指定し、援護注水隊を指定し、避難誘導を行う" },
+        { t:"給気側を進入口として指定し、進入統制を徹底する" },
+        { t:"防火区画の形成・空調設備の停止・排煙設備の作動操作を指示する" },
+        { t:"筒先は進入口から配備し、延焼経路に警戒筒先を配備する。延焼阻止線を設定する" },
+        { t:"屋内進入を指示し、進入状況の報告を受ける", r:true },
+        { t:"高発泡による消火を考慮する" },
+        { t:"後着隊の水利誘導を行う", r:true },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"通路・階段等への煙の侵入防止措置をとる" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"進入隊員の管理を徹底する", r:true },
+        { t:"警戒区域を設定する（消防団と連携）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する（チェックカードの活用）" },
+        { t:"消防団員・警察官等へ現場監視を依頼する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" }
+      ]}
+    ]
+  },
+  {
+    id:"f16", cat:"fire", name:"林野火災", icon:"🌲",
+    desc:"第１出動８隊（計12隊・大型水槽隊）｜建物への延焼阻止優先。延焼方向の側面から活動。風下以外の２方向退路確保",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"防御計画の有無・林野の状況（地形・水利）・入山者の有無・人家等の状況・活動危険を確認する", r:true },
+        { t:"火災の進展を予測し、延焼状況・気象の状況を把握する", d:"建物火災の数倍〜数十倍の速さで拡大", r:true },
+        { t:"高次出動を要請し、災害状況を報告する" },
+        { t:"部隊集結場所・進入路・水利及び元ポンプ隊を指定する" },
+        { t:"ヘリ及びドローンによる状況把握と部隊誘導を行い、ヘリの臨着場を確認する", d:"入山者の把握と避難指示。上空から延焼範囲・方向・部隊配置を確認し指揮に活用" },
+        { t:"大型水槽車を活用し、水利統制を行う。消防団員を活用する" },
+        { t:"広域応援要請の有無を判断する", d:"「林野火災対応計画」に基づく応援要請の検討" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、設置場所・局面指揮者を徹底する。無線中継を確保する" },
+        { t:"消防団・関係機関・消防対策本部及び署本部との連携を確立する" },
+        { t:"入山者の避難誘導及び救出を行い、延焼方向の住民へ避難を指示する" },
+        { t:"市街地・民家への延焼阻止を最優先に部隊を配置する" },
+        { t:"延焼方向への側面に部隊を配置し、目的・任務・担当範囲を具体的に指示する" },
+        { t:"伐採・注水等により防火線を設定する" },
+        { t:"ヘリ消火とヘリ・地上部隊の連携を行う" },
+        { t:"補給態勢（水槽車のピストン輸送）を確保し、部隊・資機材を運搬する（ヘリ・公共交通機関の活用）" },
+        { t:"山頂・稜線に警戒員、活動最前線に監視員を配置する（飛火・延焼警戒）" },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"延焼方向・風下・ポケット地帯への進入を禁止する", d:"火先から100ｍ（風速により200〜400ｍ）前方は危険区域" },
+        { t:"風下以外の二方向退路を確保する" },
+        { t:"簡単な防火線を設定し、一時避難場所に窪地を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"後方支援体制を確保する（燃料等の確保）" },
+        { t:"残火確認に消防団員等を配置し再燃を防止する" }
+      ]}
+    ]
+  },
+  {
+    id:"f17", cat:"fire", name:"車両火災", icon:"🚗",
+    desc:"一般道路３隊／指定道路６隊｜イエローカードから積載品情報収集。低発泡消火・ハイブリッド車は電気火災に準拠",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火車両の状況・積載品・要救助者・延焼危険・地水利・活動危険・交通の状況を確認し、災害状況を報告する", r:true },
+        { t:"危険物運搬車両の場合はイエローカードから情報を収集する" },
+        { t:"運転者・関係者を確保する" },
+        { t:"部隊増強（化学車・特殊災害隊等）を要請する", d:"高速道路上では水利が不足する場合がある" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"ヘリによる状況把握と部隊誘導を行う", d:"指定道路は進入口・ルートが制限される。渋滞により到着遅延の可能性" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"無線中継を確保する" },
+        { t:"救助資機材等による開口部設定を行う", d:"大型バスの場合は非常口を開放" },
+        { t:"消火方法（噴霧・泡消火）を決定する", d:"低発泡による消火を考慮。ハイブリッドカー等は電気火災に準じた活動" },
+        { t:"筒先配備と延焼阻止線を設定し、送水態勢（単独・中継送水）を徹底する" },
+        { t:"特殊車両（はしご車・水槽車）の活用を検討する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"重量物を排除する（警察との連携・民間レッカーの活用）", d:"レッカーの連絡は現場警察官又は管制室を介して要請" },
+        { t:"資器材（土嚢・土砂・耐熱服等）を調達する" },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と爆発危険の把握を行う" },
+        { t:"道路監視員等を配置する", d:"発煙筒は50ｍ以上後方に設置。カーブ・雨天時は車両配置位置を考慮" },
+        { t:"車両固定等の防災処置を確認する" },
+        { t:"耐熱服・防護服などを着装させ、警戒区域を設定する", d:"警察・道路関係機関と協力し安全管理を徹底" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"消防団員・警察官等へ道路監視等を依頼する" }
+      ]}
+    ]
+  },
+  {
+    id:"f18", cat:"fire", name:"電車火災", icon:"🚃",
+    desc:"第１出動14隊（計19隊）｜列車停止要請・電路遮断（パンタグラフ降下）。乗客の早期救出・避難誘導と火勢制圧",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火場所の状況・出火車両の種別・要救助者・活動危険・地水利・障害物質・他車両の運行状況を確認する", r:true },
+        { t:"最優先情報（人命危険・活動危険）を徹底して収集し、災害状況を報告し各隊へ周知する", r:true },
+        { t:"責任者を確保し、列車の停止要請・運行状況の情報収集・必要事項の指示を行う", d:"駅長室と対向車線双方に責任ある職員を配置し連絡体制を強化" },
+        { t:"高次出動を要請し、部隊の集結場所・進入方法を指示する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"水利を検討（大型水槽車）し、水利統制を行う" },
+        { t:"危険物火災に備えた準備を行う", d:"貨物車の危険物は「タンクローリー火災」に準じる" },
+        { t:"特殊車（はしご車・指揮救援車・照明・ボンベ充填）の部署位置を指示する", d:"高架上でははしご車の活用も考慮" },
+        { t:"部隊増強及び「大規模災害運用要綱」の体制を検討する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所（前進指揮所）を開設し、鉄道事業者責任者と連携する" },
+        { t:"指揮隊間の連携・無線中継を確保する", d:"地下構内の場合は無線通信補助設備を活用" },
+        { t:"検索区域を指定し、援護注水隊を指定する。乗客の早期救出・避難誘導と火勢制圧を図る" },
+        { t:"非常口の開放・窓等の破壊により救出路を設定する" },
+        { t:"水源を確保（大型水槽車の増隊）し、送水態勢（中継送水等）を徹底する" },
+        { t:"周囲への延焼阻止と泡消火の可否を判断する" },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"乗客・付近住民等へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"軌道敷内への進入可否を現場最高指揮者が判断し、管制室へ報告・各隊へ周知する" },
+        { t:"列車停止を要請し、停止を確認する" },
+        { t:"電路遮断（パンタグラフ降下等）の措置を電車責任者等に行わせる" },
+        { t:"安全管理員を配置し、対向・通過列車等を監視する（連絡員及び監視員の配置）", r:true },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"進入隊・隊員管理を徹底する", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"部隊整理を行う" }
+      ]}
+    ]
+  },
+  {
+    id:"f19", cat:"fire", name:"一般ずい道火災", icon:"🛤",
+    desc:"第１出動11隊｜進入は原則給気側。化学車を火点直近部署、放水隊が中継送水。洞道火災もこの方針に準じる",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"ずい道の状況・要救助者・延焼危険と煙・地水利・活動危険・障害物質・入口の閉鎖状況を確認する", r:true },
+        { t:"洞道の名称・用途・接続する建物・進入可能なマンホール・換気口・区画構造・停電等の被害を確認する" },
+        { t:"部隊増強を要請し、集結場所を指定する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"消防用設備等を活用し、災害状況を報告する" },
+        { t:"関係者・関係資料を確保し、水利統制を行う" },
+        { t:"通行車両の避難・停止措置をとる" },
+        { t:"特殊車（指揮救援車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設する（原則、給気側坑口）", d:"洞道の場合は火点付近で洞道と接続する建物の敷地内も考慮" },
+        { t:"活動拠点（部隊進入・送風・延焼阻止等）を設定し、指揮隊間の連携・無線中継を確保する", d:"トンネル外に無線中継隊を指定し通信手段を確保" },
+        { t:"検索区域を指定し、援護注水隊を指定し、給気側へ避難誘導する" },
+        { t:"水源を確保（大型水槽車の増隊）する" },
+        { t:"化学車を火点直近に部署させ、放水隊が中継送水するペア活動を行う", d:"給気側の指揮者が指揮をとる。進入は原則給気側" },
+        { t:"泡消火の可否を判断する", d:"危険物火災に備えて泡消火も考慮" },
+        { t:"洞道内の放水体形は消火と援護の２口以上とする" },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"現場の状況を確認し、進入の可否を判断する", d:"煙の大量発生・早い拡散が予想されるため慎重に進入" },
+        { t:"進入口に安全管理の隊を配置したのち、指揮所・指揮隊の統制下で進入させる" },
+        { t:"誘導ロープ・照明を確保して進入させる" },
+        { t:"警戒区域を設定する（ずい道内すべて）" },
+        { t:"漏えいの可能性のある洞道内のガス・電路を遮断する", d:"洞道は管理者へ送電停止を早期要請（ＯＦケーブルは給油停止も）" },
+        { t:"危険物品の排除と二次災害の防止。安全管理の任務指定と進入隊員の管理を徹底する", r:true },
+        { t:"交替要員・資機材の補給体制を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する" },
+        { t:"警察官等へ現場監視を依頼する" }
+      ]}
+    ]
+  },
+  {
+    id:"f20", cat:"fire", name:"長大ずい道火災", icon:"🛣",
+    desc:"第１出動16隊（両出入口単位で指令）｜指揮所は給気側入口付近、監視所と情報共有。概ね１km以上のずい道",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"ずい道の状況・要救助者・延焼危険と煙・地水利・活動危険・障害物質・入口の閉鎖状況を確認する", r:true },
+        { t:"部隊増強を要請し、集結場所を指定する", d:"両出入口単位で指令。進入口を明確に指令" },
+        { t:"監視所派遣隊から情報を収集する", d:"監視所一覧は資料タブ参照。監視カメラで常時監視" },
+        { t:"消防用設備（排煙・水噴霧等）の作動状況を確認し活用する" },
+        { t:"ブルーキャット・ドクターカーを要請し、災害状況を報告する" },
+        { t:"通行車両の避難・停止措置をとり、関係者を確保する" },
+        { t:"特殊車（指揮救援車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設する（原則、給気側坑口）。出口側に応援中隊長を要請する" },
+        { t:"指揮隊間の連携・無線中継（無線補助設備・中継装置の活用）・消防団との連携を確保する" },
+        { t:"検索区域を指定し、援護注水隊を指定し、給気側へ避難誘導する" },
+        { t:"水源を確保（大型水槽車の増隊）する" },
+        { t:"化学車を火点直近に部署させ、放水隊とのペア活動を行う", d:"進入は原則給気側" },
+        { t:"泡消火活動の可否を判断する", d:"危険物火災に備えて泡消火も考慮" },
+        { t:"応急救護所を開設し、負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"監視所からの状況報告及び現場の状況を確認し、進入の可否を判断する" },
+        { t:"進入口に安全管理の隊を配置したのち、指揮所・指揮隊の統制下で進入させる" },
+        { t:"危険物品の排除と二次災害の防止。安全管理の任務指定と進入隊員の管理を徹底する", r:true },
+        { t:"警戒区域を設定する（ずい道内すべて）" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"残火整理・警戒隊を指定し再燃を防止する" },
+        { t:"警察官等へ現場監視を依頼する" }
+      ]}
+    ]
+  },
+  {
+    id:"f21", cat:"fire", name:"タンクローリー火災", icon:"🛢",
+    desc:"第１出動17隊（化学隊・大型化学隊・泡原液搬送隊等）｜安全距離をとり部署。土嚢・土砂で流出防止、高発泡シール",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火車両の状況・積載品を把握し、災害状況を報告する", d:"イエローカード・完成検査済証・ＧＸの活用・特災隊の判断・関係者聴取", r:true },
+        { t:"集結場所を指定し、運転手・関係者を確保する（事業所等の派遣）" },
+        { t:"積載物の側溝等への流出を防止する" },
+        { t:"災害実態を把握し、情報収集と時間経過の記録を行う", r:true },
+        { t:"要救助者・延焼危険・地水利・活動危険・交通の状況を確認する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"査察係員を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携を確立する" },
+        { t:"要救助者の有無を確認し、援護注水隊を指定する" },
+        { t:"周囲への延焼阻止（流出可燃物の着火防止）を図る", d:"土嚢・土砂での流出拡大防止。高発泡シールによる着火防止措置" },
+        { t:"泡消火の可否を判断し、送水体制（中継送水等）を徹底する", d:"アルコール火災は泡原液「耐アルコール火災用」（メガフォーム）を使用" },
+        { t:"ガス漏えいの場合は漏えい防止処置後に消火する", d:"禁水性物質・可燃性高圧ガスは安易に消火できない。ファイヤーボールの発生に注意" },
+        { t:"負傷者等の状況を把握する", r:true },
+        { t:"重量物を排除する（警察との連携・民間レッカーの活用）" },
+        { t:"資器材（土嚢・土砂・耐熱服・吸着マット等）を調達する" },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" },
+        { t:"関係者へ応急措置命令・危険物の貯蔵取扱いの一時停止又は制限命令を行う" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"安全距離をとって部署させる", d:"危険物の飛散流出等により火災が急速拡大する恐れ。風上・遮蔽物の後ろへの部署を考慮" },
+        { t:"危険物品の排除と二次災害の防止。他の運行車両の停止指示及び監視を行う" },
+        { t:"危険物が皮膚に付着することを防止し、可燃性ガスを検知する" },
+        { t:"毒性の場合は防護服等、耐熱服を着装させる" },
+        { t:"警戒区域を設定する", d:"警察・道路関係機関と協力し安全管理を徹底" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"関係者へ可燃物回収の準備を指示する" },
+        { t:"証拠書類を確保する（写真撮影）" }
+      ]}
+    ]
+  },
+  {
+    id:"f22", cat:"fire", name:"船舶火災", icon:"🚢",
+    desc:"岸壁13隊／沖合４隊｜船舶図面を入手し、活動方針決定まで進入させない。船艙は備付消火設備（ハロン等）を原則使用",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"出火場所・延焼状況を確認し、船舶関係者（上級船員）を確保する", r:true },
+        { t:"船舶備付図書（一般配置図）及び乗員・乗客名簿を入手する", d:"船名・船籍・トン数・船種・船長名等" },
+        { t:"要救助者・活動危険・船舶の種別構造・積荷の種別数量・障害物質を確認する" },
+        { t:"ブルーキャット・ドクターカーを要請する" },
+        { t:"船主・代理店等の職員の派遣を依頼する" },
+        { t:"海上保安庁・みなと総局等の関係機関と連携する" },
+        { t:"消防用設備等を活用し、災害状況を報告する" },
+        { t:"状況把握・活動方針決定までは進入統制を徹底する" },
+        { t:"特殊車（指揮救援車・照明・ボンベ充填）の部署位置を指示する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、指揮隊間の連携を確立する" },
+        { t:"活動方針を船舶関係者及び関係機関と協議のうえ決定する", d:"周囲に影響が予測される場合は船舶の移動を検討" },
+        { t:"船内図を活用して検索区域を指定し、検索後は区画の出入口を閉鎖する。援護注水隊を指定する" },
+        { t:"船体外側からの冷却注水を行う" },
+        { t:"密閉消火：延焼区画の密閉と退避を確認し、船舶備付消火設備（ハロン・二酸化炭素等）を作動させる", d:"船内に人がいないことを確認してから作動させること。放射後は温度低下・ガス検知（火災荷重大なら48時間後に測定）" },
+        { t:"注水消火は一挙鎮圧可能な場合のみ。海水使用の可否を船舶関係者と調整する", d:"転覆・沈没危険が生じた場合は注水停止（復元力曲線の範囲に留意）。禁水性物品への注水厳禁" },
+        { t:"泡消火：発泡器具を選定し、泡原液必要量の確保後に一挙鎮圧する" },
+        { t:"除去消火：船舶関係者と協議し、船舶設備・クレーン等を活用する" },
+        { t:"負傷者等の状況を把握する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"ハロン設備等の作動前に退避を確認する" },
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"進入隊員を指定し管理する。隊員等の緊急退船を準備する", r:true },
+        { t:"警戒区域を設定する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"防災措置を確認し部隊整理を行う" },
+        { t:"船舶関係者へ警戒監視を依頼する" }
+      ]}
+    ]
+  },
+  {
+    id:"f23", cat:"fire", name:"航空機火災", icon:"✈️",
+    desc:"空港島以外 第１出動22隊（計51隊）／空港島は機体規模別（小型19・中型43・大型56隊）｜泡放射を原則に一挙鎮圧",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"事故発生の場所・状況を把握し、災害状況を報告する。高次出動を要請する", r:true },
+        { t:"航空機の種類・最大定員数（搭乗者リスト）・燃料漏洩の有無・風向き等を確認する", d:"近距離機約10㎘、国際線長距離ジェット機約200㎘の引火性燃料を搭載" },
+        { t:"部隊の集結場所を指示する" },
+        { t:"部隊増強及び「大規模災害運用要綱」の体制を検討する" },
+        { t:"指揮所開設位置・トリアージ地区・一時避難場所を指定する" },
+        { t:"（空港島内）空港消防所と合流し、連携活動を協議する", d:"第１・第２ゲート開放の有無を確認。各消火隊への任務（三点セット・水補給・援護注水隊等）" },
+        { t:"多数傷病者受入れ体制を確認する", d:"中央市民病院（多数受入体制）・県広域災害医療システムによる情報収集" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所（救急指揮所含む）を開設し、指揮隊間の連携を確立する" },
+        { t:"現場調整所で関係機関の情報・活動状況・傷病者情報を集約し、情報の一元化を図る" },
+        { t:"援護注水隊を指定し、耐熱服を活用して救助活動を行う", d:"機内進入は現場最高指揮者の判断のもと慎重に。援護注水を受け二次災害防止に万全を期す" },
+        { t:"火災発生防止措置（燃料漏洩箇所への泡原液放射）をとる" },
+        { t:"泡放射を原則として一挙鎮圧を図る。援護注水（広範囲）・泡原液の搬送・高発泡シールによる着火防止を行う" },
+        { t:"空港消防所（大型化学車）の活動を支援する", d:"空港消防は泡放射開始から１分以内に90％鎮圧する消火能力を有する" },
+        { t:"担架搬送隊を指定し、傷病者をトリアージ地区へ搬送する", d:"空港消防所（機材搬送車）の応急救護用機材・担架を活用" },
+        { t:"救急指揮所を開設し、現場救護地区の対応と救急搬送を行う" },
+        { t:"現場調整所で情報を集約し、現地対策本部から広報する（収集→整理→分析→広報）" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"耐熱服を活用し、ジェット燃料の引火・爆発危険に備える", d:"燃料流出で低所に火面が急拡大。安全距離を保ち活動" },
+        { t:"貨物機は積載物の情報を早期収集する" },
+        { t:"滑走路閉鎖・離発着停止状況を確認する" },
+        { t:"機体の飛散に注意し、航空機への接近はエンジン部に注意する", d:"垂直衝突→胴体は30〜500ｍ飛散。急角度衝突→火面は帯状に延焼拡大" },
+        { t:"安全管理員を配置し、進入隊員の指定と管理・緊急退出の準備（監視員配置）を行う", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員の交代と休憩（飲料水補給等）を行う", r:true },
+        { t:"消防団員を招集する（各消防署に団本部を開設）" }
+      ]}
+    ]
+  },
+  {
+    id:"f24", cat:"fire", name:"石油コンビナート火災", icon:"⛽",
+    desc:"第１出動９隊（計31隊）｜泡放射体制確保までは燃焼・隣接タンクの冷却主眼。体制が整えば一挙大量泡放射で消火",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発災事業所の発災状況・被害状況を把握し、関係者の確保と自衛消防組織の活動状況を確認する", r:true },
+        { t:"ＦＤカードを確認し、敷地内図面（防御計画書）を調達する。貯蔵取扱品・作業状況を把握する" },
+        { t:"三大危険（人命・延焼・活動）・燃焼物質及び現存量を確認する" },
+        { t:"死傷者等の発生状況を確認し、ブルーキャット・ドクターカーの要請と救急ユニット出動を検討する" },
+        { t:"出火・漏洩箇所及び影響範囲を確認し、燃焼物質の確定と危険性を確認する" },
+        { t:"隣接施設への延焼状況・危険の有無を確認する", r:true },
+        { t:"水源と発災事業所防災設備を確認する", d:"大量の消火用水と泡放射薬剤の確保" },
+        { t:"特殊車の任務付与と部署位置を指示し、高次出動を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"部隊集結位置を指定し、火災・消防警戒区域を設定する（事業所と連携）" },
+        { t:"現場指揮所を開設し、活動方針を早期決定・全隊周知する。指揮隊間（泡放射中隊間含む）の連携・無線中継を確保する" },
+        { t:"資機材及び個人装備を確認し、活動区域内への進入を統制する" },
+        { t:"自衛消防組織・共同防災組織・関係機関と連携し、現地連絡室の設置要請と指揮隊員派遣を行う" },
+        { t:"検索区域を指定し、燃焼物質を測定し、人命検索及び負傷者を救出する。破損個所の応急措置を行う" },
+        { t:"出動部隊の任務を指定し、筒先配備と延焼阻止線を設定する" },
+        { t:"泡放射体制確保までは燃焼タンク・隣接タンク及び設備の冷却を主眼とし、体制が整えば燃焼タンクへ一挙大量泡放射で消火する" },
+        { t:"泡放射中隊・冷却中隊・特殊作業中隊の部署位置と活動状況を把握し、泡放射状況を観測する（ヘリ・ドローン・はしご車活用）", r:true },
+        { t:"泡消火薬剤を選択する（高分子ゲル生成フッ素界面活性剤・フッ化たんぱく・合成界面活性剤）", d:"単体使用（原液の混合は厳禁）。併用は高分子ゲルとフッ化たんぱくのみ可" },
+        { t:"禁水性物質の有無を確認し、物質の漏洩を防止する。遠距離大量送水システム・消防艇を活用する" },
+        { t:"負傷者を救護する", r:true },
+        { t:"付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"燃焼物品の排除と二次災害の防止。関係者に燃焼物品の影響範囲を確認する", d:"二次災害の発生率が高いことを念頭に安全管理を徹底" },
+        { t:"事業所内の他の危険性物品の保管状況を確認する" },
+        { t:"安全な場所（アクセスポイント）を設定し、身体防護のため装備品・資機材を準備・配置する" },
+        { t:"活動隊員を管理し、交代隊員の確保・休憩場所の確保・飲料水等の補給を行う", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"泡原液等資機材の手配・調達・搬入導線を確保する（関係機関との調整）" },
+        { t:"石油コンビナート災害配備体制の確保・特別防災区域内外への応援要請・兵庫県広域消防相互応援協定に基づく応援要請・非常警備非常招集の発令を検討する", d:"災害規模に応じて兵庫県石油コンビナート等防災計画で定めた配備体制を要請" },
+        { t:"退避時期を確認し、残火整理・警戒隊を指定する" },
+        { t:"関係者への監視警戒を依頼する（口頭又は文書）" },
+        { t:"鎮火・漏洩等が無いことを確認し、安全宣言を行う" }
+      ]}
+    ]
+  },
+
+  /* ================= 災害編（平成31年３月改正） ================= */
+  {
+    id:"d01", cat:"jiko", name:"交通事故（自動車事故）", icon:"🚙",
+    desc:"一般道路４隊／指定道路６隊｜最優先情報＝人命・火災・活動危険。救助指揮隊長と協議し救出方法を決定",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路・部隊集結位置を決定する" },
+        { t:"事故の全容（概要・程度・積載品・車両種別・停車位置）を把握し、関係者を確保する", r:true },
+        { t:"最優先情報（人命危険・火災危険・活動危険）と積載品の種類・状況を把握する", r:true },
+        { t:"要救助者等の状況（人数・負傷程度・閉じ込め/挟まれ）を把握し、救出方法を決定する", d:"救助指揮隊長・救急隊長と連携・協議" },
+        { t:"道路状況・交通量を把握し、活動区域を確保する" },
+        { t:"部隊増強の必要性を判断する", d:"ブルーキャット・ドクターカーの要請／高度救助資機材の要請（救助指揮隊長と調整）／応援指揮隊の要請" },
+        { t:"他機関の出動を要請する（重量物排除＝レッカー車の活用）", d:"あかつきレッカー等。連絡は現場警察官又は管制室を介して要請" },
+        { t:"大規模災害への対応を検討する", d:"要救助者5〜20名：救急ユニット命令出動／30名：第1／50名：第2" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継・関係機関との連携を確保する" },
+        { t:"救出隊を指定する（事前命令）" },
+        { t:"警戒隊（出火防止・安全管理）・特殊車隊（情報収集・照明・ボンベ充填等）を指定する" },
+        { t:"ヘリを活用する（傷病者の搬送・無線中継・道路渋滞状況等把握）", d:"ヘリで救急搬送する場合は地上安全管理員を配置" },
+        { t:"要救助者を救護する", d:"要救助者の観察（救急隊又は救助隊）、応急処置と救出活動の連携", r:true },
+        { t:"負傷者を救護し、現場救護所を設置する", r:true },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物（油漏れ）の有無を確認し、危険物品の排除と二次災害の防止措置をとる" },
+        { t:"火災防止のため警戒筒先・消火器を配置する" },
+        { t:"電路遮断措置をとる" },
+        { t:"事故車両の固定・荷崩れ防止措置をとる" },
+        { t:"警戒区域を設定し、交通遮断・安全管理員の配置・発煙筒の使用（50ｍ以上後方）を行う", d:"カーブ・雨天時は消防車両の配置位置を考慮。警察・道路管理者等と連携" },
+        { t:"周囲の監視活動（対向・後方車両等の監視）を行う", r:true },
+        { t:"隊員の防護（感染防止：ゴーグル・感染防護衣等）を行う", d:"危険物流出時はゴム手袋・ゴーグル等の身体防護" }
+      ]}
+    ]
+  },
+  {
+    id:"d02", cat:"jiko", name:"交通事故（列車事故）", icon:"🚆",
+    desc:"第１出動４隊｜責任者を確保し列車停止要請。資器材は電車の重量を考慮し原則２基以上を同時使用",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路・部隊集結位置を決定する" },
+        { t:"事故の種別・態様（車両衝突・横転・下敷き・ホーム間挟まれ等）を把握し、関係者（責任者）を確保する", r:true },
+        { t:"責任者に列車の停止要請・運行状況の情報収集・必要事項の指示を行う", d:"駅長室と対向車線監視員等、双方に責任ある職員を配置。ＪＲの運行権限は運転指令所の区長" },
+        { t:"要救助者等の状況を把握し、救出方法を決定する（救助指揮隊長と連携・協議）", d:"乗客への対応：ホームと電車間の挟まれは乗客移動で影響することに留意" },
+        { t:"活動障害・活動危険の有無を確認し、活動区域を確保する" },
+        { t:"部隊増強の必要性を判断する", d:"高度救助資機材／応援指揮隊／ブルーキャット・ドクターカーの要請" },
+        { t:"列車関係機関等を要請し、重量物排除（クレーン・重機等）の活用を調整する", d:"鉄道職員の技術提供・専門工具、列車専用ジャッキ・枕木・敷板等の現場調達資器材も考慮" },
+        { t:"大規模災害への対応を検討する", d:"5〜20名：救急ユニット／30名：第1／50名：第2" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、鉄道事業者責任者と連携する。無線中継を確保する" },
+        { t:"運転指令所との連絡場所（監視室等）へ隊員を配置する" },
+        { t:"救出隊（事前命令）・警戒隊（出火防止・安全管理）・特殊車隊を指定する" },
+        { t:"救出方法を決定し救出活動を行う", d:"救助資器材は電車の重量を考慮し原則２基以上を同時使用（外れ・滑りに注意）", r:true },
+        { t:"ヘリを活用し、要救助者を救護する" },
+        { t:"負傷者を救護し、現場救護所を設置する", r:true },
+        { t:"適宜、乗客等へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"軌道敷内への進入可否を現場最高指揮者が判断し、管制室へ報告・各隊へ周知する" },
+        { t:"列車停止を要請し、停止を確認する" },
+        { t:"電路遮断措置（パンタグラフの降下等）を電車責任者等に行わせる" },
+        { t:"火災防止のため警戒筒先・消火器を配置する" },
+        { t:"車両転倒防止・貨物の荷崩れ防止・車両の固定（車止め・手動ブレーキ）を行う" },
+        { t:"警戒区域を設定し、対向・通過車両等を監視する（連絡員及び監視員の配置）", r:true },
+        { t:"隊員の防護（感染防止：ゴーグル・感染防護衣等）を行う" }
+      ]}
+    ]
+  },
+  {
+    id:"d03", cat:"jiko", name:"水難事故", icon:"🤿",
+    desc:"岸壁11隊／沖合５隊／海上以外９隊｜ヘリ・海上・陸上からの情報収集で早期実態把握。潜水要件８項目を遵守",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路・部隊集結位置を決定する" },
+        { t:"最優先情報（人命危険・活動危険）を把握する", r:true },
+        { t:"ヘリ（上空）・海上（消防艇・海保・警察）・陸上（発見者等）から情報収集し早期実態把握に努める", r:true },
+        { t:"目撃者を確保して情報収集し、現場観察（水面・陸上）を行う" },
+        { t:"要救助者（人数・負傷程度等）を把握する" },
+        { t:"潮流・風向・水温・水深の状況を確認し、活動区域を設定する" },
+        { t:"部隊増強（活動部隊の増隊・応援指揮隊・担当指揮者〈陸上・海上指揮〉）を要請する" },
+        { t:"ブルーキャット・ドクターカーを要請し、警察・海上保安庁へ出動を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継と関係機関との連絡体制を確保する", d:"海保・警察等と相互連携（無線は防災波の活用を検討）" },
+        { t:"潜水隊を指定し（事前命令）、スタンバイダイバーを配置する" },
+        { t:"陸上・海上からの検索（捜索）隊、舟艇隊（消防艇・救助ボート）、支援隊（情報収集・照明・ボンベ充填等）の任務を指定する" },
+        { t:"検索範囲を特定・拡大し（救助指揮隊長と調整）、検索方法（通常・環状・方形区画）を決定する", r:true },
+        { t:"水中探査機（水中カメラ・魚探）を活用する" },
+        { t:"ヘリを活用する（救助・傷病者の搬送・ヘリテレ等）" },
+        { t:"要救助者へ救護処置を行い、負傷者を救護する", r:true },
+        { t:"検索活動の中断・打切りは関係機関と協議する" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"警戒区域を設定し（主に陸上）、活動（潜水）区域と海上交通を監視する", r:true },
+        { t:"水難救助活動の要件（潜水深度20ｍ未満・流速0.5m/s以下・視界0.5ｍ以上・水平30ｍ以内・水温７度以上等）を確認する", d:"詳細は資料タブ「水難救助活動の要件」参照" },
+        { t:"ライフジャケットを着用させ、潜水隊員の体調チェック・活動時間管理を行う", r:true },
+        { t:"陸上と水上（水中・海面）の連携体制と安全管理員を配置する" },
+        { t:"潜水隊員の休憩・保温、食料・飲料水の補給を行う", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"d04", cat:"jiko", name:"建物・工作物事故", icon:"🏚",
+    desc:"救助出動４隊｜安全・確実・迅速かつ破壊被害最小の方法を決定。破壊は現場最高指揮者の命令による",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路を決定する。隊を指定して発生階・部屋番号を確認させる", d:"誤進入防止：エントランス名札確認・発災宅への電話・携帯警報機の作為鳴動等" },
+        { t:"事故の形態（閉じ込め・挟まれ・下敷き・転落等）を把握し、関係者から積極的に情報収集する", d:"通報者・居住者・管理人（マスターキー有無確認）・付近住民等" },
+        { t:"要救助者の有無・緊急性を確認する", d:"目視可：不自然な姿勢・応答なし・吐血跡等。目視不可：呼びかけ・異臭・物音・郵便物・メーター確認等から総合判断" },
+        { t:"ガス漏れ等特殊災害の有無を確認する" },
+        { t:"救出方法を決定する（救助指揮隊長・救急隊長と連携・協議）", d:"最も安全・確実・迅速かつ破壊による被害を最小限に止める方法。救助活動マニュアル（建物・工作物事故）に基づく" },
+        { t:"活動障害・活動危険の有無を確認し、活動区域を確保する" },
+        { t:"部隊増強を判断し、ブルーキャット・ドクターカー・高度救助資機材を要請する", d:"要救助者の症状・救出時間等を考慮しドクターカー要請を検討" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継・関係機関との連携を確保する", d:"現場最高指揮者自らが現場を確認し事故の状況を把握" },
+        { t:"救出隊（事前命令）・警戒隊（出火防止・安全管理・階層確認）・特殊車隊を指定する" },
+        { t:"進入口を検討し、要救助者を救護する", d:"関係者に破壊の承諾を得る。火花を発生する器具は極力使用しない。屋内進入時は汚損防止に努める" },
+        { t:"負傷者を救護する", r:true },
+        { t:"適宜、付近住民へ広報する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"破壊・切断作業ではガムテープ等の飛散防止措置をとり、必要最小限の破壊とする", d:"破壊活動は現場最高指揮者の命令による" },
+        { t:"警戒区域を設定し、周囲の監視活動（警戒ロープ・照明）を行う" },
+        { t:"隊員及び要救助者を保護する", d:"ゴーグル等で眼球保護、要救助者は毛布等で保護" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"立会い者（警察官・関係者）を確保する", d:"緊急を要しない破壊進入は原則、警察官や所有者の立会いのもとで実施" },
+        { t:"防犯措置：関係者への説明・警察官への引継ぎを行う" },
+        { t:"時間経過・行動記録・写真等の記録を残す" }
+      ]}
+    ]
+  },
+  {
+    id:"d05", cat:"jiko", name:"機械事故（回転機械）", icon:"⚙️",
+    desc:"救助出動４隊｜長時間救出を想定しドクターカー・機械製造元関係者を早期要請。動力源遮断後に救出",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路を決定する" },
+        { t:"事故の形態（印刷・食品加工・工作機械等への巻き込み）を把握し、関係者を確保する", d:"印刷機械は危険物（インク・機械油）の火災危険。食品加工機械は破壊・切断困難" },
+        { t:"要救助者の状況（負傷程度・巻き込み/挟まれ状況）を把握し、長時間の救出活動に対応する", d:"救助活動には長時間必要と考え、ドクターカー・機械製造元関係者（構造熟知者）を早期要請" },
+        { t:"メンテナンス会社・製造元へ連絡し、当該機械の情報（構造・分解方法等）を入手する" },
+        { t:"現場調達資器材（備え付け工具・専用工具等）を確認し活用する" },
+        { t:"救出方法を決定する（救助指揮隊長・救急隊・医師等と協議）", d:"要救助者の状態・医師の助言・機械の情報から、拡張・逆転・分解・破壊を決定" },
+        { t:"活動障害・活動危険（火災発生危険・毒性物質の有無）を確認し、活動区域を確保する" },
+        { t:"部隊増強を判断し、ブルーキャット・ドクターカー・高度救助資機材を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継・関係機関との連携を確保する" },
+        { t:"警戒隊（出火防止・安全管理）・情報収集隊（機械に関する情報）・救助支援隊（資機材搬送・活動準備）を指定する" },
+        { t:"要救助者を救護し、救出活動を行う", r:true },
+        { t:"負傷者を救護する", r:true },
+        { t:"適宜、関係者等へ広報し、報道機関に関する広報時刻・場所を指定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"電路（動力源）を遮断させ、危険要因の排除・危険防止措置後に救出活動を行わせる", d:"機械関係者等による遮断。監視・連絡員の配置" },
+        { t:"危険物・毒劇物の有無を確認し、排除と消火態勢をとる" },
+        { t:"警戒区域を設定し、周囲の監視活動（警戒ロープ・照明）を行う" },
+        { t:"隊員及び要救助者を保護する（ゴーグル等で眼球保護、要救助者は毛布等で保護）" }
+      ]}
+    ]
+  },
+  {
+    id:"d06", cat:"jiko", name:"機械事故（昇降機）", icon:"🛗",
+    desc:"救助出動４隊｜原則、専門技術者を待つ。活動前に必ず電路遮断。扉開放後は要救助者のみで脱出させない",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路を決定する" },
+        { t:"事故の形態（閉じ込め・挟まれ等）・緊急性の有無を確認し、関係者を確保する" },
+        { t:"要救助者の状況（負傷程度・数・緊急性）を把握する", d:"エスカレーターは長時間の救出活動を想定" },
+        { t:"メンテナンス会社・製造元へ連絡し、当該機械の情報を入手する", d:"原則、専門技術者を待つ。到着遅延・緊急時はその旨を連絡し救出方法等の指示をもらう" },
+        { t:"救出方法を決定する（救助指揮隊長・救急隊・医師等と協議）", d:"エレベーターは緊急性の有無により保守会社の到着を待つか判断" },
+        { t:"活動障害・活動危険の有無を確認し、活動区域を確保する", d:"かご・リフトの昇降危険、昇降路への転落危険、ガラス飛散等" },
+        { t:"部隊増強を判断し、ブルーキャット・ドクターカー・高度救助資機材等を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継・関係機関との連携を確保する" },
+        { t:"警戒隊（出火防止・安全管理）・情報収集隊・救助支援隊を指定する" },
+        { t:"要救助者を救護し、救出活動を行う", d:"救助活動マニュアル（エレベーター・エスカレーター事故）に基づく", r:true },
+        { t:"負傷者を救護する", r:true },
+        { t:"適宜、関係者等へ広報する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"専門技術者到着の有無に関わらず、活動前に電路を遮断する（監視・連絡員の配置）" },
+        { t:"扉の開放後、ピットへの転落防止のため要救助者のみで脱出させない", d:"介添え救助、または必要により自己確保ロープを設定" },
+        { t:"警戒区域を設定し、各階エレベーター扉付近に安全管理員を配置する", d:"困難な場合はドアに「故障・作業中」等の表示" },
+        { t:"隊員及び要救助者を保護する（ゴーグル等で眼球保護、要救助者は毛布等で保護）" }
+      ]}
+    ]
+  },
+  {
+    id:"d07", cat:"jiko", name:"電気（感電）事故", icon:"⚡",
+    desc:"救助出動４隊｜感電危険区域を設定し活動統制。電路遮断は原則、電気事業者。安全距離２ｍ（6600Ｖ）",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路を決定する" },
+        { t:"事故の内容・規模を把握し、関係者を確保する" },
+        { t:"要救助者の状況と送電線（活線）との接触危険を把握する" },
+        { t:"電気事業者・電気工事関係者の立会いを求め、電圧種別（高圧・低圧）と電路遮断の可否を確認する", d:"電気事業者（工事関係者等）と連絡を密にし二次災害防止" },
+        { t:"はしご車・高所作業車の進入部署可否を確認し、救出方法を決定する（救助指揮隊長・救急隊等と協議）" },
+        { t:"活動障害・活動危険の有無を確認し、活動区域を確保する" },
+        { t:"部隊増強を判断し、電気事業者等・ブルーキャット・ドクターカー・高度救助資機材を要請する", d:"必要により増隊し、救助班・救急班・火災警戒班・感電警戒班・安全管理班を任務指定" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場指揮所を開設し、無線中継・関係機関との連携を確保する" },
+        { t:"感電危険区域を設定し、活動を統制する", d:"安全距離２ｍ（配電線6600Ｖ）。高電圧は広範囲に設定（送・配電線「離隔距離」参照）" },
+        { t:"警戒隊（出火防止・安全管理）・情報収集隊・救助支援隊を指定する" },
+        { t:"要救助者を救護し、負傷者を救護する", r:true },
+        { t:"適宜、関係者等へ広報する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"電路の遮断を確認する（原則、電気事業者が実施。監視・連絡員の配置）", d:"停電で支障が生ずる施設・自家発電が作動する施設は関係機関と協議の末に実施" },
+        { t:"警戒区域・感電危険区域を設定し、周囲の監視活動（警戒ロープ・照明）を行う" },
+        { t:"感電危険区域内は絶縁保護具（耐電衣・手袋等）を装着させ、必要最小限の人員で活動させる" },
+        { t:"隊員及び資機材の落下防止措置をとる" }
+      ]}
+    ]
+  },
+  {
+    id:"d08", cat:"jiko", name:"山岳事故", icon:"🧗",
+    desc:"第１出動７隊｜119通報プレート（命の道標）で発生場所確認。人員・機材を増強し余裕を持って活動。ヘリ活用",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路・部隊集結位置を決定する", d:"「119通報プレート」（命の道標）・登山ルートから確認" },
+        { t:"必要資機材を確認し増強する。山岳救助計画を携行する" },
+        { t:"事故の全容と発生場所を特定する。ヘリから状況を把握する（上空からの現場確認・情報収集・救出方法）" },
+        { t:"通報者・下山者から要救助者等の情報を収集する", d:"要救助者の人数・負傷程度等を早期に特定" },
+        { t:"活動危険の有無を確認する" },
+        { t:"部隊増強（出動部隊の増隊・応援指揮隊）を要請する", d:"人員・機材を増強し余裕を持って活動する" },
+        { t:"ブルーキャット・ドクターカー・その他関係機関を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場（前進）指揮所を開設し、通信手段（無線中継）を確保する", d:"必要に応じて無線中継車両を配置" },
+        { t:"関係機関と連携する", d:"捜索が広範囲に及ぶ場合は消防団・警察と連携協力" },
+        { t:"無線中継隊（ヘリの活用）・先発隊（指揮者・救助隊・救急隊・誘導人等）・後続隊を指定し、消防団員を投入する" },
+        { t:"救出方法を決定する（ヘリの活用：無線中継・情報収集・上空捜索・部隊誘導・機材搬送・救出活動等）" },
+        { t:"要救助者を観察し、症状悪化防止処置を行う", r:true },
+        { t:"負傷者を救護する", r:true },
+        { t:"捜索の打切りは関係機関と協議する" },
+        { t:"報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"滑落・転落防止、落石防止措置をとり、危険箇所へ確保ロープ等を設定する", d:"山岳地では天候が急変する場合がある" },
+        { t:"ヘリ着陸場所に地上安全管理員を配置し、同行者の事故を防止する", d:"ヘリの活動時間は日没まで。中継搬送時は地上安全管理員を配置" },
+        { t:"夜間対応として照明器具（予備電池）を携行する", d:"天候悪化時・夜間は照明・防寒・合羽等の対応策を講じる" },
+        { t:"各ルートへの進入状況を現場指揮所で管理する", r:true }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は救出隊員を休憩させる", r:true },
+        { t:"食料・飲料水を補給する", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"d09", cat:"jiko", name:"酸欠事故", icon:"🫁",
+    desc:"救助出動４隊｜環境測定しながら進入。空気呼吸器着装・２名以上１組。二次救出班を待機させる",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"発生場所と指令場所を確認し、進入路・部隊集結位置を決定する" },
+        { t:"必要資機材（予備ボンベ・照明器具・ガス測定器・送排風機等）を確認・増強する" },
+        { t:"事故の全容（発生場所・進入口・内部の状況・ガスの種類・人体への影響）を把握し、関係者から情報収集する", d:"マンホール内の硫化水素滞留、不活性ガス置換、不完全燃焼のＣＯ発生等" },
+        { t:"作業スペースを確保し、風向と危険区域を把握する" },
+        { t:"要救助者の状況（人数・場所・現在の状況）を把握する" },
+        { t:"活動障害・活動危険の有無を確認し、活動区域を確保する", d:"毒性・爆発危険がある場合は「毒劇物災害・ガス災害」の活動方針も合わせて対応" },
+        { t:"部隊増強（特殊災害隊〈方面隊含む〉・応援指揮隊）を要請する", d:"状況により特殊災害出動に切り替える" },
+        { t:"ブルーキャット・ドクターカーを要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場（前進）指揮所を開設し、無線中継を確保する" },
+        { t:"警戒区域・危険区域（酸素濃度21％未満等）を設定し、現場救護所を設定する" },
+        { t:"必要資機材を確認し、不足資機材の搬送を依頼する" },
+        { t:"救出隊・応援隊（二次救出隊）・救護隊・警戒隊（ガス検知・情報収集・現場警戒）・支援隊（ボンベ充填・照明・換気等）を指定する", d:"特災隊・救助隊と協議" },
+        { t:"救出手段（低所・立て坑・横坑）を決定し、事前換気（送風機・予備ボンベ投入）を実施する", d:"環境測定を実施しながら進入。爆発危険がある場合は換気に注意" },
+        { t:"はしごを活用し、要救助者へ救護措置を行う", r:true },
+        { t:"関係機関（警察・労基・海上保安部）へ連絡する" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"ガス濃度等の測定により早期に危険区域（酸欠・毒性・爆発）を設定し、進入隊員を統制する", r:true },
+        { t:"安全管理員を配置し、周囲の監視活動（呼吸器・ガス測定等）を行う", d:"換気時はガス排出方向の安全管理（呼吸保護具等の着装）" },
+        { t:"空気呼吸器を着装させ、検索（自己確保）ロープを設定し、２名以上１組で進入させる" },
+        { t:"二次災害に備えて二次救出隊（交替要員）を配置する" },
+        { t:"進入・退出時間を把握（管理）する", r:true }
+      ]}
+    ]
+  },
+
+  /* ---- 特殊災害 ---- */
+  {
+    id:"d10", cat:"tokusai", name:"放射性物質等災害", icon:"☢️",
+    desc:"特殊災害出動 第１出動10隊／第２出動19隊｜外部被ばく防護三原則。線量限度10mSv（人命救助時100mSv）",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"指令内容を把握・確認し、風向と危険区域を把握する" },
+        { t:"進入路・部隊集結位置を決定する（風上・風横から）" },
+        { t:"要救助者・負傷者の有無と負傷程度（被ばく・汚染の有無を含む）を把握する" },
+        { t:"災害実態（取扱施設／輸送中の事故）を把握し、関係者を確保して情報収集する", d:"施設＝放射線管理区域の内外を確認。輸送中＝ＲＩ標識・携行書類を確認。到着前の措置内容も確認" },
+        { t:"放射線・放射性物質の漏洩と、種類・数量・特性を確認する" },
+        { t:"関係者（専門家）を確保し、県・専門機関への連絡と専門家派遣を協議する", d:"協力機関：神戸薬科大学・神戸大学研究基盤センター・日本メジフィジックス" },
+        { t:"出動隊へ災害状況を周知し、本部へ状況報告する", r:true },
+        { t:"増強隊（消防隊・ドクターカー等）・活動支援隊（必要資機材等）を要請する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"コールドゾーンを設定する（消防警戒区域）" },
+        { t:"現場指揮所・救急指揮所を開設し、現場救護所を設営する" },
+        { t:"ウォームゾーンを設定し、前進指揮所を開設する（進入隊員の管理・隊員交替・活動指示等）" },
+        { t:"除染所を設営し、汚染検査・除染体制を確保する。ウォームゾーン内活動隊員の防護措置をとる" },
+        { t:"ホットゾーンを設定する", d:"設定要件：関係者との協議、放射線量0.1mSv/h以上・汚染区画等。ゾーン内は防護措置" },
+        { t:"放射線量を測定・把握する", r:true },
+        { t:"検索区域を指定し、救出方法を決定し、避難誘導する" },
+        { t:"消火方法を決定する（関係者と協議）", d:"延焼危険時は可能なら放射性物質の移動" },
+        { t:"傷病者の被ばく・汚染状況を確認し、関係者（専門家）同乗のうえ搬送先病院を決定する" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時間・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"外部被ばく防護三原則（時間短縮・距離確保・遮蔽利用）を徹底する" },
+        { t:"防護措置により内部被ばくを防止し、放射線測定機器で線量を把握する", r:true },
+        { t:"進入隊員は最小限とし、被ばく管理を行い適時交代させる", d:"線量限度は原則10mSv以下。人命救助等やむを得ない場合に限り100mSv", r:true },
+        { t:"コールドゾーンへ放射性物質を持ち出さない（二次災害防止）" },
+        { t:"他の有害物質（毒劇物等）の取扱状況を確認する" }
+      ]}
+    ]
+  },
+  {
+    id:"d11", cat:"tokusai", name:"毒・劇物災害", icon:"☠️",
+    desc:"特殊災害出動 第１出動10隊／第２出動19隊｜ゾーニングで住民の安全確保。コールドゾーンへ毒劇物を持ち出さない",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"指令内容を把握・確認し、風向と危険区域を把握する" },
+        { t:"進入路・部隊集結位置を決定する（風上・風横から）" },
+        { t:"毒劇物の種類・数量・特性と漏洩箇所を確認する", d:"関係者からの情報収集・検知・測定により原因物質の特定に努める" },
+        { t:"貯蔵・取扱施設の実態を把握し、関係者を確保して漏洩程度・種別を確認する" },
+        { t:"要救助者・負傷者の有無と負傷程度（汚染の有無等）を把握する" },
+        { t:"関係者（専門家）を確保し、協力機関（海上災害防止センター・神戸学院大学）を要請する" },
+        { t:"出動隊へ災害状況（危険情報等の重要情報）を周知し、本部へ状況報告する", r:true },
+        { t:"増強隊・活動支援隊を要請し、要救助者数により救急ユニット・大規模災害運用への移行を判断する", d:"5〜20名：救急ユニット／30名：第1／50名：第2" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"コールドゾーンを設定する（消防警戒区域）", d:"活動区域（ゾーニング）の設定により住民等の安全確保を図る" },
+        { t:"現場指揮所・救急指揮所を開設し、現場救護所を設営する。活動方針を全隊員に周知する" },
+        { t:"ウォームゾーンを設定し、前進指揮所を開設する（進入隊員の管理・隊員交替・活動指示等）" },
+        { t:"除染所を設営し、ウォームゾーン内活動隊員の防護措置と汚染水の流出防止措置をとる" },
+        { t:"ホットゾーンを設定する", d:"設定要件：許容濃度・可燃性ガス30％LEL・区画等。ゾーン内は防護措置" },
+        { t:"援護注水の筒先を配備する" },
+        { t:"検知・測定により漏洩物質を確定し、防災措置を実施する", r:true },
+        { t:"検索区域を指定し、救出方法（ショートピックアップ等）を決定し、避難誘導する" },
+        { t:"トリアージを実施し、救護隊（応急処置・搬送等）を指定し、搬送先病院を決定する（EMIS等）" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時間・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物の排除と二次災害の防止措置をとる", d:"毒劇物は中毒・引火・爆発等の二次災害危険が大きく、化学反応等で危険性が増大しやすい" },
+        { t:"コールドゾーンへ毒劇物を持ち出さない" },
+        { t:"進入隊員は最小限とし、活動ローテーションを考慮した隊員管理を行う", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"d12", cat:"tokusai", name:"ガス災害", icon:"💨",
+    desc:"警戒出動５隊｜特災隊による検知・測定。火災警戒区域（火気制限）・爆発危険区域（30％LEL超・進入制限）を設定",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"指令内容を把握・確認し、進入路・部隊集結位置を確認する" },
+        { t:"ガスの種類・数量・特性と漏洩箇所・範囲を確認する", d:"漏洩は滞留地域・流動範囲の特定が難しい。LPガスは空気より重く低所に滞留" },
+        { t:"ガスの種別・漏洩程度・原因を確認し、検知・測定を実施する", r:true },
+        { t:"要救助者（人数・負傷程度等）を把握する" },
+        { t:"風向と危険区域を把握し、本部へ報告する" },
+        { t:"活動障害の有無を確認し、警戒区域を設定する" },
+        { t:"ガス関係機関を要請する" },
+        { t:"部隊増強の必要性を判断する", d:"特殊災害出動への切り替え・出動部隊の増隊要請" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"現場（前進）指揮所を開設し、無線中継を確保し、現場救護所を設置する" },
+        { t:"火災警戒区域を設定する（火気使用禁止・制限）", d:"漏洩量・測定値を考慮。関係者以外の退去命令・出入り禁止又は制限" },
+        { t:"爆発危険区域を設定する", d:"可燃性ガス濃度がLELの30％超。原則進入制限。緊急時は静電気防止・防爆資機材・ガス拡散・援護注水等の措置のうえ最小限で進入" },
+        { t:"検索区域を指定し、援護注水隊を指定し、避難誘導・負傷者救護を行う" },
+        { t:"ガス・電気関係者によるガス供給遮断・電路遮断を行わせる", d:"関係者未着で緊急の場合は可能な範囲で消防が実施（木栓打ち込み・粘土・布・テープ止め）" },
+        { t:"滞留ガス等を排出する（自然換気や送排風機による強制換気）" },
+        { t:"噴出ガスに着火した場合はガス遮断による消火を優先し、筒先を配備する", d:"注水時の留意：LPボンベ単独は原則注水しない。ボンベ集積所等は遠距離からの大量放水" },
+        { t:"特殊車の部署位置を指定する" },
+        { t:"トリアージを実施し、救護隊（応急処置・搬送等）を指定する" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物の排除と二次災害防止を徹底する（防爆資器材の使用等）", d:"ガス関係者と連携し爆発等の二次災害防止に重点" },
+        { t:"進入隊員の時間管理・活動ローテーションを行う", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"d13", cat:"tokusai", name:"危険物流出事故", icon:"🛢",
+    desc:"警戒出動（放水隊１隊）｜関係機関と連携し流出拡散を防止。火災警戒区域を設定し火気取扱いを禁止・制限",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"指令内容を把握・確認し、進入路・部隊集結位置を確認する" },
+        { t:"災害実態を把握し（危険物施設台帳情報含む）、関係者を確保して情報収集と時間経過の記録を行う", r:true },
+        { t:"危険物の種類・数量・特性と流出場所・範囲を確認する", d:"検知・測定により原因物質の特定に努める" },
+        { t:"引火危険・禁水性・毒性等の有無と、種別・漏えい程度・原因を確認する", d:"爆発危険等がある場合はガス災害の活動方針による" },
+        { t:"風向と危険区域を把握し、要救助者を把握し、本部へ報告する" },
+        { t:"活動障害の有無を確認し、活動区域を確保する" },
+        { t:"関係事業所への派遣を要請する" },
+        { t:"部隊増強の必要性を判断する", d:"特殊災害出動への切替・増隊・査察係員・消防団の要請" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"火災警戒区域を設定し（火気使用禁止・制限）、無線中継を確保する" },
+        { t:"爆発危険区域を設定する" },
+        { t:"援護注水隊を指定し、避難誘導を行う" },
+        { t:"オイルフェンスの展張・土のう等により流出・拡散を防止する", d:"関係機関と連携。危険物災害は急速に進展し有毒ガス発生・火災危険が大きい" },
+        { t:"泡による密閉（火災防止）と出火に備えた消火態勢をとる", d:"禁水性・毒性等の有無に留意。消防用設備を活用" },
+        { t:"負傷者を救護し、救護隊（応急処置・搬送等）を指定する", r:true },
+        { t:"付近住民・報道機関へ広報する（広報場所・時間の設定）" },
+        { t:"関係者へ危険物の貯蔵・取扱いの一時停止又は制限命令、応急措置命令を行う" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"危険物品の排除と二次災害の防止措置をとる" },
+        { t:"火災防止のため警戒筒先を配置し、警戒区域（火災警戒）を設定する" },
+        { t:"隊員の防護措置（簡易防護服・耐油性手袋等の装着）を行う" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"証拠書類を確保する（写真撮影）" }
+      ]}
+    ]
+  },
+
+  /* ---- 水災 ---- */
+  {
+    id:"w01", cat:"suisai", name:"水災（河川氾濫・浸水）", icon:"💧",
+    desc:"水防指令（放水隊１隊〜）｜気象情報に留意し監視体制強化。二次災害防止・退避ルートの常時確認",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"気象情報・危険箇所の状況・監視員やパトロールの情報を収集する", d:"水防計画書・避難計画書・ハザードマップで発災地点の地形等を把握", r:true },
+        { t:"水防用資器材を点検・準備する（車両積載等）" },
+        { t:"要救助者（人数・負傷程度等）を把握し、救出方法等を決定する" },
+        { t:"水防活動実施の要否と部隊増強の必要性を判断し、本部へ状況報告する", d:"職員の非常招集も検討", r:true },
+        { t:"関係機関（区役所・警察・建設局）と情報連絡する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"検索区域を指定し、救助・検索・避難者数を把握する", r:true },
+        { t:"避難状況（避難場所・経路・方法等）を確認し、避難勧告等の措置をとる", d:"避難情報は地域防災計画に基づき関係各局と調整のうえ発表。避難先ルートの安全を事前確認" },
+        { t:"避難誘導員を配置し、避難場所の対応を区役所と調整する", d:"誘導員配置・誘導ロープ・照明を活用し、適時人員点検" },
+        { t:"水防工法の要否を判断し、種類と必要資器材を調達する", d:"土砂等の輸送手段も確保" },
+        { t:"消防団及び関係機関と連携する" },
+        { t:"公用負担の権限の要否を判断する（私的資材・土地等の使用）" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する", d:"災害発生の恐れがある場合は速やかにパトロール・オートダイヤル・行政無線等で広報" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"異状を感じた場合は早期に退避する。常に退避ルートを確認する", r:true },
+        { t:"消防警戒区域を設定する", d:"緊急切迫時は小隊長判断で設定し早急に署本部へ報告" },
+        { t:"避難路を確保し、複数の監視員を配置する（避難住民の安全確保）" },
+        { t:"自己確保・誘導ロープを配置し、照明器具・連絡体制（400メガ無線等）を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員交替と休憩（飲料水補給等）を行う", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"w02", cat:"suisai", name:"水災（異常潮位・高潮・津波）", icon:"🌊",
+    desc:"水防指令｜津波到達30分前には警戒区域外へ退避（水平避難原則）。市防災情報システムで潮位監視",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"市防災情報システム（注意報・警報・防災指令・神戸港の潮位情報）を監視する", r:true },
+        { t:"防潮施設（連絡先）を確認する", d:"高潮＝みなと総局・警戒潮位→全防潮鉄扉閉鎖指令。各管理者は概ね30分前に閉鎖活動を終え退避" },
+        { t:"津波警戒として避難先の確認と安全チェックを行う（緊急避難所〈高所ビル等〉の確認）" },
+        { t:"水防用資器材を点検し車両積載する。危険箇所の状況を確認する" },
+        { t:"消防団との連絡体制（監視・パトロール）を確保し、緊急避難等安全管理事項を徹底する", d:"高潮・津波注意報／警報時は警戒・広報パトロールを実施" },
+        { t:"要救助者を把握し、本部へ状況報告する", r:true },
+        { t:"水防活動実施の要否を判断し、救出活動隊の応援要請（準備）・職員の非常招集を行う" },
+        { t:"関係機関（区役所・消防団・警察・建設局・防災福祉コミュニティ）と情報連絡する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"検索区域を指定し、救助・検索・避難者数を把握する", r:true },
+        { t:"避難状況を確認し、避難勧告等の措置をとる", d:"避難準備情報等は地域防災計画に基づき関係各局と調整。避難先が危険な場合は安全な一時避難先を早急に検討" },
+        { t:"避難誘導員を配置し、避難場所の対応を区役所と調整する", d:"南海トラフ地震では水平避難を原則とし、津波到達時刻の30分前には津波被害警戒区域外へ退避" },
+        { t:"水防工法の要否を判断し、種類と必要資器材を調達する" },
+        { t:"消防団と連携し、公用負担の権限の要否を判断する" },
+        { t:"適宜、付近住民へ広報し、報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"異状を感じた場合は早期に退避する。常に避難ルートを確認する", d:"津波は時間的余裕がない場合あり。到達時刻から余裕を持って安全な場所へ退避できるようにしておく", r:true },
+        { t:"避難路を確保し、複数の監視員を配置する（避難住民の安全確保）" },
+        { t:"自己確保・誘導ロープを配置し、照明器具・連絡体制（400メガ無線等）を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員交替と休憩（飲料水補給等）を行う", r:true }
+      ]}
+    ]
+  },
+  {
+    id:"w03", cat:"suisai", name:"水災（土砂災害）", icon:"⛰",
+    desc:"水防指令｜「山・川から土砂」「茶色い水」等のキーワードで土砂災害を疑う。斜面監視員配置・緊急退避経路の確保",
+    phases:[
+      { id:"p1", name:"状況把握", lv:1, tasks:[
+        { t:"気象情報（注意報・警報・防災指令・県地域別土砂災害危険度・雨量情報・ＸＲＡＩＮ）を収集する", r:true },
+        { t:"土砂災害警戒区域の情報と監視員・パトロールの情報を確認する" },
+        { t:"水防用資器材を点検・準備し（車両積載等）、緊急避難所を確認する" },
+        { t:"通報キーワード（「山・川から土砂」「茶色い水」「家がのまれた」等）から土砂災害を疑う", d:"通報段階で「土石流・地すべり」という言葉は無い" },
+        { t:"現地の危険箇所の状況を確認し、土砂災害を確認すれば災害実態の全容を署作戦室・本部へ連絡する", r:true },
+        { t:"避難勧告・指示の要否を判断する" },
+        { t:"要救助者を把握する", d:"消防団・警察官へ協力を要請し要救助者情報を収集" },
+        { t:"救助指令への切り替えを要請する", d:"要請基準：歩行者・車両巻き込みの形跡／土砂流入家屋で安否不明／生き埋め・閉じ込め情報" },
+        { t:"部隊増強の必要性を判断し、関係機関（警察・消防団・建設局）と情報共有する" }
+      ]},
+      { id:"p2", name:"活動", lv:2, tasks:[
+        { t:"呼びかけによる家屋住民の安否確認と避難誘導を最優先に活動する", r:true },
+        { t:"避難範囲（世帯・人数）と避難状況を確認し、避難誘導員を配置する", d:"発生区域を包含する扇形エリアを避難対象区域とし避難指示。土石流は同一山系で同時多発するため広域避難を判断" },
+        { t:"避難場所・ルート等の安全を確認し、足場を確保する", d:"土砂は沼地状態で踏み入ると抜けるのは困難。竹竿等で足場を探るかコンパネ・畳等を足場に使用" },
+        { t:"消防団及び関係機関との連携・分担範囲、他機関との活動エリアを調整する" },
+        { t:"広報を行う（個別訪問又はマイク広報）。報道機関に対する広報時刻・場所を設定する" }
+      ]},
+      { id:"p3", name:"安全管理", lv:1, tasks:[
+        { t:"消防警戒区域を設定する" },
+        { t:"土砂災害発生付近を俯瞰的に監視し、全体の地形・環境・地理の特徴を把握する" },
+        { t:"斜面監視員を配置する", d:"亀裂・オーバーハング（落石）・湧水・流水の量と色・樹木の揺れを監視。異常時は活動隊に緊急退避の合図", r:true },
+        { t:"活動前に緊急退避経路（①水平避難経路②家屋上階への垂直避難経路）を確保し、合図伝達方法を確認する", d:"大雨・轟音中でも聞こえる方法。警笛を装備" },
+        { t:"指揮者は時間を決めて活動隊員の活動状況と安全を確認する", r:true },
+        { t:"自己確保・誘導ロープを配置し、照明器具・連絡体制（400メガ無線等）を確保する" }
+      ]},
+      { id:"p4", name:"部隊整理・その他", lv:3, tasks:[
+        { t:"長時間活動時は隊員交替と休憩（飲料水・食糧の補給等）を行う", r:true }
+      ]}
+    ]
+  },
+
+  /* ================= 危機事象発生時の対応編（平成27年７月） ================= */
+  {
+    id:"k01", cat:"kiki", name:"危機事象発生時の対応", icon:"🆘",
+    desc:"活動中の隊員受傷等の緊急事態｜隊員の救出を第一とする。災害事象＝第１現場、危機事象＝第２現場として対処",
+    phases:[
+      { id:"p1", name:"初動対応・情報収集", lv:1, tasks:[
+        { t:"危機事象発生を宣言し、直ちに様々な手段で全隊及び本部に周知する", d:"無線送信・伝令・モーターサイレン・拡声器・警笛" },
+        { t:"各隊を安全な場所に退避させる" },
+        { t:"各小隊長に自隊隊員の安全（員数・負傷・健康等）を確認させ、現場指揮所へ報告させる", d:"異常有無・活動（状況）継続有無等を報告" },
+        { t:"活動継続の判断を行う", d:"中断で重大な障害・被害が認められる場合＝安全な場所で継続。影響がない（少ない）場合＝一旦安全な場所で待機" },
+        { t:"必要に応じて各小隊長を指揮所に集結させ、事故概要と以後の任務指示を与える（情報共有）" },
+        { t:"危機事象の概要・該当人数・該当小隊を確認する", d:"該当者の確認（現地にて）・事故詳細の収集・メンタルヘルスケアの配慮" },
+        { t:"発生場所の状態（建物構造・区画・用途・配置・収容物・危険物等・活動障害）を確認する" },
+        { t:"事故対策本部との情報連絡体制をとる（情報収集専従員の配置）", d:"現場と対策本部との連絡調整" }
+      ]},
+      { id:"p2", name:"指揮体制・部隊編成", lv:1, tasks:[
+        { t:"現場最高指揮者が中隊長の場合は、指揮権を直ちに指揮隊長以上の指揮者に移行する" },
+        { t:"現場最高指揮者を宣言し、各級指揮者を指定・宣言する", d:"第１現場（災害事象）＝所轄中隊長／第２現場（危機事象）＝指揮隊長／統括指揮＝大隊長以上。継続困難な場合は別途指名" },
+        { t:"指揮隊の増強を要請する（指揮支援・前進〈局面〉指揮）" },
+        { t:"活動可能な部隊を選別し、災害事象（第１現場）と危機事象（第２現場）に部隊を整理して活動態勢を立て直す" },
+        { t:"負傷・行方不明等が発生した小隊や混乱状態の隊員の活動を休止させ、必要に応じ部隊増強と隊員補充を行う" },
+        { t:"早期に活動部隊の中から検索・救助班を編成し、各隊が有機的に連携する体制を構築する" },
+        { t:"局面指揮者を危機事象現場に配置し、前進指揮所を設置する", d:"局面の情報収集・初動対応の確立・検索救助班等の早期配置" },
+        { t:"安全管理員を配置する" },
+        { t:"高次（命令）出動を要請する", d:"危機事象現場の活動を考慮した応援隊（命令出動）を優先" },
+        { t:"必要な部隊・重機・大型ブロアー車等を要請する", d:"時機を失することなく要請。長時間活動を予測したバックアップ体制（部隊増隊）・関係所属の非常招集準備" }
+      ]},
+      { id:"p3", name:"現場活動（救出支援）", lv:2, tasks:[
+        { t:"連携体制（救助隊・援護注水隊の指定）を確立する" },
+        { t:"検索区域・危険ゾーン・危険区域を設定し、活動危険の排除措置をとる" },
+        { t:"大型ブロアー使用を判断し、全隊へ周知徹底する", d:"クリアゾーンの設定（大型ブロアー車による）。排気側等の安全管理・警戒筒先等確認" },
+        { t:"活動隊（危機事象現場・災害現場）とバックアップ体制を編成する" },
+        { t:"各級指揮者・安全管理員を編成する（ローテーション等）", r:true },
+        { t:"活動支援隊を指定し、休憩場所・飲料水・食料等を確保する" },
+        { t:"活動障害（周囲の環境）を排除する", d:"専属の隊を指定し、活動隊が専念できる体制をとる" }
+      ]},
+      { id:"p4", name:"安全管理・事後対応", lv:2, tasks:[
+        { t:"二次災害防止を最優先とし、活動部隊の安全管理に万全を期す", d:"屋内等への進入は事業所関係者の協力で構造等を把握し、安全と判明するまで進入させない", r:true },
+        { t:"長時間活動時は部隊を早急に増強し、活動時間・休憩時間を区分して部隊交代に努める", r:true },
+        { t:"報道機関への広報は本部と協議・調整のうえ発表する", d:"広報場所は可能な限り本部又は所轄消防署。活動隊員に動揺を与えない配慮" },
+        { t:"情報収集体制を初期段階から充実させる", r:true },
+        { t:"危機的な出来事に遭遇した職員のメンタルケアを補助する環境を作る" }
+      ]}
+    ]
+  }
+  ];
+
+  // タスクIDを採番し索引を作る
+  var TASK_INDEX = {};
+  ROLES.forEach(function(role){
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(task, i){
+        task.id = role.id + "-" + ph.id + "-" + (i+1);
+        TASK_INDEX[task.id] = { role: role, phase: ph, task: task };
+      });
+    });
+  });
+
+  /* ---- 状態（localStorage） ---- */
+  var STORE_KEY = "saigai-tasks-v1";
+  var state = { level: 0, checks: {}, filterTodo: false, curRole: ROLES[0].id };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    if (typeof saved.level === "number" && saved.level >= 0 && saved.level < LEVELS.length) state.level = saved.level;
+    if (saved.checks && typeof saved.checks === "object") state.checks = saved.checks;
+    if (typeof saved.filterTodo === "boolean") state.filterTodo = saved.filterTodo;
+    if (typeof saved.curRole === "string" && ROLES.some(function(r){ return r.id === saved.curRole; })) state.curRole = saved.curRole;
+  } catch(e) { /* 破損時は初期状態 */ }
+
+  function save(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) { /* 容量超過等は無視 */ }
+  }
+
+  function fmtTime(ts){
+    var d = new Date(ts);
+    function z(n){ return (n<10?"0":"")+n; }
+    return z(d.getMonth()+1) + "/" + z(d.getDate()) + " " + z(d.getHours()) + ":" + z(d.getMinutes());
+  }
+
+  function findRole(id){
+    return ROLES.filter(function(r){ return r.id === id; })[0] || ROLES[0];
+  }
+
+  /* ---- 集計 ---- */
+  function roleCounts(role){
+    var due = 0, dueDone = 0, total = 0, done = 0;
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(t){
+        total++;
+        var c = !!state.checks[t.id];
+        if (c) done++;
+        if (ph.lv <= state.level) { due++; if (c) dueDone++; }
+      });
+    });
+    return { due: due, dueDone: dueDone, dueTodo: due - dueDone, total: total, done: done };
+  }
+
+  // 事案で扱っている指揮カードか（チェックが１つ以上ある、又は選択中）。
+  // 全41カードを同時集計すると未実施バッジが意味を失うため、対応中のカードのみ集計対象にする。
+  function roleActive(role){
+    if (role.id === state.curRole) return true;
+    return role.phases.some(function(ph){
+      return ph.tasks.some(function(t){ return !!state.checks[t.id]; });
+    });
+  }
+
+  /* ---- 活動段階バー ---- */
+  var levelsEl = document.getElementById("levels");
+  function renderLevels(){
+    levelsEl.innerHTML = "";
+    LEVELS.forEach(function(lv, i){
+      var b = document.createElement("button");
+      b.textContent = lv.name;
+      if (i === state.level) b.className = "cur";
+      else if (i < state.level) b.className = "passed";
+      b.addEventListener("click", function(){
+        state.level = i; save(); renderAll();
+      });
+      levelsEl.appendChild(b);
+    });
+  }
+
+  /* ---- 状況タブ ---- */
+  var roleStatsEl = document.getElementById("roleStats");
+  var statusHintEl = document.getElementById("statusHint");
+  function renderStatus(){
+    roleStatsEl.innerHTML = "";
+    var totalTodo = 0;
+    CATS.forEach(function(cat){
+      var rolesInCat = ROLES.filter(function(r){ return r.cat === cat.id; });
+      var lab = document.createElement("div");
+      lab.className = "catlabel";
+      lab.textContent = cat.name;
+      roleStatsEl.appendChild(lab);
+      rolesInCat.forEach(function(role){
+        var c = roleCounts(role);
+        var active = roleActive(role);
+        if (active) totalTodo += c.dueTodo;
+        var div = document.createElement("div");
+        div.className = "rolestat";
+        var pct = c.due ? Math.round(c.dueDone / c.due * 100) : 0;
+        var todoCls = (!active || c.due === 0) ? "" : (c.dueTodo === 0 ? "done" : "warn");
+        div.innerHTML =
+          '<span class="ri">' + role.icon + '</span>' +
+          '<span class="rm"><span class="rn">' + role.name + '</span>' +
+          '<span class="bar"><i style="width:' + (active ? pct : 0) + '%"></i></span>' +
+          '<span class="pct">' + (active
+            ? ('現段階で実施すべき ' + c.dueDone + '／' + c.due + ' 件完了（全' + c.total + '件）')
+            : ('全' + c.total + '件｜タップで指揮カードを開く')) + '</span></span>' +
+          '<span class="todo ' + todoCls + '"><b>' + ((!active || c.due === 0) ? "－" : c.dueTodo) + '</b><span>未実施</span></span>';
+        div.addEventListener("click", function(){
+          state.curRole = role.id; save();
+          switchTab("tab-tasks");
+          renderAll();
+        });
+        roleStatsEl.appendChild(div);
+      });
+    });
+    statusHintEl.innerHTML = "現在の活動段階：<b>" + LEVELS[state.level].name + "</b>。段階を進めると、その段階までに実施すべきタスクが集計されます。未実施件数は対応中（チェックのある）カードのみ集計します。";
+
+    var badge = document.getElementById("totalBadge");
+    if (totalTodo > 0) { badge.style.display = ""; badge.textContent = totalTodo > 99 ? "99+" : totalTodo; }
+    else badge.style.display = "none";
+  }
+
+  /* ---- 実施記録 ---- */
+  var logListEl = document.getElementById("logList");
+  function logEntries(){
+    return Object.keys(state.checks)
+      .map(function(id){ return { id: id, ts: state.checks[id] }; })
+      .sort(function(a,b){ return a.ts - b.ts; });
+  }
+  function renderLog(){
+    var entries = logEntries();
+    if (entries.length === 0) {
+      logListEl.innerHTML = '<p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p>';
+      return;
+    }
+    logListEl.innerHTML = "";
+    entries.forEach(function(en){
+      var info = TASK_INDEX[en.id];
+      if (!info) return;
+      var div = document.createElement("div");
+      div.className = "li";
+      div.innerHTML = '<span class="tm">' + fmtTime(en.ts) + '</span>' +
+        '<span class="rl">[' + info.role.name + ']</span>' +
+        '<span class="tx"></span>';
+      div.querySelector(".tx").textContent = info.task.t;
+      logListEl.appendChild(div);
+    });
+  }
+
+  document.getElementById("copyLog").addEventListener("click", function(){
+    var lines = logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? (fmtTime(en.ts) + "　[" + info.role.name + "]　" + info.task.t) : null;
+    }).filter(Boolean);
+    if (lines.length === 0) { alert("コピーする記録がありません。"); return; }
+    var text = "【西消防署 災害活動支援 実施記録】\n" + lines.join("\n");
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); alert("記録をコピーしました。"); } catch(e){ alert("コピーできませんでした。"); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ alert("記録をコピーしました。"); }, fallback);
+    } else fallback();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if (!confirm("チェックと実施記録をすべてクリアして、新しい事案を開始しますか？\n（この操作は取り消せません）")) return;
+    state.checks = {};
+    state.level = 0;
+    save(); renderAll();
+  });
+
+  /* ---- タスクタブ ---- */
+  var catChipsEl = document.getElementById("catChips");
+  var roleChipsEl = document.getElementById("roleChips");
+  var roleDescEl = document.getElementById("roleDesc");
+  var taskListEl = document.getElementById("taskList");
+  var filterToggleEl = document.getElementById("filterToggle");
+
+  filterToggleEl.addEventListener("click", function(){
+    state.filterTodo = !state.filterTodo; save(); renderTasks();
+  });
+
+  function renderTasks(){
+    var curRole = findRole(state.curRole);
+    var curCat = curRole.cat;
+
+    // カテゴリチップ
+    catChipsEl.innerHTML = "";
+    CATS.forEach(function(cat){
+      var b = document.createElement("button");
+      if (cat.id === curCat) b.className = "cur";
+      b.textContent = cat.name;
+      b.addEventListener("click", function(){
+        if (cat.id !== curCat) {
+          // 別カテゴリの先頭カード（チェック済みがあればそのカード）を選択
+          var rolesInCat = ROLES.filter(function(r){ return r.cat === cat.id; });
+          var target = rolesInCat.filter(roleActive)[0] || rolesInCat[0];
+          state.curRole = target.id; save();
+        }
+        renderTasks();
+      });
+      catChipsEl.appendChild(b);
+    });
+
+    // 災害種別チップ（選択中カテゴリのみ表示）
+    var prevScroll = roleChipsEl.scrollLeft;
+    roleChipsEl.innerHTML = "";
+    var curBtn = null;
+    ROLES.filter(function(r){ return r.cat === curCat; }).forEach(function(role){
+      var c = roleCounts(role);
+      var active = roleActive(role);
+      var b = document.createElement("button");
+      if (role.id === state.curRole) { b.className = "cur"; curBtn = b; }
+      b.innerHTML = role.icon + " " + role.name + ((active && c.dueTodo > 0) ? ' <span class="cbadge">' + c.dueTodo + '</span>' : "");
+      b.addEventListener("click", function(){
+        state.curRole = role.id; save(); renderTasks();
+      });
+      roleChipsEl.appendChild(b);
+    });
+    // チップ数が多いため、再描画後もスクロール位置を保ち選択中チップを見える範囲に収める
+    roleChipsEl.scrollLeft = prevScroll;
+    if (curBtn) {
+      var left = curBtn.offsetLeft - roleChipsEl.offsetLeft;
+      var right = left + curBtn.offsetWidth;
+      if (left < roleChipsEl.scrollLeft) roleChipsEl.scrollLeft = Math.max(0, left - 8);
+      else if (right > roleChipsEl.scrollLeft + roleChipsEl.clientWidth) roleChipsEl.scrollLeft = right - roleChipsEl.clientWidth + 8;
+    }
+
+    filterToggleEl.classList.toggle("on", state.filterTodo);
+
+    roleDescEl.textContent = curRole.desc;
+
+    taskListEl.innerHTML = "";
+    curRole.phases.forEach(function(ph){
+      var due = ph.lv <= state.level;
+      var tasks = ph.tasks.filter(function(t){ return !state.filterTodo || !state.checks[t.id]; });
+      if (tasks.length === 0 && state.filterTodo) return;
+
+      var phDone = ph.tasks.filter(function(t){ return state.checks[t.id]; }).length;
+
+      var sec = document.createElement("div");
+      sec.className = "phase" + (due ? "" : " future");
+      var head = document.createElement("div");
+      head.className = "ph";
+      head.innerHTML = '<span class="pn">' + ph.name + '</span>' +
+        '<span class="lv">' + (due ? "実施フェーズ" : LEVELS[ph.lv].name + "から実施") + '</span>' +
+        '<span class="cnt">' + phDone + '／' + ph.tasks.length + '</span>';
+      sec.appendChild(head);
+
+      tasks.forEach(function(t){
+        var checked = !!state.checks[t.id];
+        var div = document.createElement("div");
+        div.className = "task" + (checked ? " done" : (due ? " due" : ""));
+        var meta = "";
+        if (t.r) meta += '<span class="tag rep">↻ 都度実施</span>';
+        if (checked) meta += '<span class="tag tm">✓ ' + fmtTime(state.checks[t.id]) + '</span>';
+        div.innerHTML = '<span class="box">✓</span>' +
+          '<span class="tx-wrap" style="flex:1;min-width:0;"><span class="tx"></span>' +
+          (t.d ? '<div class="dt"></div>' : "") +
+          (meta ? '<div class="meta">' + meta + '</div>' : "") + '</span>';
+        div.querySelector(".tx").textContent = t.t;
+        if (t.d) div.querySelector(".dt").textContent = t.d;
+        div.addEventListener("click", function(){
+          if (state.checks[t.id]) delete state.checks[t.id];
+          else state.checks[t.id] = Date.now();
+          save(); renderAll();
+        });
+        sec.appendChild(div);
+      });
+      taskListEl.appendChild(sec);
+    });
+  }
+
+  /* ---- タブ切替 ---- */
+  var levelbarEl = document.getElementById("levelbar");
+  function switchTab(id){
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.id === id); });
+    document.querySelectorAll(".tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab === id); });
+    levelbarEl.style.display = (id === "tab-status" || id === "tab-tasks") ? "" : "none";
+    window.scrollTo({top:0});
+  }
+  document.querySelectorAll(".tabbar button").forEach(function(b){
+    b.addEventListener("click", function(){ switchTab(b.dataset.tab); });
+  });
+
+  /* ---- 資料検索 ---- */
+  var items = [];
+  document.querySelectorAll("#shiryoBody details.acc").forEach(function(d){
+    items.push({
+      id: d.id,
+      title: d.dataset.title || "",
+      text: d.textContent.replace(/\s+/g, " ")
+    });
+  });
+  var q = document.getElementById("q");
+  var resBox = document.getElementById("searchResults");
+  var shiryoBody = document.getElementById("shiryoBody");
+  function esc(s){ return s.replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  q.addEventListener("input", function(){
+    var kw = q.value.trim();
+    resBox.innerHTML = "";
+    if (kw.length < 1) { shiryoBody.style.display = ""; return; }
+    shiryoBody.style.display = "none";
+    var kwLower = kw.toLowerCase();
+    var hits = items.filter(function(it){ return it.text.toLowerCase().indexOf(kwLower) >= 0 || it.title.toLowerCase().indexOf(kwLower) >= 0; });
+    if (hits.length === 0) {
+      resBox.innerHTML = '<p class="note">「' + esc(kw) + '」に一致する項目はありません。</p>';
+      return;
+    }
+    hits.forEach(function(it){
+      var idx = it.text.toLowerCase().indexOf(kwLower);
+      var snippet = "";
+      if (idx >= 0) {
+        var start = Math.max(0, idx - 20);
+        snippet = (start > 0 ? "…" : "") + it.text.slice(start, idx + kw.length + 40) + "…";
+        snippet = esc(snippet).replace(new RegExp(esc(kw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), function(m){ return "<mark>" + m + "</mark>"; });
+      }
+      var btn = document.createElement("button");
+      btn.className = "sr";
+      btn.innerHTML = '<div class="t">' + esc(it.title) + '</div><span class="s">' + snippet + '</span>';
+      btn.addEventListener("click", function(){
+        q.value = ""; resBox.innerHTML = ""; shiryoBody.style.display = "";
+        var el = document.getElementById(it.id);
+        if (el) {
+          el.open = true;
+          setTimeout(function(){
+            el.scrollIntoView({behavior:"smooth", block:"start"});
+            el.classList.remove("highlight-target"); void el.offsetWidth; el.classList.add("highlight-target");
+          }, 60);
+        }
+      });
+      resBox.appendChild(btn);
+    });
+  });
+
+  /* ---- 表示モード（ライト／ダーク） ---- */
+  (function(){
+    var THEME_KEY = "cs-theme"; // 水防・震災・災害活動支援アプリで共通の設定
+    var btn = document.getElementById("themeBtn");
+    function isLight(){ return document.documentElement.getAttribute("data-theme") === "light"; }
+    function refresh(){
+      btn.textContent = isLight() ? "☀️" : "🌙";
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.content = isLight() ? "#F1F4F9" : "#1A2332";
+    }
+    try { if (localStorage.getItem(THEME_KEY) === "light") document.documentElement.setAttribute("data-theme", "light"); } catch(e){}
+    btn.addEventListener("click", function(){
+      if (isLight()) document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "light");
+      try { localStorage.setItem(THEME_KEY, isLight() ? "light" : "dark"); } catch(e){}
+      refresh();
+    });
+    refresh();
+  })();
+
+  /* ---- 記録のWord・Excel出力 ---- */
+  function logRows(){
+    return logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? { time: fmtTime(en.ts), role: info.role.name, task: info.task.t } : null;
+    }).filter(Boolean);
+  }
+  function downloadBlob(filename, blob){
+    var a = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function fileStamp(){
+    var d = new Date();
+    function z(n){ return (n<10?"0":"")+n; }
+    return d.getFullYear() + z(d.getMonth()+1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes());
+  }
+  document.getElementById("wordLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    var html = '<html xmlns:w="urn:schemas-microsoft-com:office:word" lang="ja"><head><meta charset="utf-8"><title>災害活動支援 実施記録</title></head><body>' +
+      '<h1 style="font-size:16pt;">災害活動支援 実施記録</h1>' +
+      '<p>出力日時：' + esc(new Date().toLocaleString("ja-JP")) + '</p>' +
+      '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; font-size:10.5pt;">' +
+      '<tr style="background:#E2E8F1;"><th>時刻</th><th>災害種別</th><th>実施内容</th></tr>' +
+      rows.map(function(r){
+        return '<tr><td style="white-space:nowrap;">' + esc(r.time) + '</td><td style="white-space:nowrap;">' + esc(r.role) + '</td><td>' + esc(r.task) + '</td></tr>';
+      }).join("") +
+      '</table></body></html>';
+    downloadBlob("災害活動支援実施記録_" + fileStamp() + ".doc", new Blob(["﻿", html], { type: "application/msword" }));
+  });
+  document.getElementById("excelLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    function qq(v){ return '"' + String(v).replace(/"/g, '""') + '"'; }
+    var csv = "時刻,災害種別,実施内容\r\n" + rows.map(function(r){
+      return [qq(r.time), qq(r.role), qq(r.task)].join(",");
+    }).join("\r\n");
+    downloadBlob("災害活動支援実施記録_" + fileStamp() + ".csv", new Blob(["﻿", csv], { type: "text/csv;charset=utf-8" }));
+  });
+
+  function renderAll(){
+    renderLevels();
+    renderStatus();
+    renderLog();
+    renderTasks();
+  }
+  renderAll();
+})();
+
+</script>
+</body>
+</html>
