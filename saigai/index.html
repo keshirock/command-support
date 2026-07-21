@@ -152,33 +152,42 @@
   }
   .btn.danger{background:rgba(229,72,77,.14); border-color:rgba(229,72,77,.5); color:var(--red-bright);}
 
-  /* ---- タスク：カテゴリ・災害種別チップ ---- */
-  .catchips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 8px; -webkit-overflow-scrolling:touch;}
-  .catchips::-webkit-scrollbar{display:none;}
-  .catchips button{
-    flex-shrink:0;
+  /* ---- タスク：災害種別の絞り込み選択 ---- */
+  .pickcrumb{display:flex; align-items:center; gap:8px; margin:2px 2px 10px; flex-wrap:wrap;}
+  .pickcrumb .back{
     background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
-    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
-    padding:7px 13px; cursor:pointer; white-space:nowrap;
+    color:var(--ice); font-family:inherit; font-size:13px; font-weight:800;
+    padding:8px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .pickcrumb .path{font-size:12.5px; color:var(--muted); font-weight:700;}
+  .picktitle{font-size:15px; font-weight:800; margin:4px 2px 10px;}
+  .pickbtn{
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+    background:var(--navy2); border:1px solid var(--navy3); border-left:4px solid var(--accent);
+    border-radius:14px; color:var(--white); font-family:inherit;
+    padding:14px 13px; margin-bottom:9px; cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
-  .catchips button.cur{background:var(--accent); border-color:var(--accent); color:#fff;}
-  .rolechips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
-  .rolechips::-webkit-scrollbar{display:none;}
-  .rolechips button{
-    flex-shrink:0; position:relative;
-    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
-    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
-    padding:9px 13px; cursor:pointer; white-space:nowrap;
-    display:flex; align-items:center; gap:6px;
-    -webkit-tap-highlight-color:transparent;
+  .pickbtn .pi{font-size:24px; flex-shrink:0;}
+  .pickbtn .pm{flex:1; min-width:0;}
+  .pickbtn .pn{font-size:15px; font-weight:800; display:block;}
+  .pickbtn .pd{font-size:12px; color:var(--muted); margin-top:2px; display:block;}
+  .pickbtn .arrow{color:var(--muted); font-size:18px; flex-shrink:0;}
+  .curcard{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-left:4px solid var(--accent);
+    border-radius:12px; padding:12px 13px; margin-bottom:10px;
   }
-  .rolechips button.cur{background:var(--navy4); border-color:var(--ice); color:#fff;}
-  .rolechips .cbadge{
-    background:var(--red-bright); color:#fff; font-size:10px; font-weight:800;
-    min-width:17px; height:17px; border-radius:9px; padding:0 4px;
-    display:inline-flex; align-items:center; justify-content:center;
+  .curcard .ci{font-size:24px; flex-shrink:0;}
+  .curcard .cm{flex:1; min-width:0;}
+  .curcard .cn{font-size:15px; font-weight:800;}
+  .curcard .chg{
+    margin-left:auto; flex-shrink:0;
+    background:var(--navy3); border:1px solid var(--navy4); border-radius:999px;
+    color:var(--ice); font-family:inherit; font-size:12.5px; font-weight:800;
+    padding:8px 13px; cursor:pointer; -webkit-tap-highlight-color:transparent;
   }
+  :root[data-theme="light"] .pickbtn, :root[data-theme="light"] .curcard{box-shadow:0 1px 3px rgba(26,35,50,.08);}
   .roledesc{font-size:11.5px; color:var(--muted); margin:0 2px 10px;}
 
   .filterrow{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
@@ -333,9 +342,11 @@
   .rolestat .todo span{font-size:10.5px;}
   .log{font-size:13px;}
   .btn{font-size:13.5px;}
-  .catchips button{font-size:13px; padding:8px 14px;}
-  .rolechips button{font-size:13.5px; padding:10px 15px;}
   .roledesc{font-size:12.5px;}
+  .picktitle{font-size:16px;}
+  .pickbtn .pn{font-size:16px;}
+  .pickbtn .pd{font-size:12.5px;}
+  .curcard .cn{font-size:16px;}
   .toggle{font-size:13px;}
   .phase .ph .pn{font-size:14.5px;}
   .phase .ph .lv{font-size:11px; background:#E8A33D; color:#1A2332;}
@@ -455,8 +466,12 @@
 
 <!-- ============ タスク ============ -->
 <section class="tab" id="tab-tasks">
-  <div class="catchips" id="catChips"></div>
-  <div class="rolechips" id="roleChips"></div>
+  <div id="pickerBox"></div>
+  <div class="curcard" id="curCardBar" style="display:none;">
+    <span class="ci" id="curCardIcon"></span>
+    <span class="cm"><span class="cn" id="curCardName"></span></span>
+    <button class="chg" id="changeCardBtn">🔁 種別を変更</button>
+  </div>
   <p class="roledesc" id="roleDesc"></p>
   <div class="filterrow">
     <div class="toggle" id="filterToggle"><span class="sw"></span>未実施のみ表示</div>
@@ -2326,7 +2341,7 @@
 
   /* ---- 状態（localStorage） ---- */
   var STORE_KEY = "saigai-tasks-v1";
-  var state = { level: 0, checks: {}, filterTodo: false, curRole: ROLES[0].id };
+  var state = { level: 0, checks: {}, filterTodo: false, curRole: null };
   try {
     var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
     if (typeof saved.level === "number" && saved.level >= 0 && saved.level < LEVELS.length) state.level = saved.level;
@@ -2346,7 +2361,8 @@
   }
 
   function findRole(id){
-    return ROLES.filter(function(r){ return r.id === id; })[0] || ROLES[0];
+    if (!id) return null;
+    return ROLES.filter(function(r){ return r.id === id; })[0] || null;
   }
 
   /* ---- 集計 ---- */
@@ -2394,37 +2410,40 @@
   function renderStatus(){
     roleStatsEl.innerHTML = "";
     var totalTodo = 0;
-    CATS.forEach(function(cat){
-      var rolesInCat = ROLES.filter(function(r){ return r.cat === cat.id; });
-      var lab = document.createElement("div");
-      lab.className = "catlabel";
-      lab.textContent = cat.name;
-      roleStatsEl.appendChild(lab);
-      rolesInCat.forEach(function(role){
-        var c = roleCounts(role);
-        var active = roleActive(role);
-        if (active) totalTodo += c.dueTodo;
-        var div = document.createElement("div");
-        div.className = "rolestat";
-        var pct = c.due ? Math.round(c.dueDone / c.due * 100) : 0;
-        var todoCls = (!active || c.due === 0) ? "" : (c.dueTodo === 0 ? "done" : "warn");
-        div.innerHTML =
-          '<span class="ri">' + role.icon + '</span>' +
-          '<span class="rm"><span class="rn">' + role.name + '</span>' +
-          '<span class="bar"><i style="width:' + (active ? pct : 0) + '%"></i></span>' +
-          '<span class="pct">' + (active
-            ? ('現段階で実施すべき ' + c.dueDone + '／' + c.due + ' 件完了（全' + c.total + '件）')
-            : ('全' + c.total + '件｜タップで指揮カードを開く')) + '</span></span>' +
-          '<span class="todo ' + todoCls + '"><b>' + ((!active || c.due === 0) ? "－" : c.dueTodo) + '</b><span>未実施</span></span>';
-        div.addEventListener("click", function(){
-          state.curRole = role.id; save();
-          switchTab("tab-tasks");
-          renderAll();
+    var activeRoles = ROLES.filter(roleActive);
+    if (activeRoles.length === 0) {
+      roleStatsEl.innerHTML = '<p class="lead">まだ災害種別が選択されていません。タスクタブで指令内容に応じた種別を絞り込むと、ここに進捗が表示されます。</p>';
+    } else {
+      CATS.forEach(function(cat){
+        var rolesInCat = activeRoles.filter(function(r){ return r.cat === cat.id; });
+        if (rolesInCat.length === 0) return;
+        var lab = document.createElement("div");
+        lab.className = "catlabel";
+        lab.textContent = cat.name;
+        roleStatsEl.appendChild(lab);
+        rolesInCat.forEach(function(role){
+          var c = roleCounts(role);
+          totalTodo += c.dueTodo;
+          var div = document.createElement("div");
+          div.className = "rolestat";
+          var pct = c.due ? Math.round(c.dueDone / c.due * 100) : 0;
+          var todoCls = c.due === 0 ? "" : (c.dueTodo === 0 ? "done" : "warn");
+          div.innerHTML =
+            '<span class="ri">' + role.icon + '</span>' +
+            '<span class="rm"><span class="rn">' + role.name + '</span>' +
+            '<span class="bar"><i style="width:' + pct + '%"></i></span>' +
+            '<span class="pct">現段階で実施すべき ' + c.dueDone + '／' + c.due + ' 件完了（全' + c.total + '件）</span></span>' +
+            '<span class="todo ' + todoCls + '"><b>' + (c.due === 0 ? "－" : c.dueTodo) + '</b><span>未実施</span></span>';
+          div.addEventListener("click", function(){
+            state.curRole = role.id; save();
+            switchTab("tab-tasks");
+            renderAll();
+          });
+          roleStatsEl.appendChild(div);
         });
-        roleStatsEl.appendChild(div);
       });
-    });
-    statusHintEl.innerHTML = "現在の活動段階：<b>" + LEVELS[state.level].name + "</b>。段階を進めると、その段階までに実施すべきタスクが集計されます。未実施件数は対応中（チェックのある）カードのみ集計します。";
+    }
+    statusHintEl.innerHTML = "現在の活動段階：<b>" + LEVELS[state.level].name + "</b>。段階を進めると、その段階までに実施すべきタスクが集計されます。表示・集計されるのは対応中（選択中・チェックあり）の災害種別のみです。";
 
     var badge = document.getElementById("totalBadge");
     if (totalTodo > 0) { badge.style.display = ""; badge.textContent = totalTodo > 99 ? "99+" : totalTodo; }
@@ -2480,68 +2499,135 @@
     if (!confirm("チェックと実施記録をすべてクリアして、新しい事案を開始しますか？\n（この操作は取り消せません）")) return;
     state.checks = {};
     state.level = 0;
+    state.curRole = null;
+    pickerPath = [];
     save(); renderAll();
   });
 
-  /* ---- タスクタブ ---- */
-  var catChipsEl = document.getElementById("catChips");
-  var roleChipsEl = document.getElementById("roleChips");
+  /* ---- タスクタブ（災害種別の絞り込み選択 → 指揮カード） ---- */
+  var pickerBox = document.getElementById("pickerBox");
+  var curCardBar = document.getElementById("curCardBar");
+  var curCardIcon = document.getElementById("curCardIcon");
+  var curCardName = document.getElementById("curCardName");
   var roleDescEl = document.getElementById("roleDesc");
   var taskListEl = document.getElementById("taskList");
+  var filterRowEl = document.querySelector(".filterrow");
   var filterToggleEl = document.getElementById("filterToggle");
+
+  // 絞り込みツリー：大分類（火災／火災以外／危機事象）→ 中分類 → 災害種別
+  var PICKER = [
+    { icon:"🔥", name:"火災", desc:"建物・乗り物・屋外等の火災（24種別）", children:[
+      { icon:"🏠", name:"建物火災（地区特性で選ぶ）", desc:"一般地区・木造密集・工場地区・沿岸・西区北区・山ろく・山岳",
+        roles:["f01","f02","f03","f04","f05","f06","f07"] },
+      { icon:"🏥", name:"建物火災（建物用途で選ぶ）", desc:"病院・木造市場・工場倉庫・福祉施設・物販店・高層・共同住宅・地下街",
+        roles:["f08","f09","f10","f11","f12","f13","f14","f15"] },
+      { icon:"🚗", name:"乗り物・屋外等の火災", desc:"林野・車両・電車・ずい道・タンクローリー・船舶・航空機・コンビナート",
+        roles:["f16","f17","f18","f19","f20","f21","f22","f23","f24"] }
+    ]},
+    { icon:"🚨", name:"火災以外の災害", desc:"救助・事故／特殊災害／水災（15種別）", children:[
+      { icon:"🚙", name:"救助・事故", desc:"交通事故・水難・建物工作物・機械・感電・山岳・酸欠",
+        roles:["d01","d02","d03","d04","d05","d06","d07","d08","d09"] },
+      { icon:"☣️", name:"特殊災害", desc:"放射性物質・毒劇物・ガス・危険物流出",
+        roles:["d10","d11","d12","d13"] },
+      { icon:"💧", name:"水災", desc:"河川氾濫・浸水／高潮・津波／土砂災害",
+        roles:["w01","w02","w03"] }
+    ]},
+    { icon:"🆘", name:"危機事象（隊員受傷等）", desc:"活動中に隊員の受傷・行方不明等が発生したとき", role:"k01" }
+  ];
+
+  var pickerPath = []; // 絞り込み階層（画面上のみ・保存しない）
+
+  document.getElementById("changeCardBtn").addEventListener("click", function(){
+    state.curRole = null; pickerPath = []; save(); renderAll();
+  });
 
   filterToggleEl.addEventListener("click", function(){
     state.filterTodo = !state.filterTodo; save(); renderTasks();
   });
 
-  function renderTasks(){
-    var curRole = findRole(state.curRole);
-    var curCat = curRole.cat;
+  function selectRole(id){
+    state.curRole = id; pickerPath = []; save();
+    renderAll();
+    window.scrollTo({top:0});
+  }
 
-    // カテゴリチップ
-    catChipsEl.innerHTML = "";
-    CATS.forEach(function(cat){
-      var b = document.createElement("button");
-      if (cat.id === curCat) b.className = "cur";
-      b.textContent = cat.name;
-      b.addEventListener("click", function(){
-        if (cat.id !== curCat) {
-          // 別カテゴリの先頭カード（チェック済みがあればそのカード）を選択
-          var rolesInCat = ROLES.filter(function(r){ return r.cat === cat.id; });
-          var target = rolesInCat.filter(roleActive)[0] || rolesInCat[0];
-          state.curRole = target.id; save();
-        }
-        renderTasks();
-      });
-      catChipsEl.appendChild(b);
-    });
+  function renderPicker(){
+    pickerBox.innerHTML = "";
+    var node = { children: PICKER };
+    var names = [];
+    pickerPath.forEach(function(i){ node = node.children[i]; names.push(node.name); });
 
-    // 災害種別チップ（選択中カテゴリのみ表示）
-    var prevScroll = roleChipsEl.scrollLeft;
-    roleChipsEl.innerHTML = "";
-    var curBtn = null;
-    ROLES.filter(function(r){ return r.cat === curCat; }).forEach(function(role){
-      var c = roleCounts(role);
-      var active = roleActive(role);
-      var b = document.createElement("button");
-      if (role.id === state.curRole) { b.className = "cur"; curBtn = b; }
-      b.innerHTML = role.icon + " " + role.name + ((active && c.dueTodo > 0) ? ' <span class="cbadge">' + c.dueTodo + '</span>' : "");
-      b.addEventListener("click", function(){
-        state.curRole = role.id; save(); renderTasks();
-      });
-      roleChipsEl.appendChild(b);
-    });
-    // チップ数が多いため、再描画後もスクロール位置を保ち選択中チップを見える範囲に収める
-    roleChipsEl.scrollLeft = prevScroll;
-    if (curBtn) {
-      var left = curBtn.offsetLeft - roleChipsEl.offsetLeft;
-      var right = left + curBtn.offsetWidth;
-      if (left < roleChipsEl.scrollLeft) roleChipsEl.scrollLeft = Math.max(0, left - 8);
-      else if (right > roleChipsEl.scrollLeft + roleChipsEl.clientWidth) roleChipsEl.scrollLeft = right - roleChipsEl.clientWidth + 8;
+    if (pickerPath.length > 0) {
+      var crumb = document.createElement("div");
+      crumb.className = "pickcrumb";
+      var back = document.createElement("button");
+      back.className = "back";
+      back.textContent = "‹ 戻る";
+      back.addEventListener("click", function(){ pickerPath.pop(); renderPicker(); });
+      crumb.appendChild(back);
+      var path = document.createElement("span");
+      path.className = "path";
+      path.textContent = names.join(" › ");
+      crumb.appendChild(path);
+      pickerBox.appendChild(crumb);
     }
 
-    filterToggleEl.classList.toggle("on", state.filterTodo);
+    var title = document.createElement("div");
+    title.className = "picktitle";
+    title.textContent = pickerPath.length === 0
+      ? "災害種別を選択（指令内容に応じて絞り込み）"
+      : "災害種別をさらに絞り込む";
+    pickerBox.appendChild(title);
 
+    function addBtn(icon, name, desc, onClick){
+      var b = document.createElement("button");
+      b.className = "pickbtn";
+      b.innerHTML = '<span class="pi"></span><span class="pm"><span class="pn"></span><span class="pd"></span></span><span class="arrow">›</span>';
+      b.querySelector(".pi").textContent = icon;
+      b.querySelector(".pn").textContent = name;
+      if (desc) b.querySelector(".pd").textContent = desc;
+      else b.querySelector(".pd").remove();
+      b.addEventListener("click", onClick);
+      pickerBox.appendChild(b);
+    }
+
+    if (node.children) {
+      node.children.forEach(function(ch, i){
+        addBtn(ch.icon, ch.name, ch.desc || "", function(){
+          if (ch.role) selectRole(ch.role);
+          else { pickerPath.push(i); renderPicker(); window.scrollTo({top:0}); }
+        });
+      });
+    } else if (node.roles) {
+      node.roles.forEach(function(id){
+        var role = findRole(id);
+        if (!role) return;
+        addBtn(role.icon, role.name, role.desc, function(){ selectRole(id); });
+      });
+    }
+  }
+
+  function renderTasks(){
+    filterToggleEl.classList.toggle("on", state.filterTodo);
+    var curRole = findRole(state.curRole);
+
+    // カード未選択：絞り込み画面のみ表示（他の災害のタスクは一切表示しない）
+    if (!curRole) {
+      curCardBar.style.display = "none";
+      filterRowEl.style.display = "none";
+      roleDescEl.textContent = "";
+      taskListEl.innerHTML = "";
+      pickerBox.style.display = "";
+      renderPicker();
+      return;
+    }
+
+    pickerBox.style.display = "none";
+    pickerBox.innerHTML = "";
+    curCardBar.style.display = "";
+    filterRowEl.style.display = "";
+    curCardIcon.textContent = curRole.icon;
+    curCardName.textContent = curRole.name;
     roleDescEl.textContent = curRole.desc;
 
     taskListEl.innerHTML = "";
