@@ -1,5 +1,5 @@
 /* 西消防署 災害活動支援 — オフラインキャッシュ用 Service Worker */
-const CACHE = "saigai-v1";
+const CACHE = "saigai-v2";
 const ASSETS = [
   "./",
   "./index.html",
