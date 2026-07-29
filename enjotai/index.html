@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; manifest-src 'self'; worker-src 'self'; child-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>西消防署 援助隊タスク｜緊急消防援助隊</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="援助隊タスク">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>
+  // クリックジャッキング対策：iframe内に埋め込まれた場合は表示しない。
+  try {
+    if (window.top !== window.self) { document.documentElement.style.display = "none"; }
+  } catch (e) { document.documentElement.style.display = "none"; }
+  // http/https（GitHub Pages等）で開いた時だけオフラインキャッシュを有効化。
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* 失敗してもアプリ本体は動く */ });
+    });
+  }
+</script>
+<style>
+  :root{
+    --navy:#1A2332; --navy2:#232F42; --navy3:#2C3A52; --navy4:#364763;
+    --red:#C8102E; --red-bright:#E5484D; --blue:#4C9AFF;
+    --amber:#E8A33D; --ice:#C9D6E3; --muted:#8A97A8; --white:#FFFFFF;
+    --green:#3DBE7B; --yellow:#E8C93D; --orange:#2E7CD6; --purple:#A46BE8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy);
+    color:var(--white);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:12px 12px calc(78px + env(safe-area-inset-bottom));
+    max-width:860px; margin:0 auto;
+    line-height:1.6;
+  }
+  header{display:flex; align-items:center; gap:12px; padding:4px 2px 10px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--orange); display:flex;align-items:center;justify-content:center;
+    font-size:15px; font-weight:800; flex-shrink:0; letter-spacing:.02em;
+  }
+  header h1{font-size:19px; font-weight:800; letter-spacing:.02em; line-height:1.25;}
+  header p{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  .levelbar{position:sticky; top:0; z-index:40; background:var(--navy); padding:6px 0 10px; margin:0 -2px;}
+  .levelbar .lab{font-size:10.5px; color:var(--muted); font-weight:700; margin:0 2px 5px; letter-spacing:.05em;}
+  .levels{display:flex; gap:6px; overflow-x:auto; padding:0 2px 4px; -webkit-overflow-scrolling:touch;}
+  .levels::-webkit-scrollbar{display:none;}
+  .levels button{
+    flex-shrink:0; background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:7px 13px; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent;
+  }
+  .levels button.cur{background:var(--orange); border-color:var(--orange); color:#fff;}
+  .levels button.passed{border-color:var(--navy4); color:var(--muted);}
+
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:rgba(20,28,42,.97); border-top:1px solid var(--navy3);
+    display:flex; justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(8px);
+  }
+  .tabbar button{
+    flex:1; max-width:120px; background:none; border:none; color:var(--muted);
+    font-family:inherit; font-size:10.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:4px 0; cursor:pointer; border-radius:10px; position:relative;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tabbar button .ico{font-size:19px; line-height:1;}
+  .tabbar button.active{color:var(--white);}
+  .tabbar button.active::after{content:""; width:18px; height:3px; border-radius:2px; background:var(--orange); margin-top:2px;}
+  .tabbar .nbadge{
+    position:absolute; top:0; right:calc(50% - 24px);
+    background:var(--red-bright); color:#fff; font-size:9.5px; font-weight:800;
+    min-width:16px; height:16px; border-radius:8px; padding:0 4px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tab{display:none;}
+  .tab.active{display:block; animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .card{background:var(--navy2); border-radius:14px; padding:16px 14px; margin-bottom:12px;}
+  .card h2{font-size:14px; font-weight:800; color:var(--ice); margin-bottom:10px; letter-spacing:.04em;}
+  .lead{font-size:12.5px; color:var(--ice);}
+  .note{background:var(--navy3); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--ice); margin:8px 0;}
+  .kb{color:var(--amber); font-weight:700;}
+  .sub{font-size:12.5px; font-weight:800; color:var(--amber); margin:12px 0 6px;}
+  .sub:first-child{margin-top:0;}
+
+  .rolestat{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .rolestat .ri{font-size:22px; flex-shrink:0;}
+  .rolestat .rm{flex:1; min-width:0;}
+  .rolestat .rn{font-size:13.5px; font-weight:800;}
+  .rolestat .bar{height:7px; background:var(--navy3); border-radius:4px; margin-top:6px; overflow:hidden;}
+  .rolestat .bar i{display:block; height:100%; border-radius:4px; background:var(--green); transition:width .3s;}
+  .rolestat .pct{font-size:10.5px; color:var(--muted); margin-top:3px;}
+  .rolestat .todo{flex-shrink:0; text-align:center; min-width:52px; background:var(--navy3); border-radius:10px; padding:6px 8px;}
+  .rolestat .todo b{display:block; font-size:17px; line-height:1.1;}
+  .rolestat .todo span{font-size:9.5px; color:var(--muted);}
+  .rolestat .todo.warn{background:rgba(229,72,77,.16); border:1px solid rgba(229,72,77,.5);}
+  .rolestat .todo.warn b{color:var(--red-bright);}
+  .rolestat .todo.done{background:rgba(61,190,123,.13); border:1px solid rgba(61,190,123,.45);}
+  .rolestat .todo.done b{color:var(--green);}
+
+  .log{font-size:12px;}
+  .log .li{display:flex; gap:8px; padding:6px 0; border-bottom:1px solid var(--navy3);}
+  .log .tm{color:var(--amber); font-weight:700; flex-shrink:0; font-variant-numeric:tabular-nums;}
+  .log .rl{color:var(--muted); flex-shrink:0;}
+  .log .tx{color:var(--ice);}
+  .btnrow{display:flex; gap:8px; margin-top:10px;}
+  .btn{
+    flex:1; background:var(--navy3); border:1px solid var(--navy4); border-radius:10px;
+    color:var(--white); font-family:inherit; font-size:12.5px; font-weight:800;
+    padding:11px 8px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .btn.danger{background:rgba(229,72,77,.14); border-color:rgba(229,72,77,.5); color:var(--red-bright);}
+
+  .rolechips{display:flex; gap:7px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
+  .rolechips::-webkit-scrollbar{display:none;}
+  .rolechips button{
+    flex-shrink:0; position:relative;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    color:var(--ice); font-family:inherit; font-size:12px; font-weight:800;
+    padding:9px 13px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;
+  }
+  .rolechips button.cur{background:var(--navy4); border-color:var(--ice); color:#fff;}
+  .rolechips .cbadge{
+    background:var(--red-bright); color:#fff; font-size:10px; font-weight:800;
+    min-width:17px; height:17px; border-radius:9px; padding:0 4px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .roledesc{font-size:11.5px; color:var(--muted); margin:0 2px 10px;}
+
+  .filterrow{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .toggle{
+    display:flex; align-items:center; gap:7px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:999px;
+    padding:7px 13px; font-size:12px; font-weight:800; color:var(--ice);
+    cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .toggle .sw{width:32px; height:18px; border-radius:9px; background:var(--navy4); position:relative; transition:background .2s;}
+  .toggle .sw::after{
+    content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+    border-radius:50%; background:var(--muted); transition:left .2s, background .2s;
+  }
+  .toggle.on .sw{background:var(--green);}
+  .toggle.on .sw::after{left:16px; background:#fff;}
+
+  .phase{margin-bottom:14px;}
+  .phase .ph{display:flex; align-items:center; gap:8px; margin-bottom:7px; padding:0 2px;}
+  .phase .ph .pn{font-size:13px; font-weight:800; color:var(--white);}
+  .phase .ph .lv{font-size:10px; font-weight:800; color:var(--navy); background:var(--amber); border-radius:999px; padding:2px 8px;}
+  .phase .ph .cnt{margin-left:auto; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .phase.future{opacity:.5;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+
+  .task{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--navy2); border-radius:12px; padding:11px 12px; margin-bottom:7px;
+    cursor:pointer; border-left:4px solid var(--navy3); -webkit-tap-highlight-color:transparent;
+  }
+  .task .box{
+    width:22px; height:22px; border-radius:7px; flex-shrink:0; margin-top:1px;
+    border:2px solid var(--muted); display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:800; color:transparent; transition:all .15s;
+  }
+  .task .tx{flex:1; font-size:13px; color:var(--white);}
+  .task .dt{font-size:11px; color:var(--muted); margin-top:3px;}
+  .task .meta{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;}
+  .task .tag{font-size:10px; font-weight:700; background:var(--navy3); color:var(--ice); border-radius:999px; padding:1.5px 8px;}
+  .task .tag.rep{background:rgba(76,154,255,.16); color:var(--blue);}
+  .task .tag.tm{background:rgba(61,190,123,.14); color:var(--green); font-variant-numeric:tabular-nums;}
+  .task.due{border-left-color:var(--orange);}
+  .task.done{border-left-color:var(--green); background:rgba(35,47,66,.55);}
+  .task.done .box{background:var(--green); border-color:var(--green); color:#fff;}
+  .task.done .tx{color:var(--muted); text-decoration:line-through; text-decoration-color:rgba(138,151,168,.55);}
+  .task.done .dt{display:none;}
+
+  details.acc{background:var(--navy2); border-radius:12px; margin-bottom:10px; overflow:hidden; border-left:4px solid var(--navy3);}
+  details.acc[open]{border-left-color:var(--orange);}
+  details.acc > summary{
+    list-style:none; cursor:pointer; padding:13px 14px; font-size:13.5px; font-weight:800; color:var(--white);
+    display:flex; align-items:center; gap:8px; -webkit-tap-highlight-color:transparent;
+  }
+  details.acc > summary::-webkit-details-marker{display:none;}
+  details.acc > summary::after{content:"＋"; margin-left:auto; color:var(--muted); font-weight:400; flex-shrink:0;}
+  details.acc[open] > summary::after{content:"－";}
+  details.acc .body{padding:0 14px 14px; font-size:13px; color:var(--ice);}
+  details.acc .body p{margin-bottom:8px;}
+  details.acc .body ul, details.acc .body ol{margin:0 0 8px 1.3em;}
+  details.acc .body li{margin-bottom:4px;}
+
+  .tbl-wrap{overflow-x:auto; margin:8px 0;}
+  table{border-collapse:collapse; width:100%; font-size:12px; min-width:420px;}
+  th,td{border:1px solid var(--navy4); padding:7px 8px; text-align:left; vertical-align:top; color:var(--ice);}
+  th{background:var(--navy3); color:var(--white); font-size:11.5px; white-space:nowrap;}
+  .pill{display:inline-block; background:var(--navy3); border-radius:999px; padding:2px 9px; font-size:10.5px; color:var(--ice); margin:0 2px 4px 0;}
+
+  .searchbox{
+    display:flex; align-items:center; gap:8px;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .searchbox input{flex:1; background:none; border:none; outline:none; color:var(--white); font-family:inherit; font-size:14px;}
+  .searchbox input::placeholder{color:var(--muted);}
+  #searchResults{margin-bottom:12px;}
+  .sr{
+    display:block; width:100%; text-align:left;
+    background:var(--navy2); border:none; border-left:4px solid var(--blue);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    color:var(--white); font-family:inherit; cursor:pointer;
+  }
+  .sr .t{font-size:13px; font-weight:800;}
+  .sr .s{font-size:11.5px; color:var(--muted); margin-top:2px; display:block;}
+  mark{background:var(--amber); color:#1A2332; border-radius:2px; padding:0 1px;}
+
+  .tel-group{margin-bottom:14px;}
+  .tel-group .g{font-size:12px; font-weight:800; color:var(--amber); margin-bottom:6px; letter-spacing:.05em;}
+  .tel{background:var(--navy2); border-radius:12px; padding:11px 13px; margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tel .info{flex:1; min-width:0;}
+  .tel .n{font-size:13px; font-weight:800;}
+  .tel .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .tel .num{display:flex; flex-direction:column; gap:5px; align-items:flex-end; flex-shrink:0;}
+  .tel span.ext{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--navy3); border-radius:999px; padding:5px 11px;
+    color:var(--ice); text-decoration:none; font-size:12.5px; font-weight:700; white-space:nowrap;
+  }
+
+  .link-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--navy2); border-radius:12px; padding:12px 13px; margin-bottom:8px;
+    color:var(--white); text-decoration:none;
+  }
+  .link-item .li-ico{font-size:18px;}
+  .link-item .n{font-size:13px; font-weight:800;}
+  .link-item .d{font-size:11px; color:var(--muted); margin-top:1px;}
+  .link-item::after{content:"↗"; margin-left:auto; color:var(--muted);}
+  .link-item.internal::after{content:"→";}
+
+  .foot{margin-top:20px; padding-top:12px; border-top:1px solid var(--navy3); font-size:10.5px; color:var(--muted); line-height:1.7;}
+  .highlight-target{animation:hl 2s ease;}
+  @keyframes hl{0%{box-shadow:0 0 0 3px var(--amber);} 100%{box-shadow:0 0 0 0 transparent;}}
+</style>
+<style>
+  /* ===== 改修: 視認性向上（フォント・アイコン拡大） ===== */
+  .badge{width:50px; height:50px; font-size:17px;}
+  header h1{font-size:21px;}
+  header p{font-size:12px;}
+  .levelbar .lab{font-size:11.5px;}
+  .levels button{font-size:13.5px; padding:9px 15px;}
+  .tabbar button{font-size:12px;}
+  .tabbar button .ico{font-size:23px;}
+  .card h2{font-size:15.5px;}
+  .lead{font-size:13.5px;}
+  .note{font-size:13px;}
+  .sub{font-size:13.5px;}
+  .rolestat .ri{font-size:26px;}
+  .rolestat .rn{font-size:15px;}
+  .rolestat .pct{font-size:11.5px;}
+  .rolestat .todo b{font-size:19px;}
+  .rolestat .todo span{font-size:10.5px;}
+  .log{font-size:13px;}
+  .btn{font-size:13.5px;}
+  .rolechips button{font-size:13.5px; padding:10px 15px;}
+  .roledesc{font-size:12.5px;}
+  .toggle{font-size:13px;}
+  .phase .ph .pn{font-size:14.5px;}
+  .phase .ph .lv{font-size:11px; background:#E8A33D; color:#1A2332;}
+  .phase.future .ph .lv{background:var(--navy4); color:var(--ice);}
+  .phase .ph .cnt{font-size:12px;}
+  .task .box{width:26px; height:26px; font-size:16px;}
+  .task .tx{font-size:14.5px;}
+  .task .dt{font-size:12px;}
+  .task .tag{font-size:11px;}
+  details.acc > summary{font-size:14.5px;}
+  details.acc .body{font-size:14px;}
+  table{font-size:13px;}
+  th{font-size:12.5px;}
+  .searchbox input{font-size:15px;}
+  .sr .t{font-size:14px;}
+  .sr .s{font-size:12.5px;}
+  .tel .n{font-size:14px;}
+  .tel .d{font-size:12px;}
+  .tel a.call, .tel span.ext{font-size:13.5px;}
+  .link-item .n{font-size:14px;}
+  .link-item .d{font-size:12px;}
+  .link-item .li-ico{font-size:22px;}
+  .foot{font-size:11.5px;}
+  .pill{font-size:11.5px;}
+  .tri{font-size:13.5px;}
+  .tri .t{font-size:14.5px;}
+  .lvrow{font-size:13.5px;}
+  .lvrow b{font-size:14px;}
+  mark{background:#E8A33D;}
+  .badge{color:#fff;}
+
+  /* ===== 改修: iPhoneノッチ・ダイナミックアイランド対応 ===== */
+  body{padding-top:calc(env(safe-area-inset-top) + 12px);}
+  .safetop{position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#141C2A; z-index:60; pointer-events:none;}
+  .levelbar{top:env(safe-area-inset-top);}
+
+  /* ===== 改修: 表示モード切替ボタン ===== */
+  .themebtn{
+    margin-left:auto; flex-shrink:0;
+    background:var(--navy2); border:1px solid var(--navy3); border-radius:12px;
+    font-size:20px; line-height:1; padding:9px 11px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ===== 改修: ライトモード ===== */
+  :root[data-theme="light"]{
+    --navy:#F1F4F9; --navy2:#FFFFFF; --navy3:#E2E8F1; --navy4:#C8D3E2;
+    --white:#1A2332; --ice:#33435F; --muted:#66768E; --amber:#A8690F;
+  }
+  :root[data-theme="light"] .tabbar{background:rgba(255,255,255,.97); border-top-color:var(--navy4);}
+  :root[data-theme="light"] .task.done{background:#EFF3F8;}
+  :root[data-theme="light"] .card, :root[data-theme="light"] details.acc,
+  :root[data-theme="light"] .task, :root[data-theme="light"] .rolestat,
+  :root[data-theme="light"] .tel, :root[data-theme="light"] .link-item, :root[data-theme="light"] .sr{
+    box-shadow:0 1px 3px rgba(26,35,50,.08);
+  }
+</style>
+</head>
+<body>
+<div class="safetop"></div>
+
+<header>
+  <div class="badge">緊援</div>
+  <div>
+    <h1>西消防署 援助隊タスク</h1>
+    <p>緊急消防援助隊 職員派遣計画｜役割別チェックリスト</p>
+  </div>
+  <button id="themeBtn" class="themebtn" aria-label="表示モードを切り替え">🌙</button>
+</header>
+
+<div class="levelbar" id="levelbar">
+  <div class="lab">現在の段階（タップで切替）</div>
+  <div class="levels" id="levels"></div>
+</div>
+
+<!-- ============ 状況 ============ -->
+<section class="tab active" id="tab-status">
+  <div class="card">
+    <h2>📊 役割別の進捗（タップで各タスクへ）</h2>
+    <div id="roleStats"></div>
+    <p class="note" id="statusHint"></p>
+  </div>
+
+  <div class="card">
+    <h2>🕐 実施記録（クロノロジー）</h2>
+    <div class="log" id="logList"><p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p></div>
+    <div class="btnrow">
+      <button class="btn" id="copyLog">📋 コピー</button>
+      <button class="btn" id="wordLog">📝 Word</button>
+      <button class="btn" id="excelLog">📊 Excel</button>
+    </div>
+    <div class="btnrow">
+      <button class="btn danger" id="resetBtn">🆕 新しい事案を開始（記録クリア）</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌐 情報収集・関連リンク</h2>
+    <a class="link-item" href="https://www.fdma.go.jp/" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🚒</span>
+      <span><span class="n">総務省消防庁</span><br><span class="d">災害情報・緊急消防援助隊の出動状況</span></span>
+    </a>
+    <a class="link-item" href="https://www.jma.go.jp/bosai/map.html" target="_blank" rel="noopener noreferrer">
+      <span class="li-ico">🌏</span>
+      <span><span class="n">気象庁 防災情報</span><br><span class="d">地震・津波・気象警報</span></span>
+    </a>
+    <a class="link-item internal" href="../suibou/">
+      <span class="li-ico">💧</span>
+      <span><span class="n">水防タスク（風水害対応）</span><br><span class="d">非常招集の連絡方法は水防時と同様</span></span>
+    </a>
+    <a class="link-item internal" href="../shinsai/">
+      <span class="li-ico">🌏</span>
+      <span><span class="n">震災タスク（震災初動対応）</span><br><span class="d">大規模地震発生時の署内初動はこちら</span></span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ タスク ============ -->
+<section class="tab" id="tab-tasks">
+  <div class="rolechips" id="roleChips"></div>
+  <p class="roledesc" id="roleDesc"></p>
+  <div class="filterrow">
+    <div class="toggle" id="filterToggle"><span class="sw"></span>未実施のみ表示</div>
+  </div>
+  <div id="taskList"></div>
+</section>
+
+<!-- ============ 資料 ============ -->
+<section class="tab" id="tab-shiryo">
+  <div class="searchbox">
+    <span>🔍</span>
+    <input type="search" id="q" placeholder="資料内を検索（例：携行 / 非常招集 / 食料）" autocomplete="off" maxlength="60">
+  </div>
+  <div id="searchResults"></div>
+
+  <div id="shiryoBody">
+  <details class="acc" id="acc-gensoku" data-title="職員派遣の基本原則（調整者・派遣係・派遣職員）">
+    <summary>📜 職員派遣の基本原則</summary>
+    <div class="body">
+      <p>緊急消防援助隊の職員派遣は、本計画に基づき<span class="kb">署長が決定</span>する。</p>
+      <p class="sub">調整者（窓口）</p>
+      <ul>
+        <li>派遣に伴う調整者（窓口）は<b>当務中隊長</b>。後方支援本部と連絡を密にし、派遣部隊・派遣職員の決定等の各種調整を行う。</li>
+        <li>当務中隊長が派遣となり不在の場合は、<b>総務係長又は非番の中隊長</b>が調整者となる。</li>
+        <li>初回派遣時以降は<b>当務係長</b>が西消防署の窓口（調整役）となり、総務係長が協力して支援する。</li>
+      </ul>
+      <p class="sub">派遣係</p>
+      <ul>
+        <li>対象災害が発生し後方支援本部から派遣要請を受けた時点の<b>当務係</b>が対応することが原則（兵庫県広域相互応援協定に基づく応援要請も同様）。</li>
+        <li>第２次派遣以降は後方支援本部の指示に従う。指示がなければ派遣日の当務係が対応。</li>
+        <li>直前の派遣と同一の係となる場合は、出発日を週休日とする係から派遣する。</li>
+      </ul>
+      <p class="sub">派遣部隊（基本編成・令和６年４月１日時点）</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>部隊名</th><th>隊種別</th><th>人員</th><th>備考</th></tr>
+        <tr><td><b>西21</b></td><td>消火小隊</td><td>４名</td><td>迅速、風水害時、統合機動</td></tr>
+        <tr><td><b>西75</b></td><td>指揮隊</td><td>３名</td><td>県大隊指揮隊 第２順位</td></tr>
+      </table></div>
+      <p>要請部隊は「市実施計画」（別表４〜８）内の基本編成に基づく。</p>
+      <p class="sub">派遣職員の選定（第１次派遣）</p>
+      <ul>
+        <li><b>西21</b>：要請を受けた当務中の西21小隊。派遣できない者がいる場合は当務係内で調整。資器材車載スペースと市内警備体制確保のため<b>派遣人数は４名</b>（５名乗組でも４名）。小隊長以下４名のうち<b>機関員としての活動能力を有する隊員（中型認定以上）２名以上</b>で編成。</li>
+        <li><b>西75</b>：要請を受けた当務中の西75小隊。派遣人数は<b>警防部担当課長・当務中隊長・指揮隊員の３名</b>。</li>
+        <li><b>その他の部隊</b>：要請があった当務係で対応し、本署・出張所からバランスよく選出。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-keiko" data-title="携行物品（西21・西75）">
+    <summary>🧰 携行物品（西21・西75）</summary>
+    <div class="body">
+      <p class="sub">西21（消火小隊）</p>
+      <p class="note">※特殊災害資器材、救急資器材、火災調査資器材等は下ろす。</p>
+      <ol>
+        <li>携帯無線機（260MHz×１基、400MHz×４基）・充電器<br>※トーンスケルチ実装解除無線機（10ch〜26ch可能）</li>
+        <li>小隊長スマホ（kyocera製 TORQUE G04）</li>
+        <li>通常装備資器材</li>
+        <li>予備ホース及び消耗品関係（マスク・ゴム手袋等）</li>
+        <li>携行缶 ※<span class="kb">軽油</span></li>
+        <li>冬季及び寒冷地仕様資器材、その他災害種別に応じた資器材（ライフジャケット等）</li>
+        <li>デジタルカメラ・充電器</li>
+        <li>車両スペアキー（後方支援中隊長用）</li>
+      </ol>
+      <p class="sub">西75（指揮隊）</p>
+      <ol>
+        <li>携帯無線機（260MHz×１基、400MHz×４基）・充電器<br>※トーンスケルチ実装解除無線機（10ch〜26ch可能）</li>
+        <li>指揮隊長スマホ（kyocera製 TORQUE G04）</li>
+        <li>通常装備資器材</li>
+        <li>消耗品関係（マスク・ゴム手袋等）</li>
+        <li>携行缶 ※<span class="kb">ガソリン</span></li>
+        <li>冬季及び寒冷地仕様資器材、その他災害種別に応じた資器材（ライフジャケット等）</li>
+        <li>デジタルカメラ・充電器</li>
+        <li>車両スペアキー（後方支援中隊長用）</li>
+        <li>その他：北指揮隊作成「緊急消防援助隊兵庫県大隊指揮隊運用マニュアル」内「携行資器材・準備品」参照</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-kojinsobi" data-title="個人装備（広域応援用バッグ）">
+    <summary>🎒 個人装備（広域応援用バッグ）</summary>
+    <div class="body">
+      <p>派遣に必要な個人装備等は<span class="kb">広域応援用バッグ</span>を活用し、派遣期間に合わせて準備する。</p>
+      <p class="note">保管場所：西神南ガレージ２階＝バッグ×５・寝袋×５／本署＝バッグ×３・リュック×５・寝袋×５</p>
+      <p class="sub">装備関係</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>区分</th><th>内容</th></tr>
+        <tr><td>通常防火着装一式</td><td>防火帽・防火服上下・防火靴・防火手袋・安全帯・ライト等</td></tr>
+        <tr><td>現場活動装備一式</td><td>活動服・活動帽・特殊作業靴・作業手袋・雨具・活動シャツ</td></tr>
+        <tr><td>防護装備</td><td>防塵メガネ・防護マスク・耳栓・保安帽・面体・感染防止衣</td></tr>
+      </table></div>
+      <p class="sub">生活用品関係</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>区分</th><th>内容</th></tr>
+        <tr><td>着替え</td><td>下着・靴下・タオル等</td></tr>
+        <tr><td>日用品・衛生用品</td><td>歯ブラシ・ティッシュ・ウェットティッシュ・シャワーシート等</td></tr>
+        <tr><td>防寒着</td><td>ジャンパー・ネックウォーマー・手袋・カイロ等</td></tr>
+        <tr><td>履物</td><td>運動靴・スリッパ</td></tr>
+        <tr><td>筆記具</td><td>ペン・メモ帳</td></tr>
+        <tr><td>携帯電話（個人）</td><td>充電器・携帯バッテリー</td></tr>
+        <tr><td>非常食（24時間分）</td><td>食料・その他補助食（チョコレート等）</td></tr>
+        <tr><td>各種証明書</td><td><span class="kb">名刺（20枚以上）</span>・免許証・資格書・保険証</td></tr>
+        <tr><td>その他</td><td>現金・常備薬・ビニール袋・バッグ・乾電池・虫除け（夏場）</td></tr>
+      </table></div>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-shokuryo" data-title="食料の準備">
+    <summary>🍙 食料の準備</summary>
+    <div class="body">
+      <ul>
+        <li>第１次派遣隊は<span class="kb">自隊の24時間分の食料準備</span>が必要。</li>
+        <li>個人で必要な食料は各自準備しておく。</li>
+        <li>24時間以降の食料は後方支援隊が準備する。</li>
+      </ul>
+      <p class="note"><b>重要：署の備蓄食料の署外持ち出しは不可</b>（局の予算外のため）。派遣用の食料は隊・個人で調達して準備すること。</p>
+      <p class="sub">準備量の目安（１小隊４人分・24時間）</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>品名</th><th>水（500mL×24）</th><th>クラッカー</th><th>レトルト食品</th><th>アルファ米</th><th>雑炊</th></tr>
+        <tr><td>数量</td><td>１箱</td><td>１缶</td><td>８食</td><td>８食</td><td>４食</td></tr>
+      </table></div>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-shoshu" data-title="非常招集（幹部招集・丙号非常招集）">
+    <summary>📢 非常招集</summary>
+    <div class="body">
+      <p class="sub">幹部等の招集及び情報連絡</p>
+      <p>緊急消防援助隊等の派遣対象となる災害が発生した場合は、<b>署長・副署長・消防防災課長・総務係長（年次休暇中の当務中隊長及び指揮隊長）</b>の招集を行い、派遣に関する<span class="kb">緊急会議</span>を開催する。</p>
+      <p class="sub">職員参集（丙号非常招集）</p>
+      <ul>
+        <li>署長は派遣が決定（出動予告含む）すれば、代替部隊を立ち上げるための所要人員を確保する。日勤者の乗組みも可とするが、原則、非常招集（丙号）を実施する。</li>
+        <li>招集優先順位：<b>①当務係休暇者 ②非番の係員 ③週休日の係員</b>。ただし発令時間が午前５時以降は、防災指令発令時と同様に当日出勤予定の当務員を優先。</li>
+        <li>直近職員を優先的に呼び出すなど、早期の部隊立ち上げを検討する。</li>
+        <li>連絡方法は水防時の非常招集方法と同様。</li>
+        <li>参集は原則、勤務署所に参集。輸送方法は都度調整する。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-honbu" data-title="署後方支援本部 任務分担">
+    <summary>🏢 署後方支援本部 任務分担</summary>
+    <div class="body">
+      <p>初回派遣時以降、<b>当務係長</b>が西消防署の窓口（調整役）として後方支援本部との連絡・署内調整を実施し、総務係長が協力して支援する。</p>
+      <div class="tbl-wrap"><table>
+        <tr><th>班（班長）</th><th>担当係</th><th>任務</th></tr>
+        <tr><td>指揮班<br>（防災課長）</td><td>消防係（当務）<br>救急係（当務）<br>消防団係<br>地域防災係</td><td>1. 後方支援本部の開設・運営に関すること<br>2. 派遣隊の編成及び出動準備に関すること<br>3. 非常招集に関すること</td></tr>
+        <tr><td>情報班<br>（査察係長）</td><td>査察係</td><td>1. 各消防署との連絡調整に関すること<br>2. 活動支援情報（時系列・被害状況等）の収集に関すること</td></tr>
+        <tr><td>総務班<br>（総務係長）</td><td>総務係</td><td>1. 資器材、物資（食料・飲料水）の調達補助及び調達<br>2. 広報及び派遣職員家族への情報提供<br>3. 派遣にかかる式典<br>4. 職員の派遣に伴う輸送等<br>5. 職員の労務管理<br>6. 勤務結果の整理及び集計</td></tr>
+      </table></div>
+      <p class="note">業務量等の状況により、任務の担当係を組み替えることができる。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-kinmu" data-title="勤務体制の変更・派遣期間">
+    <summary>🔁 勤務体制の変更・派遣期間</summary>
+    <div class="body">
+      <p class="sub">２交替制への移行</p>
+      <ul>
+        <li>非常招集の実施後、派遣人数により署長が通常警備体制を維持できないと判断すれば、職員課と協議の上、３交替制から２交替制へ移行できる。勤務体制を変更した場合は速やかに後方支援本部に報告。</li>
+        <li>後方支援本部から指示があった場合には２交替制に移行する。</li>
+      </ul>
+      <p class="sub">派遣期間・派遣方法</p>
+      <p>派遣期間は<span class="kb">移動（往復）２日＋現地活動３日の計５日間</span>を目安とする。第２次派遣以降の派遣期間及び交代方法は後方支援本部が判断する。</p>
+    </div>
+  </details>
+
+  <details class="acc" id="acc-sanko" data-title="参照資料一覧">
+    <summary>📄 参照資料一覧</summary>
+    <div class="body">
+      <ul>
+        <li>「緊急消防援助隊神戸市隊応援等実施計画」（市実施計画）※出動基準・対象区域・対象災害・対象部隊は別表１〜８</li>
+        <li>別紙１・２「地震発生時の当務中隊長用フローチャート」（令和６年12月10日作成）</li>
+        <li>北指揮隊作成「緊急消防援助隊兵庫県大隊指揮隊運用マニュアル」（別紙１・３、携行資器材・準備品）</li>
+      </ul>
+      <p class="note">本計画は「市実施計画」に基づき策定されているため、市実施計画に変更があった際は見直しが必要。資料の実物は紙の計画書・署内資料を参照。</p>
+    </div>
+  </details>
+  </div>
+</section>
+
+<!-- ============ 連絡先 ============ -->
+<section class="tab" id="tab-renraku">
+  <div class="card">
+    <h2>📞 連絡・調整の窓口</h2>
+    <p class="lead" style="margin-bottom:8px;">本計画（職員派遣計画）に外部電話番号の記載はありません。派遣に関する連絡調整は次の系統で行います。</p>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">派遣調整の窓口</div>
+    <div class="tel"><div class="info"><div class="n">当務中隊長（調整者・窓口）</div><div class="d">後方支援本部との連絡・派遣部隊/職員の決定等の調整。不在時は総務係長又は非番の中隊長</div></div></div>
+    <div class="tel"><div class="info"><div class="n">当務係長（初回派遣時以降の窓口）</div><div class="d">後方支援本部との連絡・署内調整。総務係長が支援</div></div></div>
+    <div class="tel"><div class="info"><div class="n">管制室</div><div class="d">西75が出動できない場合の他指揮隊出動の調整等</div></div><div class="num"><span class="ext">内線 434</span></div></div>
+  </div>
+
+  <div class="tel-group">
+    <div class="g">関係機関・他アプリの連絡先</div>
+    <a class="link-item internal" href="../suibou/">
+      <span class="li-ico">💧</span>
+      <span><span class="n">水防タスクの連絡先タブ</span><br><span class="d">区役所・県土木・警察・ライフライン各社（タップ発信）</span></span>
+    </a>
+    <a class="link-item internal" href="../shinsai/">
+      <span class="li-ico">🌏</span>
+      <span><span class="n">震災タスクの連絡先タブ</span><br><span class="d">本部各班の事務専用電話・FAX</span></span>
+    </a>
+  </div>
+</section>
+
+<div class="foot">
+  本アプリは「西消防署 緊急消防援助隊 職員派遣計画（令和６年12月10日施行）」を基に作成した業務支援ツールです。正本は紙の計画書・「緊急消防援助隊神戸市隊応援等実施計画」とし、内容が異なる場合は正本を優先してください。チェック状態はこの端末内のみに保存され、外部送信されません。個人名等の非公開情報は掲載していません。
+</div>
+
+<!-- ============ タブバー ============ -->
+<nav class="tabbar">
+  <button data-tab="tab-status" class="active"><span class="ico">📊</span>状況</button>
+  <button data-tab="tab-tasks" id="tabTasksBtn"><span class="ico">✅</span>タスク<span class="nbadge" id="totalBadge" style="display:none;"></span></button>
+  <button data-tab="tab-shiryo"><span class="ico">📖</span>資料</button>
+  <button data-tab="tab-renraku"><span class="ico">📞</span>連絡先</button>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     データ定義
+     ・LEVELS: 発災からの経過フェーズ（インデックスが順序）
+     ・ROLES: 役割 → フェーズ → タスク
+     ・タスクIDは role.id-phase.id-連番 で自動採番し localStorage のキーになる。
+       既存IDを保つため、タスクは末尾追加のみとし途中挿入・削除をしないこと。
+     ========================================================= */
+  var LEVELS = [
+    { id:"l0", name:"平常時" },
+    { id:"l1", name:"災害発生・要請" },
+    { id:"l2", name:"出動準備（〜１時間）" },
+    { id:"l3", name:"派遣中（第１次）" },
+    { id:"l4", name:"第２次派遣以降" }
+  ];
+
+  // r:true = 事案・状況の都度繰り返すタスク
+  var ROLES = [
+    {
+      id:"chotei", name:"当務中隊長（調整者）", icon:"🎖",
+      desc:"派遣調整の窓口。不在時は総務係長又は非番の中隊長が代行。地震発生時は別紙１・２のフローチャートを参照",
+      phases:[
+        { id:"p0", name:"日頃の備え", lv:0, tasks:[
+          { t:"緊急消防援助隊の出動基準・対象区域・対象災害・対象部隊を確認しておく", d:"「市実施計画」別表１〜８参照" },
+          { t:"別紙１・２「地震発生時の当務中隊長用フローチャート」の内容を確認しておく" }
+        ]},
+        { id:"p1", name:"災害発生・派遣要請時", lv:1, tasks:[
+          { t:"対象災害が発生 → 後方支援本部と連絡を密にし、派遣部隊についての情報収集", r:true },
+          { t:"係員に対し派遣の準備にあたるよう指示" },
+          { t:"市内災害への出動順位や乗組み変更等を調整（派遣隊以外の優先出動・第２水準設定）", d:"西21が出動の場合、人員搬送・資器材搬送及び警備を考慮し、西33を西神南に派遣" },
+          { t:"幹部職員等への情報連絡及び非常招集連絡" },
+          { t:"出動部隊の人選（勤務者・日勤者及び非常招集参集者による部隊編成）" }
+        ]},
+        { id:"p2", name:"出動準備〜出発", lv:2, tasks:[
+          { t:"派遣隊の出動を確認（原則、要請から１時間以内に常駐所から出動）" },
+          { t:"自身が派遣となる場合：総務係長又は非番の中隊長へ調整者（窓口）を引き継ぐ" }
+        ]},
+        { id:"p3", name:"派遣中〜継続時", lv:3, tasks:[
+          { t:"初回派遣時以降の窓口を当務係長へ移行（署後方支援本部体制）", d:"総務係長が協力して支援" }
+        ]}
+      ]
+    },
+    {
+      id:"kanbu", name:"署長・幹部", icon:"🏛",
+      desc:"派遣の決定は署長。緊急会議＝署長・副署長・消防防災課長・総務係長（年休中の当務中隊長・指揮隊長も招集）",
+      phases:[
+        { id:"p1", name:"災害発生時", lv:1, tasks:[
+          { t:"派遣対象災害の発生 → 幹部を招集し、派遣に関する緊急会議を開催", d:"署長・副署長・消防防災課長・総務係長（年次休暇中の当務中隊長及び指揮隊長）" },
+          { t:"職員派遣を決定（本計画に基づき署長が決定）" }
+        ]},
+        { id:"p2", name:"派遣決定後", lv:2, tasks:[
+          { t:"代替部隊立ち上げの所要人員を確保（原則、丙号非常招集を実施。日勤者の乗組みも可）" },
+          { t:"招集優先順位の確認：①当務係休暇者 ②非番の係員 ③週休日の係員", d:"発令が午前５時以降は当日出勤予定の当務員を優先。直近職員の優先呼出しで早期立ち上げ。連絡方法は水防時の非常招集と同様。参集は原則勤務署所" }
+        ]},
+        { id:"p4", name:"派遣継続時", lv:4, tasks:[
+          { t:"通常警備体制を維持できないと判断 → 職員課と協議の上、３交替制から２交替制へ移行（変更したら速やかに後方支援本部へ報告）" },
+          { t:"後方支援本部から指示があった場合は２交替制に移行" }
+        ]}
+      ]
+    },
+    {
+      id:"n21", name:"西21（消火小隊）", icon:"🚒",
+      desc:"基本編成：迅速・風水害時・統合機動。派遣人数４名（機関員〔中型認定以上〕２名以上）",
+      phases:[
+        { id:"p0", name:"日頃の備え", lv:0, tasks:[
+          { t:"携行物品を事前に準備しておく（要請から１時間以内の出動に備える）", d:"一覧は資料「携行物品」参照" },
+          { t:"隊編成の要件を確認：小隊長以下４名、うち機関員としての活動能力（中型認定以上）２名以上" }
+        ]},
+        { id:"p1", name:"災害発生・要請時", lv:1, tasks:[
+          { t:"非常招集による警備人員が確保されるまでは市内警備を優先", d:"別事案で出動中、又は出動準備中に市内災害の出動指令が発令された場合はそちらを優先" }
+        ]},
+        { id:"p2", name:"出動準備〜出発", lv:2, tasks:[
+          { t:"西１が立ち上がれば西21を「不能」設定とし、西神南出張所から集結場所へ参集（現場出動中なら現場交替を考慮）", d:"西１で出動することも可能（後方支援本部のオーダーを考慮）。西１で市内警備する場合は特殊災害資器材を積載し、特殊災害隊としての機能を維持" },
+          { t:"特殊災害資器材・救急資器材・火災調査資器材等を下ろす" },
+          { t:"携行物品の積載を確認（無線機260MHz×1・400MHz×4、小隊長スマホ、予備ホース・消耗品、携行缶〔軽油〕、寒冷地資器材、デジカメ、車両スペアキー）", d:"詳細は資料「携行物品」参照" },
+          { t:"派遣人数４名を確認（当務が５名乗組であっても４名）" },
+          { t:"自隊24時間分の食料を準備", d:"署の備蓄食料の署外持ち出しは不可（局の予算外）。個人で必要な食料は各自準備。24時間以降は後方支援隊が準備" },
+          { t:"原則、要請から１時間以内に常駐所から出動。車両動態は「不能」のまま、緊急走行で集結場所へ参集" }
+        ]}
+      ]
+    },
+    {
+      id:"n75", name:"西75（指揮隊）", icon:"🚩",
+      desc:"県大隊指揮隊 第２順位。派遣人員３名（警防部担当課長・当務中隊長・指揮隊員）",
+      phases:[
+        { id:"p0", name:"日頃の備え", lv:0, tasks:[
+          { t:"県大隊指揮隊第２順位であることを理解しておく（北75が何らかの理由で出動できない場合に県大隊指揮隊として出動）" },
+          { t:"携行物品を事前に準備しておく", d:"一覧は資料「携行物品」参照" }
+        ]},
+        { id:"p1", name:"災害発生・要請時", lv:1, tasks:[
+          { t:"要請があった時点で「不能」設定とし、出動準備を行う", d:"別事案で出動中、又は出動準備中に市内災害の出動指令が発令された場合は、管制室と調整し他の指揮隊を出動させる" }
+        ]},
+        { id:"p2", name:"出動準備〜出発", lv:2, tasks:[
+          { t:"派遣人員３名を確認（警防部担当課長・当務中隊長・指揮隊員）" },
+          { t:"日勤者・非常招集者が参集すれば部隊の立ち上げを実施し、通常警備体制を維持" },
+          { t:"携行物品の積載を確認（無線機、指揮隊長スマホ、消耗品、携行缶〔ガソリン〕、寒冷地資器材、デジカメ、車両スペアキー等）", d:"詳細は資料「携行物品」参照" },
+          { t:"準備が整えば西75で北消防署へ向かい、緊援隊派遣用の資器材を積載して集結場所へ参集", d:"資器材の配置：北消防署３階備品倉庫・出動準備室・４階事務所。「兵庫県大隊指揮隊運用マニュアル」別紙１・３参照" }
+        ]}
+      ]
+    },
+    {
+      id:"kojin", name:"派遣職員（個人）", icon:"🎒",
+      desc:"派遣される職員の個人準備。広域応援用バッグを活用（西神南ガレージ２階・本署に配備）",
+      phases:[
+        { id:"p0", name:"日頃の備え", lv:0, tasks:[
+          { t:"緊急消防援助隊の出動基準等について、資料確認や研修を通し精通しておく" },
+          { t:"広域応援用バッグで個人装備を準備しておく", d:"保管：西神南ガレージ２階＝バッグ×5・寝袋×5／本署＝バッグ×3・リュック×5・寝袋×5" },
+          { t:"個人で必要な非常食を準備しておく" }
+        ]},
+        { id:"p2", name:"出動準備", lv:2, tasks:[
+          { t:"装備関係を確認：通常防火着装一式・現場活動装備一式・防護装備（防塵メガネ・防護マスク・耳栓・保安帽・面体・感染防止衣）", d:"内訳は資料「個人装備」参照" },
+          { t:"生活用品を確認：着替え・日用品・防寒着・履物・筆記具・携帯充電器/バッテリー" },
+          { t:"非常食24時間分・各種証明書（名刺20枚以上・免許証・資格書・保険証）・現金・常備薬を確認" }
+        ]},
+        { id:"p3", name:"派遣中", lv:3, tasks:[
+          { t:"派遣期間の目安を確認（移動〔往復〕２日＋現地活動３日＝計５日間）" }
+        ]}
+      ]
+    },
+    {
+      id:"kouhou", name:"署後方支援本部", icon:"📦",
+      desc:"初回派遣時以降に立ち上げ。窓口＝当務係長（総務係長が支援）。指揮班・情報班・総務班で構成",
+      phases:[
+        { id:"p3", name:"立ち上げ（初回派遣時以降）", lv:3, tasks:[
+          { t:"当務係長：西消防署の窓口（調整役）として後方支援本部と連絡・署内調整を実施（総務係長が支援）", r:true },
+          { t:"指揮班（防災課長）：後方支援本部の開設・運営／派遣隊の編成・出動準備／非常招集", d:"担当係：消防係（当務）・救急係（当務）・消防団係・地域防災係" },
+          { t:"情報班（査察係長）：各消防署との連絡調整／活動支援情報（時系列・被害状況等）の収集", r:true },
+          { t:"総務班（総務係長）：資器材・物資（食料・飲料水）の調達／広報・派遣職員家族への情報提供／輸送／労務管理／勤務結果の整理集計", r:true }
+        ]},
+        { id:"p4", name:"第２次派遣以降", lv:4, tasks:[
+          { t:"派遣係を決定（原則、後方支援本部の指示。指示がなければ派遣日の当務係。直前と同一の係となる場合は出発日を週休日とする係から）", r:true },
+          { t:"24時間以降の食料を後方支援隊として準備・補給", r:true },
+          { t:"派遣期間・交代方法を後方支援本部と調整（１次と同様、移動２日＋現地活動３日の計５日間が目安）", r:true }
+        ]}
+      ]
+    }
+  ];
+
+  // タスクIDを採番し索引を作る
+  var TASK_INDEX = {};
+  ROLES.forEach(function(role){
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(task, i){
+        task.id = role.id + "-" + ph.id + "-" + (i+1);
+        TASK_INDEX[task.id] = { role: role, phase: ph, task: task };
+      });
+    });
+  });
+
+  /* ---- 状態（localStorage） ---- */
+  var STORE_KEY = "enjotai-tasks-v1";
+  var state = { level: 0, checks: {}, filterTodo: false, curRole: ROLES[0].id };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    if (typeof saved.level === "number" && saved.level >= 0 && saved.level < LEVELS.length) state.level = saved.level;
+    if (saved.checks && typeof saved.checks === "object") state.checks = saved.checks;
+    if (typeof saved.filterTodo === "boolean") state.filterTodo = saved.filterTodo;
+    if (typeof saved.curRole === "string" && ROLES.some(function(r){ return r.id === saved.curRole; })) state.curRole = saved.curRole;
+  } catch(e) { /* 破損時は初期状態 */ }
+
+  function save(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) { /* 容量超過等は無視 */ }
+  }
+
+  function fmtTime(ts){
+    var d = new Date(ts);
+    function z(n){ return (n<10?"0":"")+n; }
+    return z(d.getMonth()+1) + "/" + z(d.getDate()) + " " + z(d.getHours()) + ":" + z(d.getMinutes());
+  }
+
+  function roleCounts(role){
+    var due = 0, dueDone = 0, total = 0, done = 0;
+    role.phases.forEach(function(ph){
+      ph.tasks.forEach(function(t){
+        total++;
+        var c = !!state.checks[t.id];
+        if (c) done++;
+        if (ph.lv <= state.level) { due++; if (c) dueDone++; }
+      });
+    });
+    return { due: due, dueDone: dueDone, dueTodo: due - dueDone, total: total, done: done };
+  }
+
+  var levelsEl = document.getElementById("levels");
+  function renderLevels(){
+    levelsEl.innerHTML = "";
+    LEVELS.forEach(function(lv, i){
+      var b = document.createElement("button");
+      b.textContent = lv.name;
+      if (i === state.level) b.className = "cur";
+      else if (i < state.level) b.className = "passed";
+      b.addEventListener("click", function(){ state.level = i; save(); renderAll(); });
+      levelsEl.appendChild(b);
+    });
+  }
+
+  var roleStatsEl = document.getElementById("roleStats");
+  var statusHintEl = document.getElementById("statusHint");
+  function renderStatus(){
+    roleStatsEl.innerHTML = "";
+    var totalTodo = 0;
+    ROLES.forEach(function(role){
+      var c = roleCounts(role);
+      totalTodo += c.dueTodo;
+      var div = document.createElement("div");
+      div.className = "rolestat";
+      var pct = c.due ? Math.round(c.dueDone / c.due * 100) : 0;
+      var todoCls = c.due === 0 ? "" : (c.dueTodo === 0 ? "done" : "warn");
+      div.innerHTML =
+        '<span class="ri">' + role.icon + '</span>' +
+        '<span class="rm"><span class="rn">' + role.name + '</span>' +
+        '<span class="bar"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="pct">現フェーズまでに実施すべき ' + c.dueDone + '／' + c.due + ' 件完了（全' + c.total + '件）</span></span>' +
+        '<span class="todo ' + todoCls + '"><b>' + (c.due === 0 ? "－" : c.dueTodo) + '</b><span>未実施</span></span>';
+      div.addEventListener("click", function(){
+        state.curRole = role.id; save();
+        switchTab("tab-tasks");
+        renderAll();
+      });
+      roleStatsEl.appendChild(div);
+    });
+    statusHintEl.innerHTML = "現在のフェーズ：<b>" + LEVELS[state.level].name + "</b>。フェーズを進めると、そこまでに実施すべきタスクが集計されます。";
+
+    var badge = document.getElementById("totalBadge");
+    if (totalTodo > 0) { badge.style.display = ""; badge.textContent = totalTodo > 99 ? "99+" : totalTodo; }
+    else badge.style.display = "none";
+  }
+
+  var logListEl = document.getElementById("logList");
+  function logEntries(){
+    return Object.keys(state.checks)
+      .map(function(id){ return { id: id, ts: state.checks[id] }; })
+      .sort(function(a,b){ return a.ts - b.ts; });
+  }
+  function renderLog(){
+    var entries = logEntries();
+    if (entries.length === 0) {
+      logListEl.innerHTML = '<p class="lead">まだ実施記録はありません。タスクをチェックすると時刻付きで記録されます。</p>';
+      return;
+    }
+    logListEl.innerHTML = "";
+    entries.forEach(function(en){
+      var info = TASK_INDEX[en.id];
+      if (!info) return;
+      var div = document.createElement("div");
+      div.className = "li";
+      div.innerHTML = '<span class="tm">' + fmtTime(en.ts) + '</span>' +
+        '<span class="rl">[' + info.role.name + ']</span>' +
+        '<span class="tx"></span>';
+      div.querySelector(".tx").textContent = info.task.t;
+      logListEl.appendChild(div);
+    });
+  }
+
+  document.getElementById("copyLog").addEventListener("click", function(){
+    var lines = logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? (fmtTime(en.ts) + "　[" + info.role.name + "]　" + info.task.t) : null;
+    }).filter(Boolean);
+    if (lines.length === 0) { alert("コピーする記録がありません。"); return; }
+    var text = "【西消防署 援助隊タスク 実施記録】\n" + lines.join("\n");
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); alert("記録をコピーしました。"); } catch(e){ alert("コピーできませんでした。"); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ alert("記録をコピーしました。"); }, fallback);
+    } else fallback();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if (!confirm("チェックと実施記録をすべてクリアして、新しい事案を開始しますか？\n（この操作は取り消せません）")) return;
+    state.checks = {};
+    state.level = 0;
+    save(); renderAll();
+  });
+
+  var roleChipsEl = document.getElementById("roleChips");
+  var roleDescEl = document.getElementById("roleDesc");
+  var taskListEl = document.getElementById("taskList");
+  var filterToggleEl = document.getElementById("filterToggle");
+
+  filterToggleEl.addEventListener("click", function(){
+    state.filterTodo = !state.filterTodo; save(); renderTasks();
+  });
+
+  function renderTasks(){
+    roleChipsEl.innerHTML = "";
+    ROLES.forEach(function(role){
+      var c = roleCounts(role);
+      var b = document.createElement("button");
+      if (role.id === state.curRole) b.className = "cur";
+      b.innerHTML = role.icon + " " + role.name + (c.dueTodo > 0 ? ' <span class="cbadge">' + c.dueTodo + '</span>' : "");
+      b.addEventListener("click", function(){ state.curRole = role.id; save(); renderTasks(); });
+      roleChipsEl.appendChild(b);
+    });
+
+    filterToggleEl.classList.toggle("on", state.filterTodo);
+
+    var role = ROLES.filter(function(r){ return r.id === state.curRole; })[0] || ROLES[0];
+    roleDescEl.textContent = role.desc;
+
+    taskListEl.innerHTML = "";
+    role.phases.forEach(function(ph){
+      var due = ph.lv <= state.level;
+      var tasks = ph.tasks.filter(function(t){ return !state.filterTodo || !state.checks[t.id]; });
+      if (tasks.length === 0 && state.filterTodo) return;
+
+      var phDone = ph.tasks.filter(function(t){ return state.checks[t.id]; }).length;
+
+      var sec = document.createElement("div");
+      sec.className = "phase" + (due ? "" : " future");
+      var head = document.createElement("div");
+      head.className = "ph";
+      head.innerHTML = '<span class="pn">' + ph.name + '</span>' +
+        '<span class="lv">' + (due ? "実施フェーズ" : LEVELS[ph.lv].name + "から実施") + '</span>' +
+        '<span class="cnt">' + phDone + '／' + ph.tasks.length + '</span>';
+      sec.appendChild(head);
+
+      tasks.forEach(function(t){
+        var checked = !!state.checks[t.id];
+        var div = document.createElement("div");
+        div.className = "task" + (checked ? " done" : (due ? " due" : ""));
+        var meta = "";
+        if (t.r) meta += '<span class="tag rep">↻ 都度実施</span>';
+        if (checked) meta += '<span class="tag tm">✓ ' + fmtTime(state.checks[t.id]) + '</span>';
+        div.innerHTML = '<span class="box">✓</span>' +
+          '<span class="tx-wrap" style="flex:1;min-width:0;"><span class="tx"></span>' +
+          (t.d ? '<div class="dt"></div>' : "") +
+          (meta ? '<div class="meta">' + meta + '</div>' : "") + '</span>';
+        div.querySelector(".tx").textContent = t.t;
+        if (t.d) div.querySelector(".dt").textContent = t.d;
+        div.addEventListener("click", function(){
+          if (state.checks[t.id]) delete state.checks[t.id];
+          else state.checks[t.id] = Date.now();
+          save(); renderAll();
+        });
+        sec.appendChild(div);
+      });
+      taskListEl.appendChild(sec);
+    });
+  }
+
+  var levelbarEl = document.getElementById("levelbar");
+  function switchTab(id){
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.id === id); });
+    document.querySelectorAll(".tabbar button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab === id); });
+    levelbarEl.style.display = (id === "tab-status" || id === "tab-tasks") ? "" : "none";
+    window.scrollTo({top:0});
+  }
+  document.querySelectorAll(".tabbar button").forEach(function(b){
+    b.addEventListener("click", function(){ switchTab(b.dataset.tab); });
+  });
+
+  /* ---- 資料検索 ---- */
+  var items = [];
+  document.querySelectorAll("#shiryoBody details.acc").forEach(function(d){
+    items.push({ id: d.id, title: d.dataset.title || "", text: d.textContent.replace(/\s+/g, " ") });
+  });
+  var q = document.getElementById("q");
+  var resBox = document.getElementById("searchResults");
+  var shiryoBody = document.getElementById("shiryoBody");
+  function esc(s){ return s.replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  q.addEventListener("input", function(){
+    var kw = q.value.trim();
+    resBox.innerHTML = "";
+    if (kw.length < 1) { shiryoBody.style.display = ""; return; }
+    shiryoBody.style.display = "none";
+    var kwLower = kw.toLowerCase();
+    var hits = items.filter(function(it){ return it.text.toLowerCase().indexOf(kwLower) >= 0 || it.title.toLowerCase().indexOf(kwLower) >= 0; });
+    if (hits.length === 0) {
+      resBox.innerHTML = '<p class="note">「' + esc(kw) + '」に一致する項目はありません。</p>';
+      return;
+    }
+    hits.forEach(function(it){
+      var idx = it.text.toLowerCase().indexOf(kwLower);
+      var snippet = "";
+      if (idx >= 0) {
+        var start = Math.max(0, idx - 20);
+        snippet = (start > 0 ? "…" : "") + it.text.slice(start, idx + kw.length + 40) + "…";
+        snippet = esc(snippet).replace(new RegExp(esc(kw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), function(m){ return "<mark>" + m + "</mark>"; });
+      }
+      var btn = document.createElement("button");
+      btn.className = "sr";
+      btn.innerHTML = '<div class="t">' + esc(it.title) + '</div><span class="s">' + snippet + '</span>';
+      btn.addEventListener("click", function(){
+        q.value = ""; resBox.innerHTML = ""; shiryoBody.style.display = "";
+        var el = document.getElementById(it.id);
+        if (el) {
+          el.open = true;
+          setTimeout(function(){
+            el.scrollIntoView({behavior:"smooth", block:"start"});
+            el.classList.remove("highlight-target"); void el.offsetWidth; el.classList.add("highlight-target");
+          }, 60);
+        }
+      });
+      resBox.appendChild(btn);
+    });
+  });
+
+
+  /* ---- 表示モード（ライト／ダーク） ---- */
+  (function(){
+    var THEME_KEY = "cs-theme"; // 水防・震災アプリで共通の設定
+    var btn = document.getElementById("themeBtn");
+    function isLight(){ return document.documentElement.getAttribute("data-theme") === "light"; }
+    function refresh(){
+      btn.textContent = isLight() ? "☀️" : "🌙";
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.content = isLight() ? "#F1F4F9" : "#1A2332";
+    }
+    try { if (localStorage.getItem(THEME_KEY) === "light") document.documentElement.setAttribute("data-theme", "light"); } catch(e){}
+    btn.addEventListener("click", function(){
+      if (isLight()) document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "light");
+      try { localStorage.setItem(THEME_KEY, isLight() ? "light" : "dark"); } catch(e){}
+      refresh();
+    });
+    refresh();
+  })();
+
+  /* ---- 記録のWord・Excel出力 ---- */
+  function logRows(){
+    return logEntries().map(function(en){
+      var info = TASK_INDEX[en.id];
+      return info ? { time: fmtTime(en.ts), role: info.role.name, task: info.task.t } : null;
+    }).filter(Boolean);
+  }
+  function downloadBlob(filename, blob){
+    var a = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function fileStamp(){
+    var d = new Date();
+    function z(n){ return (n<10?"0":"")+n; }
+    return d.getFullYear() + z(d.getMonth()+1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes());
+  }
+  document.getElementById("wordLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    var html = '<html xmlns:w="urn:schemas-microsoft-com:office:word" lang="ja"><head><meta charset="utf-8"><title>援助隊タスク 実施記録</title></head><body>' +
+      '<h1 style="font-size:16pt;">援助隊タスク 実施記録</h1>' +
+      '<p>出力日時：' + esc(new Date().toLocaleString("ja-JP")) + '</p>' +
+      '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; font-size:10.5pt;">' +
+      '<tr style="background:#E2E8F1;"><th>時刻</th><th>役割</th><th>実施内容</th></tr>' +
+      rows.map(function(r){
+        return '<tr><td style="white-space:nowrap;">' + esc(r.time) + '</td><td style="white-space:nowrap;">' + esc(r.role) + '</td><td>' + esc(r.task) + '</td></tr>';
+      }).join("") +
+      '</table></body></html>';
+    downloadBlob("援助隊タスク実施記録_" + fileStamp() + ".doc", new Blob(["\ufeff", html], { type: "application/msword" }));
+  });
+  document.getElementById("excelLog").addEventListener("click", function(){
+    var rows = logRows();
+    if (rows.length === 0) { alert("出力する記録がありません。"); return; }
+    function q(v){ return '"' + String(v).replace(/"/g, '""') + '"'; }
+    var csv = "時刻,役割,実施内容\r\n" + rows.map(function(r){
+      return [q(r.time), q(r.role), q(r.task)].join(",");
+    }).join("\r\n");
+    downloadBlob("援助隊タスク実施記録_" + fileStamp() + ".csv", new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" }));
+  });
+
+  function renderAll(){
+    renderLevels();
+    renderStatus();
+    renderLog();
+    renderTasks();
+  }
+  renderAll();
+})();
+</script>
+</body>
+</html>
