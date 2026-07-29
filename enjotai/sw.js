@@ -1,5 +1,5 @@
-/* 西消防署 災害活動支援 — オフラインキャッシュ用 Service Worker */
-const CACHE = "saigai-v3";
+/* 西消防署 援助隊タスク — オフラインキャッシュ用 Service Worker */
+const CACHE = "enjotai-v1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,7 +14,8 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.startsWith("saigai-")).map((k) => caches.delete(k))))
+      // 同一オリジンに他アプリ（suibou・shinsai・amida）のキャッシュが同居するため、enjotai- のみ削除する
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.startsWith("enjotai-")).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
