@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;">
+<title>今日は、誰の番。</title>
+<style>
+  :root {
+    --ivory: #F5F0E8;
+    --ivory-deep: #EDE6D8;
+    --green: #3D5A45;
+    --green-soft: #5C7A63;
+    --terra: #C77B4F;
+    --gold: #C9A86A;
+    --ink: #3A3630;
+    --ink-soft: #7A7264;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: "Noto Serif JP", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "BIZ UDMincho", serif;
+    background: var(--ivory);
+    color: var(--ink);
+    letter-spacing: 0.08em;
+    line-height: 1.8;
+    min-height: 100vh;
+    /* 紙のような質感(ごく淡い繊維ノイズ) */
+    background-image:
+      radial-gradient(rgba(61, 90, 69, 0.025) 1px, transparent 1px),
+      radial-gradient(rgba(199, 123, 79, 0.02) 1px, transparent 1px);
+    background-size: 7px 7px, 11px 11px;
+    background-position: 0 0, 4px 6px;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  /* ---------- タイトル ---------- */
+  header { text-align: center; margin-bottom: 40px; }
+
+  .title {
+    font-size: 1.7rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+  }
+
+  .subtitle::before, .subtitle::after {
+    content: "—";
+    margin: 0 0.8em;
+    color: var(--gold);
+  }
+
+  /* ---------- セクション見出し ---------- */
+  .label {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: var(--green);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(61, 90, 69, 0.18);
+  }
+
+  section { margin-bottom: 36px; }
+
+  /* ---------- 人数設定 ---------- */
+  .counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .counter button {
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgba(61, 90, 69, 0.35);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--green);
+    font-size: 1.5rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.45s ease-out, transform 0.45s ease-out, opacity 0.3s ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .counter button:active {
+    background: rgba(61, 90, 69, 0.08);
+    transform: scale(0.94);
+  }
+
+  .counter button:disabled { opacity: 0.25; cursor: default; }
+
+  .counter .count {
+    font-size: 2rem;
+    min-width: 3.2em;
+    text-align: center;
+    color: var(--ink);
+  }
+
+  .counter .count small {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-left: 0.4em;
+    letter-spacing: 0.2em;
+  }
+
+  /* ---------- 名前入力 ---------- */
+  .names { display: flex; flex-direction: column; gap: 10px; }
+
+  .names input {
+    width: 100%;
+    padding: 13px 16px;
+    font-family: inherit;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    background: rgba(255, 253, 248, 0.7);
+    border: 1px solid rgba(61, 90, 69, 0.2);
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.4s ease-out, background 0.4s ease-out;
+  }
+
+  .names input::placeholder { color: #B8AF9E; }
+
+  .names input:focus {
+    border-color: var(--green-soft);
+    background: #FFFDF8;
+  }
+
+  /* ---------- ルーレット ---------- */
+  .wheel-area {
+    position: relative;
+    width: min(82vw, 340px);
+    margin: 8px auto 0;
+  }
+
+  .pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 20px solid var(--terra);
+    z-index: 2;
+    filter: drop-shadow(0 1px 1px rgba(58, 54, 48, 0.2));
+  }
+
+  .wheel-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    box-shadow:
+      0 6px 24px rgba(58, 54, 48, 0.12),
+      0 0 0 6px rgba(255, 253, 248, 0.8),
+      0 0 0 7px rgba(201, 168, 106, 0.5);
+  }
+
+  #wheel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    will-change: transform;
+  }
+
+  #wheel text {
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+
+  .hub-note {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    min-height: 1.6em;
+    transition: opacity 0.6s ease-out;
+  }
+
+  /* ---------- 回すボタン ---------- */
+  .spin-row { text-align: center; margin-top: 26px; }
+
+  .btn-spin {
+    font-family: inherit;
+    font-size: 1.05rem;
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+    color: var(--ivory);
+    background: var(--green);
+    border: none;
+    border-radius: 999px;
+    padding: 17px 64px;
+    cursor: pointer;
+    transition: transform 0.5s ease-out, opacity 0.4s ease-out, background 0.5s ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-spin:active { transform: scale(0.96); background: #35503D; }
+  .btn-spin:disabled { opacity: 0.4; cursor: default; }
+
+  /* ---------- 結果 ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(245, 240, 232, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-out;
+    z-index: 10;
+    padding: 24px;
+  }
+
+  .overlay.show { opacity: 1; pointer-events: auto; }
+
+  .result {
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+    transform: translateY(14px);
+    opacity: 0;
+    transition: transform 1s ease-out, opacity 1s ease-out;
+    transition-delay: 0.25s;
+  }
+
+  .overlay.show .result { transform: translateY(0); opacity: 1; }
+
+  .result-eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.4em;
+    color: var(--terra);
+    margin-bottom: 20px;
+  }
+
+  .result-name {
+    font-size: 2.3rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    line-height: 1.4;
+    word-break: break-all;
+    padding-bottom: 18px;
+    position: relative;
+  }
+
+  .result-name::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  .result-name small {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    margin-left: 0.3em;
+  }
+
+  .result-message {
+    margin-top: 26px;
+    font-size: 0.95rem;
+    color: var(--green);
+    letter-spacing: 0.12em;
+    line-height: 2.1;
+  }
+
+  .result-actions {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .btn-again {
+    font-family: inherit;
+    font-size: 0.95rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    color: var(--ivory);
+    background: var(--terra);
+    border: none;
+    border-radius: 999px;
+    padding: 15px 52px;
+    cursor: pointer;
+    transition: transform 0.5s ease-out, background 0.5s ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-again:active { transform: scale(0.96); background: #B06A41; }
+
+  .btn-close {
+    font-family: inherit;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    padding: 10px 24px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 木の葉がふわっと舞う演出(控えめ) */
+  .leaf {
+    position: absolute;
+    top: -24px;
+    width: 10px;
+    height: 14px;
+    border-radius: 60% 5% 60% 5%;
+    opacity: 0;
+    animation: leaf-fall 5.5s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes leaf-fall {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+    12%  { opacity: 0.75; }
+    100% { opacity: 0; transform: translateY(105vh) rotate(300deg); }
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: #B0A794;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1 class="title">今日は、誰の番。</h1>
+    <p class="subtitle">お支払いルーレット</p>
+  </header>
+
+  <section>
+    <h2 class="label">にんずう</h2>
+    <div class="counter">
+      <button type="button" id="btnMinus" aria-label="人数を減らす">−</button>
+      <div class="count"><span id="countNum">4</span><small>人</small></div>
+      <button type="button" id="btnPlus" aria-label="人数を増やす">＋</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="label">なまえ</h2>
+    <div class="names" id="nameList"></div>
+  </section>
+
+  <section>
+    <h2 class="label">ルーレット</h2>
+    <div class="wheel-area">
+      <div class="pointer"></div>
+      <div class="wheel-wrap">
+        <svg id="wheel" viewBox="0 0 300 300" aria-hidden="true"></svg>
+      </div>
+    </div>
+    <p class="hub-note" id="hubNote">力を抜いて、まわしてみて。</p>
+    <div class="spin-row">
+      <button type="button" class="btn-spin" id="btnSpin">まわす</button>
+    </div>
+  </section>
+
+  <footer>ごちそうさまの、その前に。</footer>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="resultName">
+  <div class="result">
+    <p class="result-eyebrow">きょうのお支払い</p>
+    <p class="result-name"><span id="resultName"></span><small>さん</small></p>
+    <p class="result-message" id="resultMessage"></p>
+    <div class="result-actions">
+      <button type="button" class="btn-again" id="btnAgain">もう一回</button>
+      <button type="button" class="btn-close" id="btnClose">とじる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var MIN = 2, MAX = 10;
+  var count = 4;
+  var names = [];          // 入力値(空文字あり)
+  var rotation = 0;        // 累積回転角(deg)
+  var spinning = false;
+
+  // セグメント配色(生成り・深緑・テラコッタ・淡金・くすみ緑)
+  var PALETTE = ['#3D5A45', '#C77B4F', '#C9A86A', '#5C7A63', '#A8674B', '#8A9B7E'];
+  // 各色の上に置く文字色
+  var TEXT_ON = {
+    '#3D5A45': '#F5F0E8', '#C77B4F': '#F5F0E8', '#C9A86A': '#3A3630',
+    '#5C7A63': '#F5F0E8', '#A8674B': '#F5F0E8', '#8A9B7E': '#3A3630'
+  };
+
+  // 岡山弁っぽい脱力系メッセージ
+  var MESSAGES = [
+    '今日は、あなたの番じゃわ。',
+    'まあ、ええがん。そういう日もあるが。',
+    '財布、ぬくうなっとる?',
+    'なんも言わんと、スッと出すんが粋じゃけぇ。',
+    '大丈夫。みんな、ちゃんと覚えとるけぇ。',
+    '気にせんでええ。ごはんがおいしかったら、それでええんじゃ。',
+    'ようこそ、お支払いの世界へ。',
+    '深呼吸して、レジへ向かおうや。',
+    '今日のところは、頼んますわ。',
+    'ま、そういうこともあらぁ。次は知らんけど。'
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var countNum = $('countNum'), btnMinus = $('btnMinus'), btnPlus = $('btnPlus');
+  var nameList = $('nameList'), wheel = $('wheel'), btnSpin = $('btnSpin');
+  var hubNote = $('hubNote'), overlay = $('overlay');
+  var resultName = $('resultName'), resultMessage = $('resultMessage');
+
+  function displayName(i) {
+    var n = (names[i] || '').trim();
+    return n !== '' ? n : 'メンバー' + (i + 1);
+  }
+
+  function segColors(n) {
+    var colors = [];
+    for (var i = 0; i < n; i++) {
+      var c = PALETTE[i % PALETTE.length];
+      // 最後のセグメントが先頭と同色で隣接する場合はずらす
+      if (i === n - 1 && c === colors[0]) c = PALETTE[(i + 1) % PALETTE.length];
+      colors.push(c);
+    }
+    return colors;
+  }
+
+  function polar(cx, cy, r, deg) {
+    var rad = (deg - 90) * Math.PI / 180; // 0degを真上に
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  }
+
+  function truncate(s, max) {
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  function buildWheel() {
+    var n = count;
+    var seg = 360 / n;
+    var colors = segColors(n);
+    var svg = [];
+    var cx = 150, cy = 150, r = 148;
+
+    for (var i = 0; i < n; i++) {
+      var a0 = i * seg, a1 = (i + 1) * seg;
+      var p0 = polar(cx, cy, r, a0);
+      var p1 = polar(cx, cy, r, a1);
+      var large = seg > 180 ? 1 : 0;
+      svg.push(
+        '<path d="M' + cx + ' ' + cy +
+        ' L' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) +
+        ' A' + r + ' ' + r + ' 0 ' + large + ' 1 ' +
+        p1[0].toFixed(2) + ' ' + p1[1].toFixed(2) +
+        ' Z" fill="' + colors[i] + '" stroke="#F5F0E8" stroke-width="1.5"/>'
+      );
+
+      // ラベル:セグメント中央角に沿って配置。下半分は180度反転して読みやすく
+      var mid = a0 + seg / 2;
+      var tp = polar(cx, cy, r * 0.62, mid);
+      var label = truncate(displayName(i), 6);
+      var textRot = (mid > 90 && mid < 270) ? mid + 180 : mid;
+      svg.push(
+        '<text x="' + tp[0].toFixed(2) + '" y="' + tp[1].toFixed(2) + '"' +
+        ' fill="' + TEXT_ON[colors[i]] + '"' +
+        ' text-anchor="middle" dominant-baseline="middle"' +
+        ' transform="rotate(' + textRot.toFixed(2) + ' ' + tp[0].toFixed(2) + ' ' + tp[1].toFixed(2) + ')">' +
+        escapeHtml(label) + '</text>'
+      );
+    }
+
+    // 中心の飾り(小さな円)
+    svg.push('<circle cx="150" cy="150" r="26" fill="#F5F0E8"/>');
+    svg.push('<circle cx="150" cy="150" r="26" fill="none" stroke="#C9A86A" stroke-width="1.5"/>');
+    svg.push('<circle cx="150" cy="150" r="4" fill="#3D5A45"/>');
+
+    wheel.innerHTML = svg.join('');
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function resetWheelRotation() {
+    rotation = 0;
+    wheel.style.transition = 'none';
+    wheel.style.transform = 'rotate(0deg)';
+    // 次フレームで transition を戻す
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { wheel.style.transition = ''; });
+    });
+  }
+
+  /* ---------- 人数 ---------- */
+  function renderCount() {
+    countNum.textContent = count;
+    btnMinus.disabled = count <= MIN;
+    btnPlus.disabled = count >= MAX;
+  }
+
+  function renderNames() {
+    nameList.innerHTML = '';
+    for (var i = 0; i < count; i++) {
+      (function (idx) {
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 12;
+        input.placeholder = 'メンバー' + (idx + 1);
+        input.value = names[idx] || '';
+        input.setAttribute('aria-label', (idx + 1) + '人目の名前');
+        input.addEventListener('input', function () {
+          names[idx] = input.value;
+          buildWheel();
+        });
+        nameList.appendChild(input);
+      })(i);
+    }
+  }
+
+  function setCount(n) {
+    if (spinning) return;
+    count = Math.min(MAX, Math.max(MIN, n));
+    renderCount();
+    renderNames();
+    buildWheel();
+    resetWheelRotation();
+  }
+
+  btnMinus.addEventListener('click', function () { setCount(count - 1); });
+  btnPlus.addEventListener('click', function () { setCount(count + 1); });
+
+  /* ---------- 抽選 ---------- */
+  function spin() {
+    if (spinning) return;
+    spinning = true;
+    btnSpin.disabled = true;
+    hubNote.style.opacity = '0';
+
+    var n = count;
+    var seg = 360 / n;
+    var winner = Math.floor(Math.random() * n); // 完全ランダム・偏りなし
+
+    // 当選セグメントの中心が真上(ポインター)に来る角度。
+    // セグメント内で±35%の揺らぎを持たせ、毎回同じ止まり方に見えないように。
+    var jitter = (Math.random() - 0.5) * seg * 0.7;
+    var target = 360 - (winner * seg + seg / 2 + jitter);
+    var current = ((rotation % 360) + 360) % 360;
+    var delta = ((target - current) % 360 + 360) % 360;
+    var turns = 5 + Math.floor(Math.random() * 3); // 5〜7周
+    rotation += turns * 360 + delta;
+
+    wheel.style.transition = 'transform 4.6s cubic-bezier(0.12, 0.72, 0.16, 1)';
+    wheel.style.transform = 'rotate(' + rotation + 'deg)';
+
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      spinning = false;
+      btnSpin.disabled = false;
+      showResult(winner);
+    }
+    wheel.addEventListener('transitionend', finish, { once: true });
+    setTimeout(finish, 5100); // transitionend が来ない環境への保険
+  }
+
+  btnSpin.addEventListener('click', spin);
+
+  /* ---------- 結果表示 ---------- */
+  function showResult(winner) {
+    resultName.textContent = displayName(winner);
+    resultMessage.textContent = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+    overlay.classList.add('show');
+    dropLeaves();
+    setTimeout(function () {
+      hubNote.textContent = 'おつかれさま。また、まわしてもええよ。';
+      hubNote.style.opacity = '1';
+    }, 800);
+  }
+
+  function dropLeaves() {
+    var colors = ['#C9A86A', '#C77B4F', '#8A9B7E'];
+    for (var i = 0; i < 10; i++) {
+      var leaf = document.createElement('span');
+      leaf.className = 'leaf';
+      leaf.style.left = (5 + Math.random() * 90) + '%';
+      leaf.style.background = colors[i % colors.length];
+      leaf.style.animationDelay = (Math.random() * 1.4) + 's';
+      leaf.style.animationDuration = (4.5 + Math.random() * 2.5) + 's';
+      overlay.appendChild(leaf);
+      (function (el) {
+        setTimeout(function () { el.remove(); }, 9000);
+      })(leaf);
+    }
+  }
+
+  $('btnAgain').addEventListener('click', function () {
+    overlay.classList.remove('show');
+    // オーバーレイが消えてから回す(ふわっと)
+    setTimeout(spin, 450);
+  });
+
+  $('btnClose').addEventListener('click', function () {
+    overlay.classList.remove('show');
+  });
+
+  /* ---------- 初期化 ---------- */
+  renderCount();
+  renderNames();
+  buildWheel();
+})();
+</script>
+</body>
+</html>
