@@ -458,7 +458,15 @@
 (function () {
   'use strict';
 
-  var SPIN_SEC = 3.6;   // ルーレットの回転時間(秒)。BGMの減速もこれに合わせる
+  /* 回転のパラメータ
+     「まわす」で定速回転に入り、「とめる」を押すか SPIN_HOLD 秒経つと減速に移る。
+     減速距離は着地点しだいで変わるので、定速時の速度から滑らかにつながるよう
+     所要時間のほうを距離に合わせて決める(BRAKE_K × 距離 ÷ 速度)。 */
+  var ROT_SEC = 0.35;      // 定速回転の1周あたりの秒数
+  var SPIN_HOLD = 2.5;     // 何も押さなければこの秒数まわり続ける
+  var STOP_READY = 0.5;    // 「とめる」が押せるようになるまでの秒数(誤タップ防止)
+  var BRAKE_TURNS = 1;     // 減速中に必ずまわる周数
+  var BRAKE_K = 2.6;       // 減速カーブの指数。大きいほど止まりぎわの余韻が長い
 
   /* ===================================================================
      BGM:Web Audio API による合成音(音源ファイル・外部リソースは不使用)
@@ -469,7 +477,7 @@
     var ctx = null, master = null, dry = null, wet = null, bus = null;
     var scene = null, wantScene = 'idle';
     var step = 0, nextTime = 0, timer = null;
-    var spinAt = 0;
+    var brakeAt = 0, brakeDur = 0;
     var VOLUME = 0.5;
     var enabled = true;
 
@@ -596,13 +604,21 @@
       }
     }
 
-    /* --- 回転中:盤の減速に合わせて音の間隔も伸び、音色も暗く沈む --- */
+    /* --- 回転中:定速のあいだは一定、減速に入ると音の間隔が伸び音色も沈む --- */
     function spinProgress() {
-      return Math.min(1, Math.max(0, (ctx.currentTime - spinAt) / SPIN_SEC));
+      if (!brakeDur) return 0;   // 定速回転中
+      return Math.min(1, Math.max(0, (ctx.currentTime - brakeAt) / brakeDur));
     }
 
     function spinStepDur() {
-      return 0.1 + 0.62 * Math.pow(spinProgress(), 2.6);
+      return 0.13 + 0.62 * Math.pow(spinProgress(), 2.6);
+    }
+
+    // 盤が減速に入ったら、その所要時間に合わせて音も間延びさせる
+    function brake(sec) {
+      if (!ctx || !enabled) return;
+      brakeAt = ctx.currentTime;
+      brakeDur = sec;
     }
 
     var SPIN_SEQ = [65, 69, 72, 74, 77, 79, 77, 74, 72, 69];
@@ -676,7 +692,7 @@
       scene = name;
       step = 0;
       nextTime = ctx.currentTime + 0.06;
-      if (name === 'spin') spinAt = ctx.currentTime;
+      if (name === 'spin') brakeDur = 0;
       if (name === 'result') resultIntro(nextTime);
       if (!timer) timer = setInterval(loop, 40);
       loop();
@@ -723,6 +739,7 @@
 
     return {
       scene: setScene,
+      brake: brake,
       tap: tap,
       setEnabled: setEnabled,
       isEnabled: function () { return enabled; }
@@ -734,6 +751,10 @@
   var names = [];          // 入力値(空文字あり)
   var rotation = 0;        // 累積回転角(deg)
   var spinning = false;
+  var phase = null;        // 'run'(定速) | 'brake'(減速) | null(停止中)
+  var rafId = null, lastT = 0, runStart = 0;
+  var brakeStart = 0, brakeFrom = 0, brakeTo = 0, brakeSec = 0;
+  var targetAngle = 0, pendingWinner = 0;
 
   // セグメント配色(生成り・深緑・テラコッタ・淡金・くすみ緑)
   var PALETTE = ['#3D5A45', '#C77B4F', '#C9A86A', '#5C7A63', '#A8674B', '#8A9B7E'];
@@ -846,14 +867,13 @@
     });
   }
 
+  function applyRotation() {
+    wheel.style.transform = 'rotate(' + rotation.toFixed(2) + 'deg)';
+  }
+
   function resetWheelRotation() {
     rotation = 0;
-    wheel.style.transition = 'none';
-    wheel.style.transform = 'rotate(0deg)';
-    // 次フレームで transition を戻す
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { wheel.style.transition = ''; });
-    });
+    applyRotation();
   }
 
   /* ---------- 人数 ---------- */
@@ -898,42 +918,87 @@
   function spin() {
     if (spinning) return;
     spinning = true;
-    btnSpin.disabled = true;
-    hubNote.style.opacity = '0';
-    Sound.scene('spin');
+    phase = 'run';
 
     var n = count;
     var total = sliceCount(n);
     var seg = 360 / total;
     // コマ単位で完全ランダムに選ぶ。コマ数は人数の整数倍なので偏りは出ない。
+    // 当たりは回し始めた時点で決まっていて、「とめる」を押す間合いでは変わらない。
     var slice = Math.floor(Math.random() * total);
-    var winner = slice % n;
+    pendingWinner = slice % n;
 
     // 当選コマの中心が真上(ポインター)に来る角度。
     // コマ内で±35%の揺らぎを持たせ、毎回同じ止まり方に見えないように。
     var jitter = (Math.random() - 0.5) * seg * 0.7;
-    var target = 360 - (slice * seg + seg / 2 + jitter);
-    var current = ((rotation % 360) + 360) % 360;
-    var delta = ((target - current) % 360 + 360) % 360;
-    var turns = 8 + Math.floor(Math.random() * 3); // 8〜10周
-    rotation += turns * 360 + delta;
+    targetAngle = (((360 - (slice * seg + seg / 2 + jitter)) % 360) + 360) % 360;
 
-    wheel.style.transition = 'transform ' + SPIN_SEC + 's cubic-bezier(0.08, 0.68, 0.13, 1)';
-    wheel.style.transform = 'rotate(' + rotation + 'deg)';
+    hubNote.textContent = '好きなときに、とめてええよ。';
+    hubNote.style.opacity = '1';
 
-    var done = false;
-    function finish() {
-      if (done) return;
-      done = true;
-      spinning = false;
-      btnSpin.disabled = false;
-      showResult(winner);
-    }
-    wheel.addEventListener('transitionend', finish, { once: true });
-    setTimeout(finish, SPIN_SEC * 1000 + 500); // transitionend が来ない環境への保険
+    // 「まわす」の連打でいきなり止まらないよう、少し置いてから押せるようにする
+    btnSpin.textContent = 'とめる';
+    btnSpin.disabled = true;
+    setTimeout(function () {
+      if (phase === 'run') btnSpin.disabled = false;
+    }, STOP_READY * 1000);
+
+    Sound.scene('spin');
+    runStart = lastT = performance.now() / 1000;
+    rafId = requestAnimationFrame(frame);
   }
 
-  btnSpin.addEventListener('click', function () { Sound.tap(); spin(); });
+  function frame(ts) {
+    var sec = ts / 1000;
+    if (phase === 'run') {
+      var dt = Math.min(0.05, sec - lastT);   // タブ復帰時に飛ばないよう上限を設ける
+      lastT = sec;
+      rotation += (360 / ROT_SEC) * dt;
+      applyRotation();
+      if (sec - runStart >= SPIN_HOLD) beginBrake(sec);
+      rafId = requestAnimationFrame(frame);
+    } else if (phase === 'brake') {
+      var p = Math.min(1, (sec - brakeStart) / brakeSec);
+      rotation = brakeFrom + (brakeTo - brakeFrom) * (1 - Math.pow(1 - p, BRAKE_K));
+      applyRotation();
+      if (p >= 1) { endSpin(); return; }
+      rafId = requestAnimationFrame(frame);
+    }
+  }
+
+  function beginBrake(sec) {
+    if (phase !== 'run') return;
+    phase = 'brake';
+    btnSpin.disabled = true;
+
+    var cur = ((rotation % 360) + 360) % 360;
+    var delta = ((targetAngle - cur) % 360 + 360) % 360;
+    var dist = BRAKE_TURNS * 360 + delta;
+    brakeStart = sec;
+    brakeFrom = rotation;
+    brakeTo = rotation + dist;
+    // 定速時の速度からカクつかずにつながる減速時間
+    brakeSec = BRAKE_K * dist / (360 / ROT_SEC);
+
+    Sound.brake(brakeSec);
+  }
+
+  function endSpin() {
+    rafId = null;
+    phase = null;
+    spinning = false;
+    rotation = ((rotation % 360) + 360) % 360;   // 累積が際限なく増えないよう畳む
+    applyRotation();
+    btnSpin.textContent = 'まわす';
+    btnSpin.disabled = false;
+    showResult(pendingWinner);
+  }
+
+  btnSpin.addEventListener('click', function () {
+    Sound.tap();
+    if (spinning) beginBrake(performance.now() / 1000);
+    else spin();
+  });
 
   /* ---------- 結果表示 ---------- */
   function showResult(winner) {
