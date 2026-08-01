@@ -458,6 +458,8 @@
 (function () {
   'use strict';
 
+  var SPIN_SEC = 3.6;   // ルーレットの回転時間(秒)。BGMの減速もこれに合わせる
+
   /* ===================================================================
      BGM:Web Audio API による合成音(音源ファイル・外部リソースは不使用)
      シーンは「待機」「回転中」「結果」の3つ。ヘ長調のペンタトニックを
@@ -468,7 +470,6 @@
     var scene = null, wantScene = 'idle';
     var step = 0, nextTime = 0, timer = null;
     var spinAt = 0;
-    var SPIN_SEC = 4.6;   // ルーレットの回転時間と合わせる
     var VOLUME = 0.5;
     var enabled = true;
 
@@ -601,7 +602,7 @@
     }
 
     function spinStepDur() {
-      return 0.135 + 0.62 * Math.pow(spinProgress(), 2.6);
+      return 0.1 + 0.62 * Math.pow(spinProgress(), 2.6);
     }
 
     var SPIN_SEQ = [65, 69, 72, 74, 77, 79, 77, 74, 72, 69];
@@ -767,6 +768,12 @@
     return n !== '' ? n : 'メンバー' + (i + 1);
   }
 
+  // 人数が少ないとコマが大きすぎてルーレットらしくないので、同じ人を
+  // 複数コマに散らして割る。2人→8コマ、3人→9コマ、4人→8コマ。
+  var REPEAT = { 2: 4, 3: 3, 4: 2 };
+
+  function sliceCount(n) { return n * (REPEAT[n] || 1); }
+
   function segColors(n) {
     var colors = [];
     for (var i = 0; i < n; i++) {
@@ -789,12 +796,14 @@
 
   function buildWheel() {
     var n = count;
-    var seg = 360 / n;
+    var total = sliceCount(n);
+    var seg = 360 / total;
     var colors = segColors(n);
     var svg = [];
     var cx = 150, cy = 150, r = 148;
 
-    for (var i = 0; i < n; i++) {
+    for (var i = 0; i < total; i++) {
+      var m = i % n;   // このコマに割り当てられた人
       var a0 = i * seg, a1 = (i + 1) * seg;
       var p0 = polar(cx, cy, r, a0);
       var p1 = polar(cx, cy, r, a1);
@@ -804,17 +813,19 @@
         ' L' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) +
         ' A' + r + ' ' + r + ' 0 ' + large + ' 1 ' +
         p1[0].toFixed(2) + ' ' + p1[1].toFixed(2) +
-        ' Z" fill="' + colors[i] + '" stroke="#F5F0E8" stroke-width="1.5"/>'
+        ' Z" fill="' + colors[m] + '" stroke="#F5F0E8" stroke-width="1.5"/>'
       );
 
       // ラベル:セグメント中央角に沿って配置。下半分は180度反転して読みやすく
       var mid = a0 + seg / 2;
-      var tp = polar(cx, cy, r * 0.62, mid);
-      var label = truncate(displayName(i), 6);
+      // コマが細かいときは文字を小さく・外寄りにして中心の飾りとの重なりを避ける
+      var tp = polar(cx, cy, r * (total >= 9 ? 0.66 : 0.62), mid);
+      var label = truncate(displayName(m), 6);
       var textRot = (mid > 90 && mid < 270) ? mid + 180 : mid;
       svg.push(
         '<text x="' + tp[0].toFixed(2) + '" y="' + tp[1].toFixed(2) + '"' +
-        ' fill="' + TEXT_ON[colors[i]] + '"' +
+        ' font-size="' + (total >= 9 ? 11 : 13) + '"' +
+        ' fill="' + TEXT_ON[colors[m]] + '"' +
         ' text-anchor="middle" dominant-baseline="middle"' +
         ' transform="rotate(' + textRot.toFixed(2) + ' ' + tp[0].toFixed(2) + ' ' + tp[1].toFixed(2) + ')">' +
         escapeHtml(label) + '</text>'
@@ -892,19 +903,22 @@
     Sound.scene('spin');
 
     var n = count;
-    var seg = 360 / n;
-    var winner = Math.floor(Math.random() * n); // 完全ランダム・偏りなし
+    var total = sliceCount(n);
+    var seg = 360 / total;
+    // コマ単位で完全ランダムに選ぶ。コマ数は人数の整数倍なので偏りは出ない。
+    var slice = Math.floor(Math.random() * total);
+    var winner = slice % n;
 
-    // 当選セグメントの中心が真上(ポインター)に来る角度。
-    // セグメント内で±35%の揺らぎを持たせ、毎回同じ止まり方に見えないように。
+    // 当選コマの中心が真上(ポインター)に来る角度。
+    // コマ内で±35%の揺らぎを持たせ、毎回同じ止まり方に見えないように。
     var jitter = (Math.random() - 0.5) * seg * 0.7;
-    var target = 360 - (winner * seg + seg / 2 + jitter);
+    var target = 360 - (slice * seg + seg / 2 + jitter);
     var current = ((rotation % 360) + 360) % 360;
     var delta = ((target - current) % 360 + 360) % 360;
-    var turns = 5 + Math.floor(Math.random() * 3); // 5〜7周
+    var turns = 8 + Math.floor(Math.random() * 3); // 8〜10周
     rotation += turns * 360 + delta;
 
-    wheel.style.transition = 'transform 4.6s cubic-bezier(0.12, 0.72, 0.16, 1)';
+    wheel.style.transition = 'transform ' + SPIN_SEC + 's cubic-bezier(0.08, 0.68, 0.13, 1)';
     wheel.style.transform = 'rotate(' + rotation + 'deg)';
 
     var done = false;
@@ -916,7 +930,7 @@
       showResult(winner);
     }
     wheel.addEventListener('transitionend', finish, { once: true });
-    setTimeout(finish, 5100); // transitionend が来ない環境への保険
+    setTimeout(finish, SPIN_SEC * 1000 + 500); // transitionend が来ない環境への保険
   }
 
   btnSpin.addEventListener('click', function () { Sound.tap(); spin(); });
