@@ -229,10 +229,10 @@
     will-change: transform;
   }
 
+  /* 盤内のラベルは一文字ずつ配置するので、字送りはSVG側で指定する */
   #wheel text {
     font-family: inherit;
-    font-size: 13px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 
   .hub-note {
@@ -795,6 +795,9 @@
 
   function sliceCount(n) { return n * (REPEAT[n] || 1); }
 
+  // 縦書きにすると向きが変わる文字(長音符・ダッシュ・括弧など)
+  var VERT_TURN = 'ー－ｰ〜～―‐−-—()（）「」『』【】〔〕[]{}｛｝<>＜＞…‥';
+
   function segColors(n) {
     var colors = [];
     for (var i = 0; i < n; i++) {
@@ -837,20 +840,31 @@
         ' Z" fill="' + colors[m] + '" stroke="#F5F0E8" stroke-width="1.5"/>'
       );
 
-      // ラベル:セグメント中央角に沿って配置。下半分は180度反転して読みやすく
+      // ラベル:一文字ずつ半径方向に積んで縦書きにする。
+      // 下半分のコマは180度まわし、文字が逆さまにならないようにする
+      // (このとき読む向きも反転するので、積む順も内側からに変える)。
       var mid = a0 + seg / 2;
-      // コマが細かいときは文字を小さく・外寄りにして中心の飾りとの重なりを避ける
-      var tp = polar(cx, cy, r * (total >= 9 ? 0.66 : 0.62), mid);
-      var label = truncate(displayName(m), 6);
-      var textRot = (mid > 90 && mid < 270) ? mid + 180 : mid;
-      svg.push(
-        '<text x="' + tp[0].toFixed(2) + '" y="' + tp[1].toFixed(2) + '"' +
-        ' font-size="' + (total >= 9 ? 11 : 13) + '"' +
-        ' fill="' + TEXT_ON[colors[m]] + '"' +
-        ' text-anchor="middle" dominant-baseline="middle"' +
-        ' transform="rotate(' + textRot.toFixed(2) + ' ' + tp[0].toFixed(2) + ' ' + tp[1].toFixed(2) + ')">' +
-        escapeHtml(label) + '</text>'
-      );
+      var flip = (mid > 90 && mid < 270);
+      var fs = total >= 9 ? 11 : 13;      // コマが細かいときは小さめに
+      var gap = fs * 1.15;                // 字送り
+      var rMid = r * (0.90 + 0.28) / 2;   // 縁と中心の飾りの間に収める
+      var chars = truncate(displayName(m), 6).split('');
+      var span = (chars.length - 1) * gap;
+
+      for (var c = 0; c < chars.length; c++) {
+        var rr = flip ? rMid - span / 2 + c * gap : rMid + span / 2 - c * gap;
+        var cp = polar(cx, cy, rr, mid);
+        // 長音符や括弧は縦書きでは寝かせる
+        var rot = (flip ? mid + 180 : mid) + (VERT_TURN.indexOf(chars[c]) >= 0 ? 90 : 0);
+        svg.push(
+          '<text x="' + cp[0].toFixed(2) + '" y="' + cp[1].toFixed(2) + '"' +
+          ' font-size="' + fs + '"' +
+          ' fill="' + TEXT_ON[colors[m]] + '"' +
+          ' text-anchor="middle" dominant-baseline="central"' +
+          ' transform="rotate(' + rot.toFixed(2) + ' ' + cp[0].toFixed(2) + ' ' + cp[1].toFixed(2) + ')">' +
+          escapeHtml(chars[c]) + '</text>'
+        );
+      }
     }
 
     // 中心の飾り(小さな円)
